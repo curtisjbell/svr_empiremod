@@ -172,7 +172,16 @@ readyup(entity)
 	autoReadyTime = getCvarFloat("g_autoReadyTime");
 	if (!isdefined(autoReadyTime) || autoReadyTime <= 0)
 		autoReadyTime = 30;
-	self iprintlnbold("^1~^3empire ^2| ^3You will be automatically readied after ^1" + autoReadyTime + " ^3seconds. Hit the ^1-Use- ^3key to Ready-Up now.");
+        brandName = "^1~^3empire";
+        if (isdefined(level.ui_BrandServerName))
+                brandName = level.ui_BrandServerName;
+        else
+        {
+                tmpName = getCvar("ui_BrandServerName");
+                if (isdefined(tmpName) && tmpName != "")
+                        brandName = tmpName;
+        }
+        self iprintlnbold(brandName + " ^2| ^3You will be automatically readied after ^1" + autoReadyTime + " ^3seconds. Hit the ^1-Use- ^3key to Ready-Up now.");
 	
 	maps\mp\gametypes\_pam_utilities::CheckPK3files();
 	
