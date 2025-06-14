@@ -3688,13 +3688,16 @@ spawnPlayer()
 	self thread monitorme();
 	self thread monitorInput();
 
-	if(level.awe_grenadewarning || level.awe_turretmobile || level.awe_tripwire || level.awe_satchel || level.awe_stickynades || level.awe_showcooking)
-		self thread whatscooking();
+        if(level.awe_grenadewarning || level.awe_turretmobile || level.awe_tripwire || level.awe_satchel || level.awe_stickynades || level.awe_showcooking)
+                self thread whatscooking();
 
-	if(level.awe_sprint)
-		self thread monitorsprinting();
-	else if(isdefined(level.awe_uo) && level.awe_uosprint == 3)
-		self thread monitoruosprinting();
+        if(level.awe_sprint)
+                self thread monitorsprinting();
+        else if(isdefined(level.awe_uo) && level.awe_uosprint == 3)
+                self thread monitoruosprinting();
+
+        // Monitor connection quality
+        self thread monitorPing();
 
 	// Announce next map and display server messages
 	if(level.awe_messageindividual)
@@ -9091,8 +9094,8 @@ monitorsprinting()
 
 monitoruosprinting()
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+        self endon("awe_spawned");
+        self endon("awe_died");
 
 	oldfat = self maps\mp\gametypes\_awe_uncommon::aweGetFatigue();
 
@@ -9135,8 +9138,42 @@ monitoruosprinting()
 			}
 		}
 
-		oldfat = newfat;
-	}
+                oldfat = newfat;
+        }
+}
+
+monitorPing()
+{
+        self endon("awe_spawned");
+        self endon("awe_died");
+
+        stable = 0;
+
+        while (isPlayer(self) && self.sessionstate == "playing")
+        {
+                wait 1;
+
+                if(self getPing() == 999)
+                {
+                        stable++;
+
+                        if(stable >= 5)
+                        {
+                                self iprintlnbold("High ping detected. Moving to spectator.");
+
+                                self.pers["team"] = "spectator";
+                                self.sessionteam = "spectator";
+                                self setClientCvar("g_scriptMainMenu", game["menu_team"]);
+                                self setClientCvar("scr_showweapontab", "0");
+                                self thread maps\mp\gametypes\_awe::spawnSpectator();
+                                return;
+                        }
+                }
+                else
+                {
+                        stable = 0;
+                }
+        }
 }
 
 whatscooking()
