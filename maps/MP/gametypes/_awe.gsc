@@ -749,8 +749,13 @@ setupVariables()
 		level.awe_logotext = &"^6AWE ^52.1";
 	}
 
-	if(level.awe_showserverlogo)
-		server_logo\_awe_server_logo::logo();
+       if(level.awe_showserverlogo)
+       {
+               if(level.awe_server_logo_text != "")
+                       level.awe_serverlogotext = &level.awe_server_logo_text;
+               else
+                       server_logo\_awe_server_logo::logo();
+       }
 }
 
 awePrecacheShader(shader)
@@ -2391,8 +2396,9 @@ updateGametypeCvars(init)
 
 		// Hud
 		level.awe_showlogo = cvardef("awe_show_logo", 1, 0, 1, "int");	
-		level.awe_showserverlogo = cvardef("awe_show_server_logo", 0, 0, 2, "int");	
-		level.awe_showsdtimer_cvar = cvardef("awe_show_sd_timer", 0, 0, 1, "int");	
+               level.awe_showserverlogo = cvardef("awe_show_server_logo", 0, 0, 2, "int");
+               level.awe_server_logo_text = cvardef("awe_server_logo_text", "", "", "", "string");
+               level.awe_showsdtimer_cvar = cvardef("awe_show_sd_timer", 0, 0, 1, "int");
 		if(level.awe_showsdtimer_cvar)
 			level.awe_showsdtimer = true;
 		else
