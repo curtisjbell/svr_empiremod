@@ -613,8 +613,14 @@ initGlobalCvars()
 	level.ui_BrandGametypeEnabled = getCvar("ui_BrandGametypeEnabled");
 	if(level.ui_BrandGametypeEnabled == "")
 		level.ui_BrandGametypeEnabled = "1";
-	setCvar("ui_BrandGametypeEnabled", level.ui_BrandGametypeEnabled);
-	makeCvarServerInfo("ui_BrandGametypeEnabled", "1");
+        setCvar("ui_BrandGametypeEnabled", level.ui_BrandGametypeEnabled);
+        makeCvarServerInfo("ui_BrandGametypeEnabled", "1");
+
+        level.awe_server_logo_text = getCvar("awe_server_logo_text");
+        if(level.awe_server_logo_text == "")
+                level.awe_server_logo_text = "";
+        setCvar("awe_server_logo_text", level.awe_server_logo_text);
+        makeCvarServerInfo("awe_server_logo_text", "");
 
 	// AutoAdmin
 	level.ui_AutoAdmin_AFK_NotifyPlayer = getCvar("ui_AutoAdmin_AFK_NotifyPlayer");
@@ -994,10 +1000,16 @@ updateGlobalCvars()
 			setCvar("ui_BrandNextMap", level.ui_BrandNextMap);
 		}
 
-		if(level.ui_BrandGametypeEnabled != getCvar("ui_BrandGametypeEnabled")) {
-			level.ui_BrandGametypeEnabled = getCvar("ui_BrandGametypeEnabled");
-			setCvar("ui_BrandGametypeEnabled", level.ui_BrandGametypeEnabled);
-		}
+               if(level.ui_BrandGametypeEnabled != getCvar("ui_BrandGametypeEnabled")) {
+                       level.ui_BrandGametypeEnabled = getCvar("ui_BrandGametypeEnabled");
+                       setCvar("ui_BrandGametypeEnabled", level.ui_BrandGametypeEnabled);
+               }
+
+               awe_server_logo_text = getCvar("awe_server_logo_text");
+               if(level.awe_server_logo_text != awe_server_logo_text) {
+                       level.awe_server_logo_text = awe_server_logo_text;
+                       setCvar("awe_server_logo_text", level.awe_server_logo_text);
+               }
 
 		if(level.ui_AutoAdmin_AFK_NotifyPlayer != getCvar("ui_AutoAdmin_AFK_NotifyPlayer")) {
 			level.ui_AutoAdmin_AFK_NotifyPlayer = getCvar("ui_AutoAdmin_AFK_NotifyPlayer");
