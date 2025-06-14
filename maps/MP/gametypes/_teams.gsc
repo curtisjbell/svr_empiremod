@@ -635,14 +635,20 @@ initGlobalCvars()
 	setCvar("ui_AutoAdmin_AFK_NotifyActionTaken", level.ui_AutoAdmin_AFK_NotifyActionTaken);
 	makeCvarServerInfo("ui_AutoAdmin_AFK_NotifyActionTaken", "^1~^3empire ^2| ^1automod: ^3You have been forced into spectator mode due to ^1AFK^3 behavior.");
 
-	level.ui_AutoAdmin_AFK_NotifyRemoved = getCvar("ui_AutoAdmin_AFK_NotifyRemoved");
-	if(level.ui_AutoAdmin_AFK_NotifyRemoved == "")
-		level.ui_AutoAdmin_AFK_NotifyRemoved = "^1~^3empire ^2| ^1automod: ^3You are no longer marked as ^1AFK^3.";
-	setCvar("ui_AutoAdmin_AFK_NotifyRemoved", level.ui_AutoAdmin_AFK_NotifyRemoved);
-	makeCvarServerInfo("ui_AutoAdmin_AFK_NotifyRemoved", "^1~^3empire ^2| ^1automod: ^3You are no longer marked as ^1AFK^3.");
+        level.ui_AutoAdmin_AFK_NotifyRemoved = getCvar("ui_AutoAdmin_AFK_NotifyRemoved");
+        if(level.ui_AutoAdmin_AFK_NotifyRemoved == "")
+                level.ui_AutoAdmin_AFK_NotifyRemoved = "^1~^3empire ^2| ^1automod: ^3You are no longer marked as ^1AFK^3.";
+        setCvar("ui_AutoAdmin_AFK_NotifyRemoved", level.ui_AutoAdmin_AFK_NotifyRemoved);
+        makeCvarServerInfo("ui_AutoAdmin_AFK_NotifyRemoved", "^1~^3empire ^2| ^1automod: ^3You are no longer marked as ^1AFK^3.");
 
-	// Initialize g_allowedGametypeVote cvar
-	level.allowedGametypeVote = getCvar("g_allowedGametypeVote");
+        level.ui_AutoAdmin_FastShootMsg = getCvar("ui_AutoAdmin_FastShootMsg");
+        if(level.ui_AutoAdmin_FastShootMsg == "")
+                level.ui_AutoAdmin_FastShootMsg = "^1~^3empire ^2| ^1automod: ^3";
+        setCvar("ui_AutoAdmin_FastShootMsg", level.ui_AutoAdmin_FastShootMsg);
+        makeCvarServerInfo("ui_AutoAdmin_FastShootMsg", "^1~^3empire ^2| ^1automod: ^3");
+
+        // Initialize g_allowedGametypeVote cvar
+        level.allowedGametypeVote = getCvar("g_allowedGametypeVote");
 	if(level.allowedGametypeVote == "")
 		level.allowedGametypeVote = "dm tdm sd"; // Default allowed gametypes
 	setCvar("g_allowedGametypeVote", level.allowedGametypeVote);
@@ -1008,10 +1014,15 @@ updateGlobalCvars()
 			setCvar("ui_AutoAdmin_AFK_NotifyActionTaken", level.ui_AutoAdmin_AFK_NotifyActionTaken);
 		}
 
-		if(level.ui_AutoAdmin_AFK_NotifyRemoved != getCvar("ui_AutoAdmin_AFK_NotifyRemoved")) {
-			level.ui_AutoAdmin_AFK_NotifyRemoved = getCvar("ui_AutoAdmin_AFK_NotifyRemoved");
-			setCvar("ui_AutoAdmin_AFK_NotifyRemoved", level.ui_AutoAdmin_AFK_NotifyRemoved);
-		}
+                if(level.ui_AutoAdmin_AFK_NotifyRemoved != getCvar("ui_AutoAdmin_AFK_NotifyRemoved")) {
+                        level.ui_AutoAdmin_AFK_NotifyRemoved = getCvar("ui_AutoAdmin_AFK_NotifyRemoved");
+                        setCvar("ui_AutoAdmin_AFK_NotifyRemoved", level.ui_AutoAdmin_AFK_NotifyRemoved);
+                }
+
+                if(level.ui_AutoAdmin_FastShootMsg != getCvar("ui_AutoAdmin_FastShootMsg")) {
+                        level.ui_AutoAdmin_FastShootMsg = getCvar("ui_AutoAdmin_FastShootMsg");
+                        setCvar("ui_AutoAdmin_FastShootMsg", level.ui_AutoAdmin_FastShootMsg);
+                }
 
 		// Monitor changes to g_allowedGametypeVote
 		allowedGametypeVote = getCvar("g_allowedGametypeVote");

@@ -572,9 +572,9 @@ rFASHSHOOTmessage()
 			}
 
 			self.rFASHSHOOTmessage++;
-			self iprintln("^1~^3empire ^2| ^1automod: ^3" + self.name + " ^1used fastshooting!^3 (" + self.rFASHSHOOTmessage + ")");
-		}
-	}
+                        self iprintln(getcvar("ui_AutoAdmin_FastShootMsg") + self.name + " ^1used fastshooting!^3 (" + self.rFASHSHOOTmessage + ")");
+                }
+        }
 }
 
 rSTRATEXPLOIT()
