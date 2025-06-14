@@ -23,6 +23,7 @@ ui_AutoAdmin_AFK_NotifyPlayer "^1~^3empire ^2| ^1automod: ^3You have been detect
 ui_AutoAdmin_AFK_NotifyPublic " has been detected as AFK and will be forced into spectator mode in "
 ui_AutoAdmin_AFK_NotifyActionTaken "^1~^3empire ^2| ^1automod: ^3You have been forced into spectator mode due to ^1AFK^3 behavior."
 ui_AutoAdmin_AFK_NotifyRemoved "^1~^3empire ^2| ^1automod: ^3You are no longer marked as ^1AFK^3."
+ui_AutoAdmin_FastShootMsg "^1~^3empire ^2| ^1automod: ^3"
 
 // Allowed gametype voting
 g_allowedGametypeVote "ctf sd dm tdm bas re hq dom bel" // space delimited list of gametypes that can be voted
