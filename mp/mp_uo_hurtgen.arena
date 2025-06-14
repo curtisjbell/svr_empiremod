@@ -1,0 +1,6 @@
+{
+	map		"mp_uo_hurtgen"
+	longname	"Hurtgen(UO)"
+	gametype	"dom ad ctf dm tdm htf lts actf sd rsd dem re bel hq"
+}
+

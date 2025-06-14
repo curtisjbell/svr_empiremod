@@ -1,0 +1,44 @@
+		itemDef 
+		{
+			name main_back_top
+			style WINDOW_STYLE_SHADER
+			rect 0 0 640 320
+			background "ui_mp/assets/main_back_top_mp.dds"
+			visible 1
+			decoration
+		}
+		itemDef 
+		{
+			name main_back_bottom
+			style WINDOW_STYLE_SHADER
+			rect 0 320 640 160
+			background "ui_mp/assets/main_back_bottom_mp.dds"
+			visible 1
+			decoration
+		}
+		itemDef
+		{
+			name background_version_display
+			type 1
+			rect 630 472 0 0
+			visible 1
+			cvar "shortversion"
+			decoration
+			textscale .23
+			textalign ITEM_ALIGN_RIGHT
+			textalignx 0
+			textaligny 0
+		}
+		itemDef
+		{
+			name background_version_display2
+			type 1
+			rect 10 472 0 0
+			visible 1
+			text "AWE 2.1 (www.awemod.com)"
+			decoration
+			textscale .23
+			textalign ITEM_ALIGN_LEFT
+			textalignx 0
+			textaligny 0
+		}

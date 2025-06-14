@@ -1,0 +1,30 @@
+v1.01
+Fixed display bug when notifying public about an AFK player.  
+
+
+v1.0
+
+Added the following global cvars:
+
+// PAM UO Auto-Ready
+g_AutoReadyTime "30"
+g_AutoSpectatorTime "30"
+
+// Server Branding / Customization
+ui_BrandServerName "^1~^3empire"
+ui_BrandColorPrimary "3"
+ui_BrandColorSecondary "1"
+ui_BrandColorTertiary "2"
+ui_BrandNextMap "^1~^3empire ^2| ^1Next:"
+ui_BrandGametypeEnabled "1"
+
+// AutoAdmin
+ui_AutoAdmin_AFK_NotifyPlayer "^1~^3empire ^2| ^1automod: ^3You have been detected as ^1AFK^3. You will be forced into spectator mode in "
+ui_AutoAdmin_AFK_NotifyPublic " has been detected as AFK and will be forced into spectator mode in "
+ui_AutoAdmin_AFK_NotifyActionTaken "^1~^3empire ^2| ^1automod: ^3You have been forced into spectator mode due to ^1AFK^3 behavior."
+ui_AutoAdmin_AFK_NotifyRemoved "^1~^3empire ^2| ^1automod: ^3You are no longer marked as ^1AFK^3."
+
+// Allowed gametype voting
+g_allowedGametypeVote "ctf sd dm tdm bas re hq dom bel" // space delimited list of gametypes that can be voted
+
+TODO:
