@@ -4677,12 +4677,12 @@ monitorInput()
 
 monitorme()
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+        self endon("awe_spawned");
+        self endon("awe_died");
 
-	count = 0;
-	funcount=0;
-	ch_count = 0;
+        count = 0;
+        funcount = 0;
+        ch_count = 0;
 
 	while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
 	{
@@ -4868,21 +4868,27 @@ monitorme()
 			//iprintln("DEBUG: Movement not detected, pace=" + self.awe_pace);
 			}
 
-		if(level.awe_anticamptime && !isdefined(self.awe_camper) && !isdefined(level.awe_tdom))
-		{
-			// Check for campers
-			if(self.awe_pace == 0) {
-				count++;
-			} else {
-				count=0;
-				//self notify("not_afk");
-			}
-			if(count>=level.awe_anticamptime)
-			{
-				self thread camper();
-				count=0;
-			}
-		}
+                if(level.awe_anticamptime && !isdefined(self.awe_camper) && !isdefined(level.awe_tdom))
+                {
+                        if(isdefined(self.hasflag) || (isdefined(self.carrying) && self.carrying))
+                        {
+                                count = 0;
+                        }
+                        else
+                        {
+                                // Check for campers
+                                if(self.awe_pace == 0)
+                                        count++;
+                                else
+                                        count = 0;
+
+                                if(count >= level.awe_anticamptime)
+                                {
+                                        self thread camper();
+                                        count = 0;
+                                }
+                        }
+                }
 
 		// Mess with the poor camper
 		if(level.awe_anticampfun && isdefined(self.awe_camper))
@@ -4911,16 +4917,21 @@ monitorme()
 				}
 				funcount=0;
 			}
-			else
-				funcount++;
-		}
-	}
+                        else
+                                funcount++;
+                }
+
+        }
 }
 
 camper()
 {
     self endon("awe_spawned");
     self endon("not_afk");
+
+    // Skip AFK punishment if player is carrying the flag
+    if (isdefined(self.hasflag) || (isdefined(self.carrying) && self.carrying))
+            return;
         
     // Ensure any previous timer is cleared.
     if(isdefined(self.awe_camptimer))
