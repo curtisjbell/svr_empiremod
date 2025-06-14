@@ -2392,6 +2392,7 @@ updateGametypeCvars(init)
 		// Hud
 		level.awe_showlogo = cvardef("awe_show_logo", 1, 0, 1, "int");	
 		level.awe_showserverlogo = cvardef("awe_show_server_logo", 0, 0, 2, "int");	
+		level.awe_serverlogotext = cvardef("awe_server_logo_text", "", "", "", "string");	
 		level.awe_showsdtimer_cvar = cvardef("awe_show_sd_timer", 0, 0, 1, "int");	
 		if(level.awe_showsdtimer_cvar)
 			level.awe_showsdtimer = true;

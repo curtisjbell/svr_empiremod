@@ -1,5 +1,8 @@
-logo() { level.awe_serverlogotext = 
-
+logo()
+{
+	level.awe_serverlogotext = getcvar("awe_server_logo_text");
+	if(level.awe_serverlogotext == "")
+	{
 	// Replace the text between the quotationmarks with your server and/or clan name
 	// Colorcoding can be used
 	// ^1 = red
@@ -15,8 +18,8 @@ logo() { level.awe_serverlogotext =
 
 ///// DON'T CHANGE ANYTHING ABOVE THIS LINE /////
 
-	&"^7Custom logo file ^1NOT ^7installed correctly"
+	level.awe_serverlogotext = &"^7Custom logo file ^1NOT ^7installed correctly";
 
 ///// DON'T CHANGE ANYTHING BELOW THIS LINE /////
-;
+	}
 }
