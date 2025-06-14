@@ -3,6 +3,42 @@
 //
 // 		Sets up defaults for all of the values
 // ----------------------------------------------------------------------------------
+//	
+//	Supported CVars and fallback values when unset:
+//	awe_br1 - br_ppr * 3 (15 if scr_rank_ppr = 5)
+//	awe_br2 - br_ppr * 6 (30 if scr_rank_ppr = 5)
+//	awe_br3 - br_ppr * 9 (45 if scr_rank_ppr = 5)
+//	awe_br4 - br_ppr * 12 (60 if scr_rank_ppr = 5)
+//	awe_br0_gunclips - 4
+//	awe_br1_gunclips - 4
+//	awe_br2_gunclips - 5
+//	awe_br3_gunclips - 5
+//	awe_br4_gunclips - 6
+//	awe_br0_pistolclips - 2
+//	awe_br1_pistolclips - 3
+//	awe_br2_pistolclips - 3
+//	awe_br3_pistolclips - 4
+//	awe_br4_pistolclips - 4
+//	awe_br0_grenades - 1
+//	awe_br1_grenades - 1
+//	awe_br2_grenades - 1
+//	awe_br3_grenades - 2
+//	awe_br4_grenades - 2
+//	awe_br0_smokegrenades - 1
+//	awe_br1_smokegrenades - 1
+//	awe_br2_smokegrenades - 1
+//	awe_br3_smokegrenades - 2
+//	awe_br4_smokegrenades - 2
+//	awe_br0_satchels - 0
+//	awe_br1_satchels - 0
+//	awe_br2_satchels - 0
+//	awe_br3_satchels - 0
+//	awe_br4_satchels - 1
+//	scr_rank_ppr - 5
+//	scr_artillery_first_interval - 45
+//	scr_artillery_interval - 120
+//	scr_artillery_interval_range - 15
+//	scr_forcerank - 0
 InitializeBattleRank()
 {
 	game["br_artillery_ready"] = "gfx/hud/hud@fire_ready_shell.dds";
