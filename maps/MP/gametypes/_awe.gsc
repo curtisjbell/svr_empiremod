@@ -4871,21 +4871,25 @@ monitorme()
 			//iprintln("DEBUG: Movement not detected, pace=" + self.awe_pace);
 			}
 
-		if(level.awe_anticamptime && !isdefined(self.awe_camper) && !isdefined(level.awe_tdom))
-		{
-			// Check for campers
-			if(self.awe_pace == 0) {
-				count++;
-			} else {
-				count=0;
-				//self notify("not_afk");
-			}
-			if(count>=level.awe_anticamptime)
-			{
-				self thread camper();
-				count=0;
-			}
-		}
+                if(level.awe_anticamptime && !isdefined(self.awe_camper) && !isdefined(level.awe_tdom) && !isdefined(self.hasflag) && (!isdefined(self.carrying) || !self.carrying))
+                {
+                        // Check for campers
+                        if(self.awe_pace == 0)
+                        {
+                                count++;
+                        }
+                        else
+                        {
+                                count = 0;
+                                //self notify("not_afk");
+                        }
+
+                        if(count >= level.awe_anticamptime)
+                        {
+                                self thread camper();
+                                count = 0;
+                        }
+                }
 
 		// Mess with the poor camper
 		if(level.awe_anticampfun && isdefined(self.awe_camper))
@@ -4924,6 +4928,10 @@ camper()
 {
     self endon("awe_spawned");
     self endon("not_afk");
+
+    // Skip AFK handling if the player is carrying a flag/object
+    if(isdefined(self.hasflag) || (isdefined(self.carrying) && self.carrying))
+        return;
         
     // Ensure any previous timer is cleared.
     if(isdefined(self.awe_camptimer))
