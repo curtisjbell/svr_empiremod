@@ -3,6 +3,19 @@
 //
 // 		Sets up defaults for all of the values
 // ----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+//      getConfigInt
+//
+//              Returns the integer value of a cvar or the supplied default if the cvar is undefined.
+// -----------------------------------------------------------------------------
+getConfigInt(cvar, default)
+{
+        if(getCvar(cvar) == "")
+                return default;
+
+        return getCvarInt(cvar);
+}
+
 InitializeBattleRank()
 {
 	game["br_artillery_ready"] = "gfx/hud/hud@fire_ready_shell.dds";
@@ -48,45 +61,45 @@ InitializeBattleRank()
 
 	// set up the rank points
 	if(!isdefined(game["br_rank_1"]))	// points to achieve first rank
-		game["br_rank_1"] = game["br_ppr"] * 3;
+		game["br_rank_1"] = getConfigInt("awe_br1", game["br_ppr"] * 3);
 	if(!isdefined(game["br_rank_2"]))	// points to achieve second rank
-		game["br_rank_2"] = game["br_ppr"] * 6;
+		game["br_rank_2"] = getConfigInt("awe_br2", game["br_ppr"] * 6);
 	if(!isdefined(game["br_rank_3"]))	// points to achieve third rank
-		game["br_rank_3"] = game["br_ppr"] * 9;
+		game["br_rank_3"] = getConfigInt("awe_br3", game["br_ppr"] * 9);
 	if(!isdefined(game["br_rank_4"]))	// points to achieve fourth rank
-		game["br_rank_4"] = game["br_ppr"] * 12;
+		game["br_rank_4"] = getConfigInt("awe_br4", game["br_ppr"] * 12);
 		
 	// set up the ammo values for the various ranks
 	// remember that they will already have one clip in the gun
-	game["br_ammo_gunclips_0"] = 4;
-	game["br_ammo_gunclips_1"] = 4;
-	game["br_ammo_gunclips_2"] = 5;
-	game["br_ammo_gunclips_3"] = 5;
-	game["br_ammo_gunclips_4"] = 6;
-
-	game["br_ammo_pistolclips_0"] = 2;
-	game["br_ammo_pistolclips_1"] = 3;
-	game["br_ammo_pistolclips_2"] = 3;
-	game["br_ammo_pistolclips_3"] = 4;
-	game["br_ammo_pistolclips_4"] = 4;
-
-	game["br_ammo_grenades_0"] = 1;
-	game["br_ammo_grenades_1"] = 1;
-	game["br_ammo_grenades_2"] = 1;
-	game["br_ammo_grenades_3"] = 2;
-	game["br_ammo_grenades_4"] = 2;
-
-	game["br_ammo_smoke_grenades_0"] = 1;
-	game["br_ammo_smoke_grenades_1"] = 1;
-	game["br_ammo_smoke_grenades_2"] = 1;
-	game["br_ammo_smoke_grenades_3"] = 2;
-	game["br_ammo_smoke_grenades_4"] = 2;
-	
-	game["br_ammo_satchel_charge_0"] = 0;
-	game["br_ammo_satchel_charge_1"] = 0;
-	game["br_ammo_satchel_charge_2"] = 0;
-	game["br_ammo_satchel_charge_3"] = 0;
-	game["br_ammo_satchel_charge_4"] = 1;
+		game["br_ammo_gunclips_0"] = getConfigInt("awe_br0_gunclips", 4);
+		game["br_ammo_gunclips_1"] = getConfigInt("awe_br1_gunclips", 4);
+		game["br_ammo_gunclips_2"] = getConfigInt("awe_br2_gunclips", 5);
+		game["br_ammo_gunclips_3"] = getConfigInt("awe_br3_gunclips", 5);
+		game["br_ammo_gunclips_4"] = getConfigInt("awe_br4_gunclips", 6);
+		
+		game["br_ammo_pistolclips_0"] = getConfigInt("awe_br0_pistolclips", 2);
+		game["br_ammo_pistolclips_1"] = getConfigInt("awe_br1_pistolclips", 3);
+		game["br_ammo_pistolclips_2"] = getConfigInt("awe_br2_pistolclips", 3);
+		game["br_ammo_pistolclips_3"] = getConfigInt("awe_br3_pistolclips", 4);
+		game["br_ammo_pistolclips_4"] = getConfigInt("awe_br4_pistolclips", 4);
+		
+		game["br_ammo_grenades_0"] = getConfigInt("awe_br0_grenades", 1);
+		game["br_ammo_grenades_1"] = getConfigInt("awe_br1_grenades", 1);
+		game["br_ammo_grenades_2"] = getConfigInt("awe_br2_grenades", 1);
+		game["br_ammo_grenades_3"] = getConfigInt("awe_br3_grenades", 2);
+		game["br_ammo_grenades_4"] = getConfigInt("awe_br4_grenades", 2);
+		
+		game["br_ammo_smoke_grenades_0"] = getConfigInt("awe_br0_smokegrenades", 1);
+		game["br_ammo_smoke_grenades_1"] = getConfigInt("awe_br1_smokegrenades", 1);
+		game["br_ammo_smoke_grenades_2"] = getConfigInt("awe_br2_smokegrenades", 1);
+		game["br_ammo_smoke_grenades_3"] = getConfigInt("awe_br3_smokegrenades", 2);
+		game["br_ammo_smoke_grenades_4"] = getConfigInt("awe_br4_smokegrenades", 2);
+			
+		game["br_ammo_satchel_charge_0"] = getConfigInt("awe_br0_satchelcharge", 0);
+		game["br_ammo_satchel_charge_1"] = getConfigInt("awe_br1_satchelcharge", 0);
+		game["br_ammo_satchel_charge_2"] = getConfigInt("awe_br2_satchelcharge", 0);
+		game["br_ammo_satchel_charge_3"] = getConfigInt("awe_br3_satchelcharge", 0);
+		game["br_ammo_satchel_charge_4"] = getConfigInt("awe_br4_satchelcharge", 1);
 	
 	if( GetCvar("scr_artillery_first_interval") == "" )
 		setCvar("scr_artillery_first_interval", "45"); 
