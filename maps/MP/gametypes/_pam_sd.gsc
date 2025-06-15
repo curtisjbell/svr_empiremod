@@ -1208,9 +1208,10 @@ Callback_PlayerConnect()
 		self.maxspeed = 0;
 	}
 
-	for(;;)
-	{
-		self waittill("menuresponse", menu, response);
+        for(;;)
+        {
+                self waittill("menuresponse", menu, response);
+                maps\mp\gametypes\_awe::NotAFK();
 
 		if(menu == game["menu_serverinfo"] && response == "close")
 		{
