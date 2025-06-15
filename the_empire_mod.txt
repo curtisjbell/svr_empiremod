@@ -20,8 +20,8 @@ ui_BrandGametypeEnabled "1"
 awe_server_logo_text "" // text displayed under the compass
 
 // AutoAdmin
-ui_AutoAdmin_AFK_NotifyPlayer "^1~^3empire ^2| ^1automod: ^3You have been detected as ^1AFK^3. You will be forced into spectator mode in "
-ui_AutoAdmin_AFK_NotifyPublic " has been detected as AFK and will be forced into spectator mode in "
+ui_AutoAdmin_AFK_NotifyPlayer "^1~^3empire ^2| ^1automod: ^3You have been detected as ^1AFK^3. You will be forced into spectator mode in {{TIME}} seconds."
+ui_AutoAdmin_AFK_NotifyPublic "{{PLAYER}} has been detected as AFK and will be forced into spectator mode in {{TIME}} seconds."
 ui_AutoAdmin_AFK_NotifyActionTaken "^1~^3empire ^2| ^1automod: ^3You have been forced into spectator mode due to ^1AFK^3 behavior."
 ui_AutoAdmin_AFK_NotifyRemoved "^1~^3empire ^2| ^1automod: ^3You are no longer marked as ^1AFK^3."
 

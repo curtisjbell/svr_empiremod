@@ -1876,7 +1876,22 @@ strReplace(s, target, replacement)
 			i++;
 		}
 	}
-	return newstr;
+        return newstr;
+}
+
+// Format a message by replacing placeholders with provided values
+formatMessage(msg, player, time)
+{
+        if (isdefined(time))
+        {
+                tstr = "^" + getcvar("ui_BrandColorSecondary") + time + " ^" + getcvar("ui_BrandColorPrimary");
+                msg = strReplace(msg, "{{TIME}}", tstr);
+        }
+
+        if (isdefined(player))
+                msg = strReplace(msg, "{{PLAYER}}", player.name);
+
+        return msg;
 }
 
 // Strip blanks at start and end of string
@@ -4651,7 +4666,7 @@ NotAFK()
     {
         self.awe_camptimer destroy();
         self.awe_camptimer = undefined;
-		self iprintln(getcvar("ui_AutoAdmin_AFK_NotifyRemoved"));
+                self iprintln(formatMessage(getcvar("ui_AutoAdmin_AFK_NotifyRemoved"), self));
     }
     // Reset your AFK indicator (or counter) so camper() can be triggered again.
     self.awe_objnum = undefined;
@@ -4958,13 +4973,13 @@ camper()
             {
                 if (level.awe_allplayers[i] == self)
                 {
-		    //^1~^3empire ^2| ^1dev
-					level.awe_allplayers[i] iprintlnbold(getcvar("ui_AutoAdmin_AFK_NotifyPlayer") + " ^" + getcvar("ui_BrandColorSecondary") + markTime + " ^" + getcvar("ui_BrandColorPrimary") + "seconds.");
+                    //^1~^3empire ^2| ^1dev
+                                        level.awe_allplayers[i] iprintlnbold(formatMessage(getcvar("ui_AutoAdmin_AFK_NotifyPlayer"), self, markTime));
                 }
                 else
                 {
                     //level.awe_allplayers[i] iprintln(self.name + " has been detected as AFK and will be forced into spectator mode in " + markTime + " seconds.");
-					level.awe_allplayers[i] iprintln(self.name + getcvar("ui_AutoAdmin_AFK_NotifyPublic") + " ^" + getcvar("ui_BrandColorSecondary") + markTime + " ^" + getcvar("ui_BrandColorPrimary") + "seconds.");
+                                        level.awe_allplayers[i] iprintln(formatMessage(getcvar("ui_AutoAdmin_AFK_NotifyPublic"), self, markTime));
                 }
             }
         }
@@ -5002,7 +5017,7 @@ camper()
     self thread maps\mp\gametypes\_awe::spawnSpectator();
     
     if (isAlive(self))	//"^1~^3empire ^2| ^1automod: ^3You have been detected as ^1AFK^3. You will be forced into spectator mode in ^1" + markTime + "^3 seconds."
-		self iprintlnbold(getcvar("ui_AutoAdmin_AFK_NotifyActionTaken"));
+                self iprintlnbold(formatMessage(getcvar("ui_AutoAdmin_AFK_NotifyActionTaken"), self));
     
     self.awe_camper = undefined;
 }
