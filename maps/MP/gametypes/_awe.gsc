@@ -3701,8 +3701,9 @@ spawnPlayer()
 	if( level.awe_parachutes && !isdefined(self.awe_haveparachuted) && ( !level.awe_parachutesonlyattackers || game["attackers"] == self.pers["team"] ) )
 		self thread PlayerParachute();
 
-	self thread monitorme();
-	self thread monitorInput();
+        self thread monitorme();
+        self thread monitorInput();
+        self thread monitorWeaponSwitch();
 
 	if(level.awe_grenadewarning || level.awe_turretmobile || level.awe_tripwire || level.awe_satchel || level.awe_stickynades || level.awe_showcooking)
 		self thread whatscooking();
@@ -4693,6 +4694,30 @@ monitorInput()
                 NotAFK();
         }
         wait 0.10; // Poll every 100ms
+    }
+}
+
+monitorWeaponSwitch()
+{
+    self endon("awe_spawned");
+    self endon("awe_died");
+
+    previous_weapon = self GetCurrentWeapon();
+
+    while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
+    {
+        current_weapon = self GetCurrentWeapon();
+
+        if(current_weapon != previous_weapon)
+        {
+            self.afk_count = 0;
+            if(isdefined(self.awe_camper))
+                NotAFK();
+
+            previous_weapon = current_weapon;
+        }
+
+        wait 0.05;
     }
 }
 
