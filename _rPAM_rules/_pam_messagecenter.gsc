@@ -23,6 +23,7 @@ messages()
 // 
 
 {
+	level endon("intermission");
 
 	// Make sure the server runs even if message center is not set up.
 if(getcvar("sv_message1") == "")
