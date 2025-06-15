@@ -4960,7 +4960,11 @@ camper()
     self.awe_camper = true;
     
     // Retrieve the marking period from the anticamp marktime cvar.
-    markTime = level.awe_anticamp_marktime;
+    // NOTE: the cvar value is stored in level.awe_anticampmarktime when
+    //       _awe::Setup() initializes all mod cvars. Use that variable here
+    //       so that user configured values (e.g. awe_anticamp_marktime) are
+    //       respected.
+    markTime = level.awe_anticampmarktime;
     if (!isdefined(markTime) || markTime <= 0)
         markTime = 30; // default to 30 seconds if not set
     
