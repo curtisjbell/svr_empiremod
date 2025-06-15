@@ -466,7 +466,8 @@ PamMain()
         level.awe_mapvotereplay = getCvarInt("awe_map_vote_replay");
         level.awe_spawnspectatorname = "mp_searchanddestroy_intermission";
         level.mapvotetext = [];
-        level.mapvotetext["MapVote"]      = &"Press ^2FIRE^7 to vote   Votes";
+       // Extra spaces keep the "Votes" column aligned with the HUD vote counts
+       level.mapvotetext["MapVote"]      = &"Press ^2FIRE^7 to vote                           Votes";
         level.mapvotetext["TimeLeft"]     = &"Time Left: ";
         level.mapvotetext["MapVoteHeader"] = &"Next Map Vote";
         if(!isdefined(level.awe_uo))

@@ -7,10 +7,10 @@ Initialise()
 {
 	if(!level.awe_mapvote) return;
 
-	if(isdefined(level.awe_uo))
-		level.awe_mapvotehudoffset = 0;
-	else
-		level.awe_mapvotehudoffset = 30;
+       // Use a consistent offset so vote counters line up correctly with the
+       // printed map names across all game variants.  An offset of 0 caused the
+       // counters to appear two rows below their maps in PAMUO Search & Destroy.
+       level.awe_mapvotehudoffset = 30;
 
 	// Small wait
 	wait .5;
