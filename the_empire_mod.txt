@@ -2,6 +2,16 @@ v1.01
 Fixed display bug when notifying public about an AFK player.  
 
 
+v1.02
+Added reload glitch detection for AWE. New cvars:
+awe_rlg_detection "1"
+awe_rlg_detect_threshold "3"
+awe_rlg_autokick "0"
+awe_rlg_autokick_warnings "2"
+ui_AutoAdmin_RLG_NotifyPlayer "^1~^3empire ^2| ^1automod: ^3Fast shooting detected (^1{{TIME}}^3)."
+ui_AutoAdmin_RLG_NotifyPublic "{{PLAYER}} was caught fast shooting (^1{{TIME}}^7)."
+ui_AutoAdmin_RLG_NotifyActionTaken "^1~^3empire ^2| ^1automod: ^3You were moved to spectators for fast shooting."
+
 v1.0
 
 Added the following global cvars:

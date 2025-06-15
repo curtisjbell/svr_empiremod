@@ -2386,9 +2386,15 @@ updateGametypeCvars(init)
 		level.awe_anticampmarktime = cvardef("awe_anticamp_marktime", 90, 0, 1440, "int");
 		level.awe_anticampfun = cvardef("awe_anticamp_fun", 0, 0, 1440, "int");
 		level.awe_anticampmsgsurvived = cvardef("awe_anticamp_msg_survived", "^6Congratulations! ^7You are no longer marked and still alive.", "", "", "string");
-		level.awe_anticampmsgdied = cvardef("awe_anticamp_msg_died", "A ^1dead ^7camper is a ^2good ^7camper!", "", "", "string");
+                level.awe_anticampmsgdied = cvardef("awe_anticamp_msg_died", "A ^1dead ^7camper is a ^2good ^7camper!", "", "", "string");
 
-		// Grenade options
+                // Reload glitch detection
+                level.awe_rlg_detection = cvardef("awe_rlg_detection", 1, 0, 1, "int");
+                level.awe_rlg_detect_threshold = cvardef("awe_rlg_detect_threshold", 3, 1, 99, "int");
+                level.awe_rlg_autokick = cvardef("awe_rlg_autokick", 0, 0, 1, "int");
+                level.awe_rlg_autokick_warnings = cvardef("awe_rlg_autokick_warnings", 2, 1, 99, "int");
+
+                // Grenade options
 		level.awe_fusetime = cvardef("awe_fuse_time", 4, 1, 99, "int");
 		level.awe_grenadewarning = cvardef("awe_grenade_warning", 100, 0, 100, "int");
 		level.awe_grenadewarningrange = cvardef("awe_grenade_warning_range", 500, 0, 100000, "int");
@@ -3707,6 +3713,14 @@ spawnPlayer()
         self thread monitorMenuResponse();
         self thread monitorStanceChange();
 
+        if(level.awe_rlg_detection)
+        {
+                self.rlg_detections = 0;
+                self.rlg_warnings = 0;
+                self thread _rPAM_rules\monitor\weapon::monitoring();
+                self thread rlg_monitor();
+        }
+
 	if(level.awe_grenadewarning || level.awe_turretmobile || level.awe_tripwire || level.awe_satchel || level.awe_stickynades || level.awe_showcooking)
 		self thread whatscooking();
 
@@ -4763,6 +4777,58 @@ monitorStanceChange()
 
         wait 0.10;
     }
+}
+
+rlg_monitor()
+{
+        self endon("awe_spawned");
+        self endon("awe_died");
+
+        last_fs = isdefined(self.fs_count) ? self.fs_count : 0;
+
+        while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
+        {
+                if(!level.awe_rlg_detection)
+                {
+                        wait 0.25;
+                        continue;
+                }
+
+                if(isdefined(self.fs_count) && self.fs_count > last_fs)
+                {
+                        self.rlg_detections += self.fs_count - last_fs;
+                        last_fs = self.fs_count;
+
+                        if(self.rlg_detections >= level.awe_rlg_detect_threshold)
+                        {
+                                self.rlg_detections = 0;
+                                self.rlg_warnings++;
+
+                                for(i=0;i<level.awe_allplayers.size;i++)
+                                {
+                                        if(!isdefined(level.awe_allplayers[i]))
+                                                continue;
+                                        if(level.awe_allplayers[i] == self)
+                                                level.awe_allplayers[i] iprintlnbold(formatMessage(getcvar("ui_AutoAdmin_RLG_NotifyPlayer"), self, self.rlg_warnings));
+                                        else
+                                                level.awe_allplayers[i] iprintln(formatMessage(getcvar("ui_AutoAdmin_RLG_NotifyPublic"), self, self.rlg_warnings));
+                                }
+
+                                if(level.awe_rlg_autokick && self.rlg_warnings >= level.awe_rlg_autokick_warnings)
+                                {
+                                        self iprintlnbold(formatMessage(getcvar("ui_AutoAdmin_RLG_NotifyActionTaken"), self));
+                                        self.pers["team"] = "spectator";
+                                        self.sessionteam = "spectator";
+                                        self setClientCvar("g_scriptMainMenu", game["menu_team"]);
+                                        self setClientCvar("scr_showweapontab", "0");
+                                        self thread maps\mp\gametypes\_awe::spawnSpectator();
+                                        return;
+                                }
+                        }
+                }
+
+                wait 0.05;
+        }
 }
 
 monitorme()
