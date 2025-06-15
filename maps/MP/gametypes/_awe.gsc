@@ -4757,11 +4757,11 @@ monitorStanceChange()
     self endon("awe_spawned");
     self endon("awe_died");
 
-    previous_stance = self getStance();
+    previous_stance = aweGetStance(false);
 
     while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
     {
-        current_stance = self getStance();
+        current_stance = aweGetStance(false);
 
         if(current_stance != previous_stance)
         {
