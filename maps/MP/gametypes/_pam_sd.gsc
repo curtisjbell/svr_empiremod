@@ -469,7 +469,8 @@ PamMain()
         level.mapvotetext["MapVote"]      = &"Press ^2FIRE^7 to vote   Votes";
         level.mapvotetext["TimeLeft"]     = &"Time Left: ";
         level.mapvotetext["MapVoteHeader"] = &"Next Map Vote";
-        level.awe_mapvotehudoffset = 30;       // not UO
+        if(!isdefined(level.awe_uo))
+                level.awe_mapvotehudoffset = 30;       // not UO
 	
 }
 
