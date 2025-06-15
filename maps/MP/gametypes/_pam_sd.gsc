@@ -456,8 +456,20 @@ PamMain()
 	if(game["mode"] != "match" && getCvar("sv_messagecenter") == "1")
 		thread _rPAM_rules\_pam_messagecenter::messages();
 
-	if(level.killcam >= 1)
-		setarchive(true);
+
+        if(level.killcam >= 1)
+                setarchive(true);
+
+        // AWE map vote configuration
+        level.awe_mapvote = getCvarInt("awe_map_vote");
+        level.awe_mapvotetime = getCvarInt("awe_map_vote_time");
+        level.awe_mapvotereplay = getCvarInt("awe_map_vote_replay");
+        level.awe_spawnspectatorname = "mp_searchanddestroy_intermission";
+        level.mapvotetext = [];
+        level.mapvotetext["MapVote"]      = &"Press ^2FIRE^7 to vote   Votes";
+        level.mapvotetext["TimeLeft"]     = &"Time Left: ";
+        level.mapvotetext["MapVoteHeader"] = &"Next Map Vote";
+        level.awe_mapvotehudoffset = 30;       // not UO
 	
 }
 
@@ -3044,8 +3056,11 @@ endRound(roundwinner)
 
 endMap()
 {
-	game["state"] = "intermission";
-	level notify("intermission");
+        if(level.awe_mapvote)
+                maps\mp\gametypes\_awe_mapvote::Initialise();
+
+        game["state"] = "intermission";
+        level notify("intermission");
 	
 	if(isdefined(level.bombmodel))
 		level.bombmodel stopLoopSound();
