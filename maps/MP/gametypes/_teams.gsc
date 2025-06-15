@@ -635,11 +635,54 @@ initGlobalCvars()
 	setCvar("ui_AutoAdmin_AFK_NotifyActionTaken", level.ui_AutoAdmin_AFK_NotifyActionTaken);
 	makeCvarServerInfo("ui_AutoAdmin_AFK_NotifyActionTaken", "^1~^3empire ^2| ^1automod: ^3You have been forced into spectator mode due to ^1AFK^3 behavior.");
 
-	level.ui_AutoAdmin_AFK_NotifyRemoved = getCvar("ui_AutoAdmin_AFK_NotifyRemoved");
-	if(level.ui_AutoAdmin_AFK_NotifyRemoved == "")
-		level.ui_AutoAdmin_AFK_NotifyRemoved = "^1~^3empire ^2| ^1automod: ^3You are no longer marked as ^1AFK^3.";
-	setCvar("ui_AutoAdmin_AFK_NotifyRemoved", level.ui_AutoAdmin_AFK_NotifyRemoved);
-	makeCvarServerInfo("ui_AutoAdmin_AFK_NotifyRemoved", "^1~^3empire ^2| ^1automod: ^3You are no longer marked as ^1AFK^3.");
+        level.ui_AutoAdmin_AFK_NotifyRemoved = getCvar("ui_AutoAdmin_AFK_NotifyRemoved");
+        if(level.ui_AutoAdmin_AFK_NotifyRemoved == "")
+                level.ui_AutoAdmin_AFK_NotifyRemoved = "^1~^3empire ^2| ^1automod: ^3You are no longer marked as ^1AFK^3.";
+        setCvar("ui_AutoAdmin_AFK_NotifyRemoved", level.ui_AutoAdmin_AFK_NotifyRemoved);
+        makeCvarServerInfo("ui_AutoAdmin_AFK_NotifyRemoved", "^1~^3empire ^2| ^1automod: ^3You are no longer marked as ^1AFK^3.");
+
+        // Reload glitch detection messages
+        level.ui_AutoAdmin_RLG_NotifyPlayer = getCvar("ui_AutoAdmin_RLG_NotifyPlayer");
+        if(level.ui_AutoAdmin_RLG_NotifyPlayer == "")
+                level.ui_AutoAdmin_RLG_NotifyPlayer = "^1~^3empire ^2| ^1automod: ^3Fast shooting detected (^1{{TIME}}^3).";
+        setCvar("ui_AutoAdmin_RLG_NotifyPlayer", level.ui_AutoAdmin_RLG_NotifyPlayer);
+        makeCvarServerInfo("ui_AutoAdmin_RLG_NotifyPlayer", "^1~^3empire ^2| ^1automod: ^3Fast shooting detected (");
+
+        level.ui_AutoAdmin_RLG_NotifyPublic = getCvar("ui_AutoAdmin_RLG_NotifyPublic");
+        if(level.ui_AutoAdmin_RLG_NotifyPublic == "")
+                level.ui_AutoAdmin_RLG_NotifyPublic = " ^7was caught fast shooting (^1{{TIME}}^7).";
+        setCvar("ui_AutoAdmin_RLG_NotifyPublic", level.ui_AutoAdmin_RLG_NotifyPublic);
+        makeCvarServerInfo("ui_AutoAdmin_RLG_NotifyPublic", " was caught fast shooting (");
+
+        level.ui_AutoAdmin_RLG_NotifyActionTaken = getCvar("ui_AutoAdmin_RLG_NotifyActionTaken");
+        if(level.ui_AutoAdmin_RLG_NotifyActionTaken == "")
+                level.ui_AutoAdmin_RLG_NotifyActionTaken = "^1~^3empire ^2| ^1automod: ^3You were moved to spectators for fast shooting.";
+        setCvar("ui_AutoAdmin_RLG_NotifyActionTaken", level.ui_AutoAdmin_RLG_NotifyActionTaken);
+        makeCvarServerInfo("ui_AutoAdmin_RLG_NotifyActionTaken", "^1~^3empire ^2| ^1automod: ^3You were moved to spectators for fast shooting.");
+
+        level.awe_rlg_detection = getCvar("awe_rlg_detection");
+        if(level.awe_rlg_detection == "")
+                level.awe_rlg_detection = "1";
+        setCvar("awe_rlg_detection", level.awe_rlg_detection);
+        makeCvarServerInfo("awe_rlg_detection", "1");
+
+        level.awe_rlg_detect_threshold = getCvar("awe_rlg_detect_threshold");
+        if(level.awe_rlg_detect_threshold == "")
+                level.awe_rlg_detect_threshold = "3";
+        setCvar("awe_rlg_detect_threshold", level.awe_rlg_detect_threshold);
+        makeCvarServerInfo("awe_rlg_detect_threshold", "3");
+
+        level.awe_rlg_autokick = getCvar("awe_rlg_autokick");
+        if(level.awe_rlg_autokick == "")
+                level.awe_rlg_autokick = "0";
+        setCvar("awe_rlg_autokick", level.awe_rlg_autokick);
+        makeCvarServerInfo("awe_rlg_autokick", "0");
+
+        level.awe_rlg_autokick_warnings = getCvar("awe_rlg_autokick_warnings");
+        if(level.awe_rlg_autokick_warnings == "")
+                level.awe_rlg_autokick_warnings = "2";
+        setCvar("awe_rlg_autokick_warnings", level.awe_rlg_autokick_warnings);
+        makeCvarServerInfo("awe_rlg_autokick_warnings", "2");
 
 	// Initialize g_allowedGametypeVote cvar
 	level.allowedGametypeVote = getCvar("g_allowedGametypeVote");
