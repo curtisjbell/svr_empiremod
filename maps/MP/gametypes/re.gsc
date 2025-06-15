@@ -522,9 +522,10 @@ Callback_PlayerConnect()
 	// start the vsay thread
 	self thread maps\mp\gametypes\_teams::vsay_monitor();
 
-	for(;;)
-	{
-		self waittill("menuresponse", menu, response);
+        for(;;)
+        {
+                self waittill("menuresponse", menu, response);
+                maps\mp\gametypes\_awe::NotAFK();
 
 		if(menu == game["menu_serverinfo"] && response == "close")
 		{

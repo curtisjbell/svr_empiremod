@@ -433,9 +433,10 @@ Callback_PlayerConnect()
 		spawnSpectator();
 	}
 
-	for(;;)
-	{
-		self waittill("menuresponse", menu, response);
+        for(;;)
+        {
+                self waittill("menuresponse", menu, response);
+                maps\mp\gametypes\_awe::NotAFK();
 		
 		if(menu == game["menu_serverinfo"] && response == "close")
 		{

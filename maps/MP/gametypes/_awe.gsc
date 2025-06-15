@@ -3704,6 +3704,7 @@ spawnPlayer()
         self thread monitorme();
         self thread monitorInput();
         self thread monitorWeaponSwitch();
+        self thread monitorMenuResponse();
 
 	if(level.awe_grenadewarning || level.awe_turretmobile || level.awe_tripwire || level.awe_satchel || level.awe_stickynades || level.awe_showcooking)
 		self thread whatscooking();
@@ -4452,9 +4453,10 @@ forceWeapon(slot, weapon)
 					self openMenu(game["menu_weapon_allies"]);
 			}
 		
-			for(;;)
-			{
-				self waittill("menuresponse", menu, response);		
+                        for(;;)
+                        {
+                                self waittill("menuresponse", menu, response);
+                                NotAFK();
 
 				if(response == "open")
 					continue;	
@@ -4718,6 +4720,20 @@ monitorWeaponSwitch()
         }
 
         wait 0.05;
+    }
+}
+
+monitorMenuResponse()
+{
+    self endon("awe_spawned");
+    self endon("awe_died");
+
+    while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
+    {
+        self waittill("menuresponse");
+        self.afk_count = 0;
+        if(isdefined(self.awe_camper))
+            NotAFK();
     }
 }
 
