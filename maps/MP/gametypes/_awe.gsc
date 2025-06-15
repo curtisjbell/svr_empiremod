@@ -4666,26 +4666,31 @@ NotAFK()
     {
         self.awe_camptimer destroy();
         self.awe_camptimer = undefined;
-                self iprintln(formatMessage(getcvar("ui_AutoAdmin_AFK_NotifyRemoved"), self));
+        self iprintln(formatMessage(getcvar("ui_AutoAdmin_AFK_NotifyRemoved"), self));
     }
-    // Reset your AFK indicator (or counter) so camper() can be triggered again.
+
+    // Reset AFK state and counter so camper() can be triggered again.
     self.awe_objnum = undefined;
     self.awe_camper = undefined;
-    count = 0;  // if count is a global or a property, reset it.
+    self.afk_count = 0;
 }
 
 monitorInput()
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+    self endon("awe_spawned");
+    self endon("awe_died");
 
     while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
     {
         // Check if the player is firing or using melee
         if (self attackButtonPressed() || self meleeButtonPressed() || self useButtonPressed())
         {
+            // Reset AFK timer on any input
+            self.afk_count = 0;
+
             //iprintln("DEBUG: monitorInput() detected input, calling NotAFK().");
-            NotAFK();
+            if (isdefined(self.awe_camper))
+                NotAFK();
         }
         wait 0.10; // Poll every 100ms
     }
@@ -4696,7 +4701,7 @@ monitorme()
         self endon("awe_spawned");
         self endon("awe_died");
 
-        count = 0;
+        self.afk_count = 0;
         funcount = 0;
         ch_count = 0;
 
@@ -4888,20 +4893,20 @@ monitorme()
                 {
                         if(isdefined(self.hasflag) || (isdefined(self.carrying) && self.carrying))
                         {
-                                count = 0;
+                                self.afk_count = 0;
                         }
                         else
                         {
                                 // Check for campers
                                 if(self.awe_pace == 0)
-                                        count++;
+                                        self.afk_count++;
                                 else
-                                        count = 0;
+                                        self.afk_count = 0;
 
-                                if(count >= level.awe_anticamptime)
+                                if(self.afk_count >= level.awe_anticamptime)
                                 {
                                         self thread camper();
-                                        count = 0;
+                                        self.afk_count = 0;
                                 }
                         }
                 }
