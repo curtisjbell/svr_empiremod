@@ -609,17 +609,8 @@ getRandomMapRotation()
 			break;
 	}
 
-	// Shuffle the array 20 times
-	for(k = 0; k < 20; k++)
-	{
-		for(i = 0; i < x.maps.size; i++)
-		{
-			j = randomInt(x.maps.size);
-			element = x.maps[i];
-			x.maps[i] = x.maps[j];
-			x.maps[j] = element;
-		}
-	}
+	// Shuffle the array for better randomization
+	shuffleArray(x.maps);
 
 	return x;
 }
@@ -784,5 +775,16 @@ getGametypeName(gt)
 			break;
 	}
 
-	return gtname;
+       return gtname;
+}
+
+shuffleArray(arr)
+{
+        for(i = arr.size - 1; i > 0; i--)
+        {
+                j = randomInt(i + 1);  // 0..i inclusive
+                temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+        }
 }
