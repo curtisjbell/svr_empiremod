@@ -4784,7 +4784,10 @@ rlg_monitor()
         self endon("awe_spawned");
         self endon("awe_died");
 
-        last_fs = isdefined(self.fs_count) ? self.fs_count : 0;
+        if(isdefined(self.fs_count))
+                last_fs = self.fs_count;
+        else
+                last_fs = 0;
 
         while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
         {
