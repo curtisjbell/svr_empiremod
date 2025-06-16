@@ -204,9 +204,11 @@ reset_fastshot_counter() {
 		players = getentarray("player", "classname");
 		for(i = 0; i < players.size; i++)
 		{
-			if (isDefined(players[i])) {
-				players[i].fs_count = 1;
-			}
+                        if (isDefined(players[i])) {
+                                players[i].fs_count = 1;
+                                players[i].fs_shot_weapon = players[i] GetCurrentWeapon();
+                                players[i].fs_shot_time = getTime();
+                        }
 		}
 		level waittill("round_started");
 	}
@@ -214,8 +216,10 @@ reset_fastshot_counter() {
 
 fastshoot_monitoring()
 {
-	self endon("player_disconnected");
-	self.fs_count = 1;
+        self endon("player_disconnected");
+        self.fs_count = 1;
+        self.fs_shot_weapon = self GetCurrentWeapon();
+        self.fs_shot_time = getTime();
 	while(!isAlive(self))
 	{
 		wait 0.05;
@@ -230,10 +234,12 @@ fastshoot_monitoring()
 			continue;
 		}
 		total_ammo = getWeaponTotalAmmo(self);
-		if (total_ammo < total_ammo_previous) {
-			self notify("stop_aimrun_monitoring");
-			self thread shotFired(total_ammo);
-		}
+                if (total_ammo < total_ammo_previous) {
+                        self notify("stop_aimrun_monitoring");
+                        self.fs_shot_weapon = self GetCurrentWeapon();
+                        self.fs_shot_time = getTime();
+                        self thread shotFired(total_ammo);
+                }
 		total_ammo_previous = total_ammo;
 
 		wait 0.05;

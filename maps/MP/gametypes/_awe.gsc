@@ -4842,8 +4842,8 @@ rlg_monitor()
 
                 if(isdefined(self.fs_count) && self.fs_count > last_fs)
                 {
-                        curr_weapon = self GetCurrentWeapon();
-                        curr_time = getTime();
+                        curr_weapon = self.fs_shot_weapon;
+                        curr_time = self.fs_shot_time;
                         delay = curr_time - last_time;
                         threshold = rlg_get_threshold(curr_weapon, last_weapon);
 
