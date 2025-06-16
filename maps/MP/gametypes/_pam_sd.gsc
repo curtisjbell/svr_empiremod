@@ -468,8 +468,12 @@ PamMain()
         level.mapvotetext = [];
        // Extra spaces keep the "Votes" column aligned with the HUD vote counts
        level.mapvotetext["MapVote"]      = &"Press ^2FIRE^7 to vote                           Votes";
-        level.mapvotetext["TimeLeft"]     = &"Time Left: ";
-        level.mapvotetext["MapVoteHeader"] = &"Next Map Vote";
+       level.mapvotetext["TimeLeft"]     = &"Time Left: ";
+       level.mapvotetext["MapVoteHeader"] = &"Next Map Vote";
+       // Ensure map vote strings display correctly
+       precacheString(level.mapvotetext["MapVote"]);
+       precacheString(level.mapvotetext["TimeLeft"]);
+       precacheString(level.mapvotetext["MapVoteHeader"]);
         if(!isdefined(level.awe_uo))
                 level.awe_mapvotehudoffset = 30;       // not UO
 	
