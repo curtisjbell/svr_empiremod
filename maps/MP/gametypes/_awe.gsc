@@ -4779,6 +4779,46 @@ monitorStanceChange()
     }
 }
 
+rlg_get_threshold(curr_weapon, prev_weapon)
+{
+        ms_threshold = 0;
+
+        if(curr_weapon == prev_weapon)
+        {
+                switch(curr_weapon)
+                {
+                        case "enfield_mp":
+                        case "kar98k_mp":
+                        case "kar98k_sniper_mp":
+                        case "mosin_nagant_mp":
+                        case "springfield_mp":
+                                ms_threshold = 1250;
+                                break;
+                        case "mosin_nagant_sniper_mp":
+                        case "fraggrenade_mp":
+                        case "mk1britishfrag_mp":
+                        case "rgd-33russianfrag_mp":
+                        case "stielhandgranate_mp":
+                                ms_threshold = 1400;
+                                break;
+                        case "colt_mp":
+                        case "luger_mp":
+                                ms_threshold = 100;
+                                break;
+                        case "none":
+                                ms_threshold = 1400;
+                                break;
+                }
+        }
+        else if((curr_weapon == "kar98k_mp" && prev_weapon == "mosin_nagant_mp") ||
+                (prev_weapon == "kar98k_mp" && curr_weapon == "mosin_nagant_mp"))
+        {
+                ms_threshold = 1150;
+        }
+
+        return ms_threshold;
+}
+
 rlg_monitor()
 {
         self endon("awe_spawned");
@@ -4788,6 +4828,9 @@ rlg_monitor()
                 last_fs = self.fs_count;
         else
                 last_fs = 0;
+
+        last_weapon = self GetCurrentWeapon();
+        last_time = getTime();
 
         while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
         {
@@ -4799,8 +4842,17 @@ rlg_monitor()
 
                 if(isdefined(self.fs_count) && self.fs_count > last_fs)
                 {
-                        self.rlg_detections += self.fs_count - last_fs;
+                        curr_weapon = self GetCurrentWeapon();
+                        curr_time = getTime();
+                        delay = curr_time - last_time;
+                        threshold = rlg_get_threshold(curr_weapon, last_weapon);
+
+                        if(threshold > 0 && delay < threshold)
+                                self.rlg_detections += self.fs_count - last_fs;
+
                         last_fs = self.fs_count;
+                        last_weapon = curr_weapon;
+                        last_time = curr_time;
 
                         if(self.rlg_detections >= level.awe_rlg_detect_threshold)
                         {
