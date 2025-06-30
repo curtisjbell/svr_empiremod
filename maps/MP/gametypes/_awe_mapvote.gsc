@@ -609,8 +609,25 @@ getRandomMapRotation()
 			break;
 	}
 
-	// Shuffle the array for better randomization
-	shuffleArray(x.maps);
+        // Remove recently played maps
+        history = getRotationHistory();
+        if(isdefined(history))
+        {
+                for(h=0; h<history.size; h++)
+                {
+                        for(i=0; i<x.maps.size; i++)
+                        {
+                                if(x.maps[i]["map"] == history[h]["map"] && x.maps[i]["gametype"] == history[h]["gametype"])
+                                {
+                                        x.maps = removeRotationIndex(x.maps, i);
+                                        i--;
+                                }
+                        }
+                }
+        }
+
+        // Shuffle the array for better randomization
+        shuffleArray(x.maps);
 
 	return x;
 }
@@ -787,4 +804,80 @@ shuffleArray(arr)
                 arr[i] = arr[j];
                 arr[j] = temp;
         }
+}
+
+removeRotationIndex(arr, index)
+{
+        newarr = [];
+        for(i=0;i<arr.size;i++)
+        {
+                if(i != index)
+                        newarr[newarr.size] = arr[i];
+        }
+        return newarr;
+}
+
+getRotationHistory()
+{
+        histstr = strip(getcvar("awe_map_history"));
+        if(histstr == "")
+                return [];
+
+        tokens = explode(histstr, " ");
+        hist = [];
+        lastgt = getcvar("g_gametype");
+        for(i=0;i<tokens.size;)
+        {
+                if(tokens[i] == "gametype" && isdefined(tokens[i+1]))
+                {
+                        lastgt = tokens[i+1];
+                        i += 2;
+                }
+                else if(tokens[i] == "map" && isdefined(tokens[i+1]))
+                {
+                        hist[hist.size] = [];
+                        hist[hist.size-1]["gametype"] = lastgt;
+                        hist[hist.size-1]["map"] = tokens[i+1];
+                        i += 2;
+                }
+                else
+                        i++;
+        }
+        return hist;
+}
+
+buildRotationString(arr)
+{
+        str = "";
+        for(i=0; i<arr.size; i++)
+                str += " gametype " + arr[i]["gametype"] + " map " + arr[i]["map"];
+        return strip(str);
+}
+
+UpdateMapHistory()
+{
+        size = getcvarint("awe_map_history_size");
+        if(!isdefined(size) || size <= 0)
+                return;
+
+        history = getRotationHistory();
+
+        cur["map"] = getcvar("mapname");
+        cur["gametype"] = getcvar("g_gametype");
+
+        for(i=0;i<history.size;i++)
+        {
+                if(history[i]["map"] == cur["map"] && history[i]["gametype"] == cur["gametype"])
+                {
+                        history = removeRotationIndex(history, i);
+                        break;
+                }
+        }
+
+        while(history.size >= size)
+                history = removeRotationIndex(history, 0);
+
+        history[history.size] = cur;
+
+        setcvar("awe_map_history", buildRotationString(history));
 }

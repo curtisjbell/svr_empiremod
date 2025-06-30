@@ -12,6 +12,11 @@ ui_AutoAdmin_RLG_NotifyPlayer "^1~^3empire ^2| ^1automod: ^3Fast shooting detect
 ui_AutoAdmin_RLG_NotifyPublic "{{PLAYER}} was caught fast shooting (^1{{TIME}}^7)."
 ui_AutoAdmin_RLG_NotifyActionTaken "^1~^3empire ^2| ^1automod: ^3You were moved to spectators for fast shooting."
 
+v1.03
+Added map rotation history tracking. New cvars:
+awe_map_history_size "5"
+awe_map_history ""
+
 v1.0
 
 Added the following global cvars:
