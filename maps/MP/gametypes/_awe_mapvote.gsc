@@ -164,7 +164,7 @@ RunMapVote()
 	currentgt = getcvar("g_gametype");
 	currentmap = getcvar("mapname");
  
-	x = GetRandomMapRotation();
+       x = getRandomMapRotation();
 	if(isdefined(x))
 	{
 		if(isdefined(x.maps))
@@ -626,6 +626,88 @@ getRandomMapRotation()
                 }
         }
 
+       if(x.maps.size < 5)
+       {
+               count = getActivePlayerCount();
+               for(offset = 1; offset < 32 && x.maps.size < 5; offset++)
+               {
+                       rot = strip(getcvar("sv_maprotation" + (count + offset)));
+                       if(rot != "")
+                       {
+                               addmaps = parseRotationString(rot);
+                               if(isdefined(history))
+                               {
+                                       for(h=0; h<history.size; h++)
+                                       {
+                                               for(j=0; j<addmaps.size; j++)
+                                               {
+                                                       if(addmaps[j]["map"] == history[h]["map"] && addmaps[j]["gametype"] == history[h]["gametype"])
+                                                       {
+                                                               addmaps = removeRotationIndex(addmaps, j);
+                                                               j--;
+                                                       }
+                                               }
+                                       }
+                               }
+                               for(j=0; j<addmaps.size && x.maps.size < 5; j++)
+                               {
+                                       exists = false;
+                                       for(k=0; k<x.maps.size; k++)
+                                       {
+                                               if(x.maps[k]["map"] == addmaps[j]["map"] && x.maps[k]["gametype"] == addmaps[j]["gametype"])
+                                               {
+                                                       exists = true;
+                                                       break;
+                                               }
+                                       }
+                                       if(!exists)
+                                               x.maps[x.maps.size] = addmaps[j];
+                               }
+                       }
+
+                       if(x.maps.size >= 5)
+                               break;
+
+                       below = count - offset;
+                       if(below > 0)
+                       {
+                               rot = strip(getcvar("sv_maprotation" + below));
+                               if(rot != "")
+                               {
+                                       addmaps = parseRotationString(rot);
+                                       if(isdefined(history))
+                                       {
+                                               for(h=0; h<history.size; h++)
+                                               {
+                                                       for(j=0; j<addmaps.size; j++)
+                                                       {
+                                                               if(addmaps[j]["map"] == history[h]["map"] && addmaps[j]["gametype"] == history[h]["gametype"])
+                                                               {
+                                                                       addmaps = removeRotationIndex(addmaps, j);
+                                                                       j--;
+                                                               }
+                                                       }
+                                               }
+                                       }
+                                       for(j=0; j<addmaps.size && x.maps.size < 5; j++)
+                                       {
+                                               exists = false;
+                                               for(k=0; k<x.maps.size; k++)
+                                               {
+                                                       if(x.maps[k]["map"] == addmaps[j]["map"] && x.maps[k]["gametype"] == addmaps[j]["gametype"])
+                                                       {
+                                                               exists = true;
+                                                               break;
+                                                       }
+                                               }
+                                               if(!exists)
+                                                       x.maps[x.maps.size] = addmaps[j];
+                                       }
+                               }
+                       }
+               }
+       }
+
         // Shuffle the array for better randomization
         shuffleArray(x.maps);
 
@@ -880,4 +962,101 @@ UpdateMapHistory()
         history[history.size] = cur;
 
         setcvar("awe_map_history", buildRotationString(history));
+}
+
+parseRotationString(rot)
+{
+       j = 0;
+       tokens[j] = "";
+       for(i=0; i<rot.size; i++)
+       {
+               if(rot[i] == " ")
+               {
+                       j++;
+                       tokens[j] = "";
+               }
+               else
+                       tokens[j] += rot[i];
+       }
+
+       arr = [];
+       for(i=0; i<tokens.size; i++)
+       {
+               element = strip(tokens[i]);
+               if(element != "")
+                       arr[arr.size] = element;
+       }
+
+       maps = [];
+       lastexec = undefined;
+       lastjeep = undefined;
+       lasttank = undefined;
+       lastgt = getcvar("g_gametype");
+       for(i=0; i<arr.size; )
+       {
+               switch(arr[i])
+               {
+                       case "allow_jeeps":
+                               if(isdefined(arr[i+1]))
+                                       lastjeep = arr[i+1];
+                               i += 2;
+                               break;
+
+                       case "allow_tanks":
+                               if(isdefined(arr[i+1]))
+                                       lasttank = arr[i+1];
+                               i += 2;
+                               break;
+
+                       case "exec":
+                               if(isdefined(arr[i+1]))
+                                       lastexec = arr[i+1];
+                               i += 2;
+                               break;
+
+                       case "gametype":
+                               if(isdefined(arr[i+1]))
+                                       lastgt = arr[i+1];
+                               i += 2;
+                               break;
+
+                       case "map":
+                               if(isdefined(arr[i+1]))
+                               {
+                                       maps[maps.size]["exec"] = lastexec;
+                                       maps[maps.size-1]["jeep"] = lastjeep;
+                                       maps[maps.size-1]["tank"] = lasttank;
+                                       maps[maps.size-1]["gametype"] = lastgt;
+                                       maps[maps.size-1]["map"] = arr[i+1];
+                               }
+                               lastexec = undefined;
+                               lastjeep = undefined;
+                               lasttank = undefined;
+                               lastgt = undefined;
+                               i += 2;
+                               break;
+
+                       default:
+                               if(isGametype(arr[i]))
+                                       lastgt = arr[i];
+                               else if(isConfig(arr[i]))
+                                       lastexec = arr[i];
+                               else
+                               {
+                                       maps[maps.size]["exec"] = lastexec;
+                                       maps[maps.size-1]["jeep"] = lastjeep;
+                                       maps[maps.size-1]["tank"] = lasttank;
+                                       maps[maps.size-1]["gametype"] = lastgt;
+                                       maps[maps.size-1]["map"] = arr[i];
+                                       lastexec = undefined;
+                                       lastjeep = undefined;
+                                       lasttank = undefined;
+                                       lastgt = undefined;
+                               }
+                               i += 1;
+                               break;
+               }
+       }
+
+       return maps;
 }
