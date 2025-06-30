@@ -12,6 +12,7 @@ For additional notes on mod changes see `the_empire_mod.txt`.
 
 ## Changelog
 
+- **v1.03** - Added map rotation history to improve map voting.
 - **v1.02** - Added reload glitch detection with new cvars for AWE.
 - **v1.01** - Fixed display bug when notifying players about AFK status.
 - **v1.0** - Initial release with branding, AutoAdmin messages and gametype voting.

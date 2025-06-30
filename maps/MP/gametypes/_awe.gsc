@@ -96,6 +96,7 @@ Callback_StartGameType()
 	if(level.awe_disable) return;
 
 	// Set up variables
+        maps\mp\gametypes\_awe_mapvote::UpdateMapHistory();
 	setupVariables();
 
 	// Find map limits
@@ -2065,6 +2066,9 @@ updateGametypeCvars(init)
 	level.awe_mapvote = cvardef("awe_map_vote", 0, 0, 1, "int");
 	level.awe_mapvotetime = cvardef("awe_map_vote_time", 30, 10, 180, "int");
 	level.awe_mapvotereplay = cvardef("awe_map_vote_replay",0,0,1,"int");
+        // Map rotation history
+        level.awe_maphistory = cvardef("awe_map_history", "", "", "", "string");
+        level.awe_maphistorysize = cvardef("awe_map_history_size", 5, 1, 20, "int");
 
 	// Show grenade cooking
 	level.awe_showcooking = cvardef("awe_show_cooking", 1, 0, 1, "int");

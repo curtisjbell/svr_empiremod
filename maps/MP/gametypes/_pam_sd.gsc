@@ -785,6 +785,7 @@ rSTOPWATCHstart(time)
 
 Callback_StartGameType()
 {
+        maps\mp\gametypes\_awe_mapvote::UpdateMapHistory();
 	// if this is a fresh map start, set nationalities based on cvars, otherwise leave game variable nationalities as set in the level script
 	if(!isDefined(game["gamestarted"]))
 	{
