@@ -5091,11 +5091,11 @@ monitorme()
                         }
                         else
                         {
-                                // Check for campers
-                                if(self.awe_pace == 0)
-                                        self.afk_count++;
-                                else
-                                        self.afk_count = 0;
+                               // Check for campers - ignore players using LMGs
+                               if(self.awe_pace == 0 && !isWeaponType("lmg", self GetCurrentWeapon()))
+                                       self.afk_count++;
+                               else
+                                       self.afk_count = 0;
 
                                 if(self.afk_count >= level.awe_anticamptime)
                                 {
