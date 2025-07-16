@@ -708,10 +708,38 @@ getRandomMapRotation()
                }
        }
 
-        // Shuffle the array for better randomization
-        shuffleArray(x.maps);
+       // Shuffle the array for better randomization
+       shuffleArray(x.maps);
 
-	return x;
+       // Always include maps specified via cvar
+       force = strip(getcvar("awe_map_vote_force"));
+       if(force != "")
+       {
+               forced = parseRotationString(force);
+               if(isdefined(forced))
+               {
+                       for(f=0; f<forced.size; f++)
+                       {
+                               for(k=0; k<x.maps.size; k++)
+                               {
+                                       if(x.maps[k]["map"] == forced[f]["map"] && x.maps[k]["gametype"] == forced[f]["gametype"])
+                                       {
+                                               x.maps = removeRotationIndex(x.maps, k);
+                                               break;
+                                       }
+                               }
+                       }
+
+                       newarr = [];
+                       for(f=0; f<forced.size; f++)
+                               newarr[newarr.size] = forced[f];
+                       for(k=0; k<x.maps.size; k++)
+                               newarr[newarr.size] = x.maps[k];
+                       x.maps = newarr;
+               }
+       }
+
+       return x;
 }
 
 getActivePlayerCount()
