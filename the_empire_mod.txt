@@ -17,6 +17,10 @@ Added map rotation history tracking. New cvars:
 awe_map_history_size "5"
 awe_map_history ""
 
+v1.04
+Always include specified maps in gametype voting. New cvar:
+awe_map_vote_force ""
+
 v1.0
 
 Added the following global cvars:
