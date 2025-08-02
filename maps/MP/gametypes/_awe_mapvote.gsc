@@ -3,11 +3,13 @@
 // ORIGINALLY MADE BY NC-17 (codam, powerserver), REWORKED BY wizard220, MODIFIED BY FrAnCkY55, Modified again by bell
 //***********************************************************************************************************
 
+mapsList = [];
+
 Initialise()
 {
-	if(!level.awe_mapvote) return;
+        if(!level.awe_mapvote) return;
 
-	LoadArenaFiles();
+        loadMapGametypeData();
 
 // Use a consistent offset so vote counters line up correctly with the
        // printed map names across all game variants.  An offset of 0 caused the
@@ -52,54 +54,33 @@ CleanUp()
         if(isdefined(level.awe_warmupmsg)) level.awe_warmupmsg destroy();
 }
 
-LoadArenaFiles()
+loadMapGametypeData()
 {
-	level.arenaMaps = [];
-	files = getfilelist("mp","arena");
-	for(i=0;i<files.size;i++)
-	{
-	handle = fopen("mp/" + files[i]);
-	if(handle < 0)
-	continue;
-	
-	map = undefined;
-	longname = undefined;
-	gametypes = undefined;
-	
-	while(isdefined(line = freadln(handle)))
-	{
-	line = strip(line);
-	if(line == "" || line == "{")
-	continue;
-	if(line == "}")
-	{
-	if(isdefined(map) && isdefined(longname) && isdefined(gametypes))
-	{
-	info = spawnstruct();
-	info.map = map;
-	info.longname = longname;
-	info.gametypes = gametypes;
-	level.arenaMaps[level.arenaMaps.size] = info;
-	}
-	map = undefined;
-	longname = undefined;
-	gametypes = undefined;
-	continue;
-	}
-	
-	data = explode(line, "\"");
-	key = strip(data[0]);
-	value = strip(data[1]);
-	if(key == "map")
-	map = value;
-	else if(key == "longname")
-	longname = value;
-	else if(key == "gametype")
-	gametypes = explode(value, " ");
-	}
-	
-	fclose(handle);
-	}
+        filenames = FS_ListFiles("mp", "*.arena");
+        if(!isdefined(filenames))
+        return;
+
+        for(i=0;i<filenames.size;i++)
+        {
+                processArenaFile(filenames[i]);
+        }
+}
+
+processArenaFile(filename)
+{
+        data = IO_ReadEntireFile("mp/" + filename);
+        if(!isdefined(data))
+        return;
+
+        mapName = regexMatch(data, "map\\s+\"([^\"]+)\"");
+        gametypeMatch = regexMatch(data, "gametype\\s+\"([^\"]+)\"");
+
+        if(!isdefined(mapName) || !isdefined(gametypeMatch))
+        return;
+
+        gametypeArray = stringSplit(gametypeMatch, " ");
+
+        mapsList[mapName] = gametypeArray;
 }
 
 CreateHud()
