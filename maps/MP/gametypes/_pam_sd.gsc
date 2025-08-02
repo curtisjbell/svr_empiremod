@@ -456,26 +456,8 @@ PamMain()
 	if(game["mode"] != "match" && getCvar("sv_messagecenter") == "1")
 		thread _rPAM_rules\_pam_messagecenter::messages();
 
-
-        if(level.killcam >= 1)
-                setarchive(true);
-
-        // AWE map vote configuration
-        level.awe_mapvote = getCvarInt("awe_map_vote");
-        level.awe_mapvotetime = getCvarInt("awe_map_vote_time");
-        level.awe_mapvotereplay = getCvarInt("awe_map_vote_replay");
-        level.awe_spawnspectatorname = "mp_searchanddestroy_intermission";
-        level.mapvotetext = [];
-       // Extra spaces keep the "Votes" column aligned with the HUD vote counts
-       level.mapvotetext["MapVote"]      = &"Press ^2FIRE^7 to vote                           Votes";
-       level.mapvotetext["TimeLeft"]     = &"Time Left: ";
-       level.mapvotetext["MapVoteHeader"] = &"Next Map Vote";
-       // Ensure map vote strings display correctly
-       precacheString(level.mapvotetext["MapVote"]);
-       precacheString(level.mapvotetext["TimeLeft"]);
-       precacheString(level.mapvotetext["MapVoteHeader"]);
-        if(!isdefined(level.awe_uo))
-                level.awe_mapvotehudoffset = 30;       // not UO
+	if(level.killcam >= 1)
+		setarchive(true);
 	
 }
 
@@ -785,7 +767,6 @@ rSTOPWATCHstart(time)
 
 Callback_StartGameType()
 {
-        maps\mp\gametypes\_awe_mapvote::UpdateMapHistory();
 	// if this is a fresh map start, set nationalities based on cvars, otherwise leave game variable nationalities as set in the level script
 	if(!isDefined(game["gamestarted"]))
 	{
@@ -1098,12 +1079,31 @@ Callback_StartGameType()
 		maps\mp\gametypes\_pam_teams::scoreboard();
 
 		thread addBotClients();
+			
 	}
+	
+	//MAP VOTE
+	level.mapvotetext["MapVote"]	= &"Press ^2FIRE^7 to vote                           Votes";
+//		level.mapvotetext["Votes"]	= &"Votes";
+	level.mapvotetext["TimeLeft"] = &"Time Left: ";
+	level.mapvotetext["MapVoteHeader"] = &"Next Map Vote";
+//		game["objective_default"]="gfx/hud/objective.dds";
+	//shader used as icon for selection
+//		maps\mp\gametypes\_awe::awePrecacheShader(game["objective_default"]);	
+	maps\mp\gametypes\_awe::awePrecacheString(level.mapvotetext["MapVote"]);
+//		maps\mp\gametypes\_awe::awePrecacheString(level.mapvotetext["Votes"]);
+	maps\mp\gametypes\_awe::awePrecacheString(level.mapvotetext["TimeLeft"]);
+	maps\mp\gametypes\_awe::awePrecacheString(level.mapvotetext["MapVoteHeader"]);
+	
+	level.awe_mapvote = getCvar("awe_map_vote");
+	level.awe_mapvotetime = getCvarInt("awe_map_vote_time");
+	level.awe_mapvotereplay = getCvar("awe_map_vote_replay");
 	
 	maps\mp\gametypes\_pam_teams::modeltype();
 	maps\mp\gametypes\_pam_teams::initGlobalCvars();
 	maps\mp\gametypes\_pam_teams::initWeaponCvars();
 	maps\mp\gametypes\_pam_teams::restrictPlacedWeapons();
+	maps\mp\gametypes\_corrupt_killcam::corrupt_StartGameType();
 	thread maps\mp\gametypes\_pam_teams::updateGlobalCvars();
 	thread maps\mp\gametypes\_pam_teams::updateWeaponCvars();
 
@@ -1227,10 +1227,9 @@ Callback_PlayerConnect()
 		self.maxspeed = 0;
 	}
 
-        for(;;)
-        {
-                self waittill("menuresponse", menu, response);
-                maps\mp\gametypes\_awe::NotAFK();
+	for(;;)
+	{
+		self waittill("menuresponse", menu, response);
 
 		if(menu == game["menu_serverinfo"] && response == "close")
 		{
@@ -1353,8 +1352,13 @@ Callback_PlayerConnect()
 				//------------------------------------------------------------------------------
 				
 				if(response != self.pers["team"] && self.sessionstate == "playing")
+				{
+					if(self.pers["team"] == "allies")
+						level.alliesLastKilled = false;
+					else if(self.pers["team"] == "axis")
+						level.axisLastKilled = false;
 					self suicide();
-	                        
+				}       
 				self.pers["team"] = response;
 				self.pers["teamTime"] = (gettime() / 1000);
 				self.pers["weapon"] = undefined;
@@ -1387,8 +1391,15 @@ Callback_PlayerConnect()
 				if(self.pers["team"] != "spectator")
 				{
 					if(isAlive(self))
+					{
+						if(self.pers["team"] == "allies")
+							level.alliesLastKilled = false;
+						else if(self.pers["team"] == "axis")
+							level.axisLastKilled = false;
+							
 						self suicide();
-
+					}
+					
 					self.pers["team"] = "spectator";
 					self.pers["teamTime"] = 1000000;
 					self.pers["weapon"] = undefined;
@@ -1657,7 +1668,10 @@ Callback_PlayerDisconnect()
 	logPrint("Q;" + lpselfguid + ";" + lpselfnum + ";" + self.name + "\n");
 
 	if(game["matchstarted"])
+	{
+		level.axisLastKilled = false;
 		level thread updateTeamStatus();
+	}
 }
 
 Callback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc)
@@ -2018,6 +2032,14 @@ Callback_PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 		body = self cloneplayer();
 	self.autobalance = undefined;
 
+	if((isPlayer(attacker)) && attacker != self)
+	{
+		if(self.pers["team"] == "allies")
+			level.alliesLastKilled = true;
+		else if(self.pers["team"] == "axis")
+			level.axisLastKilled = true;
+	}
+
 	updateTeamStatus();
 
 	// TODO: Add additional checks that allow killcam when the last player killed wouldn't end the round (bomb is planted)
@@ -2030,18 +2052,81 @@ Callback_PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 	/*if(level.warmup != "0")
 		self thread spawnPlayer();*/
 
-	if(doKillcam && !level.roundended)
+	if(doKillcam)
 		self thread killcam(attackerNum, delay);
 	else
 	{
-		currentorigin = self.origin;
-		currentangles = self.angles;
-		level.specmode = "death";
-		level.z_rpam_player_specmode = "death";
-		level.z_rpam_spec_specmode = "death";
+		if(!level.roundended)
+		{
+			currentorigin = self.origin;
+			currentangles = self.angles;
+			level.specmode = "death";
+			level.z_rpam_player_specmode = "death";
+			level.z_rpam_spec_specmode = "death";
 
-		self thread spawnSpectator(currentorigin + (0, 0, 60), currentangles);
+			self thread spawnSpectator(currentorigin + (0, 0, 60), currentangles);
+		}
+		else if(game["matchstarted"] && game["doFinalKillcam"])
+		{
+			if((isPlayer(attacker)) && attacker != self)  //if killed by self or world don't do final killcam
+			{
+
+				//if(level.mapended)
+				//	return;
+				game["finaldelay"] = getTime();
+				level waittill("postround");
+				delay = delay + game["finaldelay"];
+				level endon("corrupt_killcam");
+
+				players = getentarray("player", "classname");
+				for(i = 0; i < players.size; i++)
+				{	
+					corruptPlayers = players[i];
+					
+					primary = corruptPlayers getWeaponSlotWeapon("primary");
+					primaryb = corruptPlayers getWeaponSlotWeapon("primaryb");
+
+				
+					if(primaryb == "none")
+						corruptPlayers.pers["weapon1"] = corruptPlayers.pers["weapon"];
+					else
+						corruptPlayers.pers["weapon1"] = primary;
+						
+					corruptPlayers.pers["weapon2"] = primaryb;
+
+					spawnweapon = corruptPlayers getCurrentWeapon();
+					if ( (spawnweapon == "none") && (isdefined (primary)) ) 
+						spawnweapon = primary;
+					
+					if(!maps\mp\gametypes\_teams::isPistolOrGrenade(spawnweapon))
+						corruptPlayers.pers["spawnweapon"] = spawnweapon;
+					else
+						corruptPlayers.pers["spawnweapon"] = corruptPlayers.pers["weapon1"];
+						
+					if(corruptPlayers == self)
+						continue;
+					
+					if(corruptPlayers.sessionstate != "dead")
+					{
+						currentorigin = self.origin;
+						currentangles = self.angles;
+						level.specmode = "death";
+						level.z_rpam_player_specmode = "death";
+						level.z_rpam_spec_specmode = "death";
+
+						self thread spawnSpectator(currentorigin + (0, 0, 60), currentangles);
+					}
+						
+					corruptPlayers thread maps\mp\gametypes\_corrupt_killcam::corrupt_killcam(attackerNum, delay);
+
+				}
+			
+				maps\mp\gametypes\_corrupt_killcam::corrupt_killcam(attackerNum, delay);
+			}
+			level notify("corrupt_killcam_over");
+		}
 	}
+
 }
 
 spawnPlayer()
@@ -2447,6 +2532,9 @@ startGame()
 
 startRound()
 {
+	
+	level.axisLastKilled = false;
+	level.alliesLastKilled = false;
 	// WEAPON EXPLOIT FIX
 	if (game["dropsecondweap"])
 		DropSecWeapon();
@@ -2714,8 +2802,12 @@ resetScores()
 	}
 }
 
-endRound(roundwinner)
+endRound(roundwinner, doKillcam)
 {
+
+	if(!isDefined(doKillcam))
+		doKillcam = false;
+		
 	level endon("kill_endround");
 
 	if(level.roundended)
@@ -3029,6 +3121,11 @@ endRound(roundwinner)
 		wait 4;
 	}
 	maps\mp\gametypes\_pam_weaponlimits::CheckLimits();
+	
+	level notify("postround");
+	game["finaldelay"] = (getTime() - game["finaldelay"]) / 1000;
+	if(doKillcam)
+		level waittill("corrupt_killcam_over");
 
 	if((getcvar("g_roundwarmuptime") != "0") && (game["roundsplayed"] != "0" ) && level.hithalftime == 0)
 	{
@@ -3063,14 +3160,22 @@ endRound(roundwinner)
 
 endMap()
 {
-        if(level.awe_mapvote)
-                maps\mp\gametypes\_awe_mapvote::Initialise();
-
-        game["state"] = "intermission";
-        level notify("intermission");
 	
 	if(isdefined(level.bombmodel))
 		level.bombmodel stopLoopSound();
+
+	level.awe_disable = 0;
+	
+	////// Added by AWE ///////////
+	maps\mp\gametypes\_awe::endMap();
+	/////////////////////////////////
+
+	game["state"] = "intermission";
+	level notify("intermission");
+	
+	
+		
+	
 
 	if(game["alliedscore"] == game["axisscore"])
 		text = &"MPSCRIPT_THE_GAME_IS_A_TIE";
@@ -4273,7 +4378,7 @@ updateTeamStatus()
 		if(!level.bombplanted)
 		{
 			announcement(&"SD_ALLIESHAVEBEENELIMINATED");
-			level thread endRound("axis");
+			level thread endRound("axis", level.alliesLastKilled);
 			return;
 		}
 
@@ -4284,7 +4389,7 @@ updateTeamStatus()
 		if(level.exist["axis"])
 		{
 			announcement(&"SD_ALLIESHAVEBEENELIMINATED");
-			level thread endRound("axis");
+			level thread endRound("axis", level.alliesLastKilled);
 
 			if (rPLANTED == 1)
 			{
@@ -4309,7 +4414,7 @@ updateTeamStatus()
 		if(!level.bombplanted)
 		{
 			announcement(&"SD_AXISHAVEBEENELIMINATED");
-			level thread endRound("allies");
+			level thread endRound("allies", level.axisLastKilled);
 			return;
  		}
  		
@@ -4320,7 +4425,7 @@ updateTeamStatus()
 		if(level.exist["allies"])
 		{
 			announcement(&"SD_AXISHAVEBEENELIMINATED");
-			level thread endRound("allies");
+			level thread endRound("allies", level.axisLastKilled);
 
 			if (rPLANTED == 1)
 			{

@@ -5,7 +5,7 @@ LeagueRules()
 
 
 	game["leaguestring"] = &"Pub Mode";
-	game["rpam_branding"] = &"^1~^3empire ^2| ^1 ctf^3/^1sd";
+	game["rpam_branding"] = &"^1~^3empire ^2| ^1 sd^3/^1wawa";
 	game["p_color"] = "^4";
 
 
@@ -51,8 +51,8 @@ if (getcvarint("g_ot_active") > 0)
 
 // Bomb Plant Settings
 	setcvar("sv_BombPlantTime", "5");		// bomb plant time
-	setcvar("sv_BombDefuseTime", "10");		// bomb defuse time
-	setcvar("sv_BombTimer", "45");			// bomb timer
+	setcvar("sv_BombDefuseTime", "7");		// bomb defuse time
+	setcvar("sv_BombTimer", "60");			// bomb timer
 
 // Timeouts
 	setcvar("g_timeoutsAllowed", "1");		// number of timeouts per side	
