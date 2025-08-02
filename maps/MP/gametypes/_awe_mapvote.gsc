@@ -161,16 +161,17 @@ CreateHud()
 
 RunMapVote()
 {
-	currentgt = getcvar("g_gametype");
-	currentmap = getcvar("mapname");
- 
-       x = getRandomMapRotation();
-	if(isdefined(x))
-	{
-		if(isdefined(x.maps))
-			maps = x.maps;
-		x delete();
-	}
+        currentmap = getcvar("mapname");
+
+       nextgt = selectGametype();
+
+       x = getRandomMapRotation(nextgt);
+        if(isdefined(x))
+        {
+                if(isdefined(x.maps) && x.maps.size > 0)
+                        maps = x.maps;
+                x delete();
+        }
 
 	// Any maps?
 	if(!isdefined(maps))
@@ -181,24 +182,24 @@ RunMapVote()
 	}
 
 	// Fill all alternatives with the current map in case there is not enough unique maps
-	for(j=0;j<5;j++)
-	{
-		level.mapcandidate[j]["map"] = currentmap;
-		level.mapcandidate[j]["mapname"] = "Replay this map";
-		level.mapcandidate[j]["gametype"] = currentgt;
-		level.mapcandidate[j]["exec"] = undefined;
-		level.mapcandidate[j]["jeep"] = undefined;
-		level.mapcandidate[j]["tank"] = undefined;
-		level.mapcandidate[j]["votes"] = 0;
-	}
+        for(j=0;j<5;j++)
+        {
+                level.mapcandidate[j]["map"] = currentmap;
+                level.mapcandidate[j]["mapname"] = "Replay this map";
+                level.mapcandidate[j]["gametype"] = nextgt;
+                level.mapcandidate[j]["exec"] = undefined;
+                level.mapcandidate[j]["jeep"] = undefined;
+                level.mapcandidate[j]["tank"] = undefined;
+                level.mapcandidate[j]["votes"] = 0;
+        }
 	
 	//get candidates
 	i = 0;
 	for(j=0;j<5;j++)
 	{
-		// Skip current map and gametype combination
-		if(maps[i]["map"] == currentmap && maps[i]["gametype"] == currentgt)
-			i++;
+                // Skip current map and gametype combination
+                if(maps[i]["map"] == currentmap && maps[i]["gametype"] == nextgt)
+                        i++;
 
 		// Any maps left?
 		if(!isdefined(maps[i]))
@@ -397,6 +398,7 @@ SetMapWinner(winner)
 	exec		= level.mapcandidate[winner]["exec"];
 	jeep		= level.mapcandidate[winner]["jeep"];
 	tank		= level.mapcandidate[winner]["tank"];
+	UpdateGametypeHistory(gametype);
 
 	//write to cvars
 	if(!isdefined(exec))
@@ -478,12 +480,12 @@ SetMapWinner(winner)
 	level notify( "VotingComplete" );
 }
 
-getRandomMapRotation()
+getRandomMapRotation(selectedgt)
 {
-	maprot = "";
-	number = 0;	
-	
-	random = true;
+        maprot = "";
+        number = 0;
+
+        random = true;
 
 	count = getActivePlayerCount();
 	// Get maprotation if current empty or not the one we want
@@ -625,9 +627,21 @@ getRandomMapRotation()
                                         i--;
                                 }
                         }
+        }
+
+        if(isdefined(selectedgt))
+        {
+                for(i=0; i<x.maps.size; i++)
+                {
+                        if(x.maps[i]["gametype"] != selectedgt)
+                        {
+                                x.maps = removeRotationIndex(x.maps, i);
+                                i--;
+                        }
                 }
         }
-	   count = getActivePlayerCount();
+
+       count = getActivePlayerCount();
        if(x.maps.size < 5)
        {
                
@@ -637,6 +651,17 @@ getRandomMapRotation()
                        if(rot != "")
                        {
                                addmaps = parseRotationString(rot);
+                               if(isdefined(selectedgt))
+                               {
+                                       for(j=0; j<addmaps.size; j++)
+                                       {
+                                               if(addmaps[j]["gametype"] != selectedgt)
+                                               {
+                                                       addmaps = removeRotationIndex(addmaps, j);
+                                                       j--;
+                                               }
+                                       }
+                               }
                                if(isdefined(history))
                                {
                                        for(h=0; h<history.size; h++)
@@ -677,6 +702,17 @@ getRandomMapRotation()
                                if(rot != "")
                                {
                                        addmaps = parseRotationString(rot);
+                                       if(isdefined(selectedgt))
+                                       {
+                                               for(j=0; j<addmaps.size; j++)
+                                               {
+                                                       if(addmaps[j]["gametype"] != selectedgt)
+                                                       {
+                                                               addmaps = removeRotationIndex(addmaps, j);
+                                                               j--;
+                                                       }
+                                               }
+                                       }
                                        if(isdefined(history))
                                        {
                                                for(h=0; h<history.size; h++)
@@ -710,10 +746,16 @@ getRandomMapRotation()
                }
        }
 
+       if(x.maps.size == 0)
+       {
+               x delete();
+               return undefined;
+       }
+
         // Shuffle the array for better randomization
         x.maps = shuffleArray(x.maps);
 
-	return x;
+        return x;
 }
 
 getActivePlayerCount()
@@ -967,7 +1009,7 @@ UpdateMapHistory()
         setcvar("awe_map_history", buildRotationString(history));
 }
 
-UpdateGametypeHistory()
+UpdateGametypeHistory(gt)
 {
         size = getcvarint("awe_gametype_history_size");
         if(!isdefined(size) || size <= 0)
@@ -975,7 +1017,7 @@ UpdateGametypeHistory()
 
         history = getGametypeHistory();
 
-        cur = getcvar("g_gametype");
+        cur = gt;
 
         for(i=0;i<history.size;i++)
         {
@@ -992,6 +1034,86 @@ UpdateGametypeHistory()
         history[history.size] = cur;
 
         setcvar("awe_gametype_history", buildGametypeString(history));
+}
+
+arrayContains(arr, val)
+{
+        for(i=0; i<arr.size; i++)
+                if(arr[i] == val)
+                        return true;
+        return false;
+}
+
+getAllowedGametypeList()
+{
+        gtstr = strip(getcvar("awe_allowed_gametypes"));
+        if(gtstr == "")
+                return [];
+
+        tokens = explode(gtstr, " ");
+        gts = [];
+        for(i=0; i<tokens.size; i++)
+        {
+                element = strip(tokens[i]);
+                if(element != "")
+                        gts[gts.size] = element;
+        }
+        return gts;
+}
+
+selectGametype()
+{
+        mode = getcvarint("awe_gametype_mode");
+        cur = getcvar("g_gametype");
+
+        if(mode == 1)
+                return cur;
+
+        allowed = getAllowedGametypeList();
+        if(allowed.size == 0)
+        {
+                allowed[allowed.size] = cur;
+        }
+
+        history = getGametypeHistory();
+
+        if(mode == 2)
+        {
+                choices = [];
+                for(i=0; i<allowed.size; i++)
+                        if(!arrayContains(history, allowed[i]))
+                                choices[choices.size] = allowed[i];
+                if(choices.size == 0)
+                        choices = allowed;
+                choices = shuffleArray(choices);
+                return choices[0];
+        }
+
+        if(mode == 3)
+        {
+                last = undefined;
+                if(history.size > 0)
+                        last = history[history.size-1];
+                start = 0;
+                if(isdefined(last))
+                {
+                        for(i=0; i<allowed.size; i++)
+                                if(allowed[i] == last)
+                                {
+                                        start = (i + 1) % allowed.size;
+                                        break;
+                                }
+                }
+                for(offset=0; offset<allowed.size; offset++)
+                {
+                        gt = allowed[(start + offset) % allowed.size];
+                        if(!arrayContains(history, gt))
+                                return gt;
+                }
+                return allowed[start];
+        }
+
+        return cur;
 }
 
 getGametypeHistory()
@@ -1079,7 +1201,6 @@ parseRotationString(rot)
                                lastexec = undefined;
                                lastjeep = undefined;
                                lasttank = undefined;
-                               lastgt = undefined;
                                i += 2;
                                break;
 
@@ -1098,7 +1219,6 @@ parseRotationString(rot)
                                        lastexec = undefined;
                                        lastjeep = undefined;
                                        lasttank = undefined;
-                                       lastgt = undefined;
                                }
                                i += 1;
                                break;

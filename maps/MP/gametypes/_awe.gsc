@@ -97,7 +97,7 @@ Callback_StartGameType()
 
         // Set up variables
         maps\mp\gametypes\_awe_mapvote::UpdateMapHistory();
-        maps\mp\gametypes\_awe_mapvote::UpdateGametypeHistory();
+        maps\mp\gametypes\_awe_mapvote::UpdateGametypeHistory(getcvar("g_gametype"));
         setupVariables();
 
 	// Find map limits
