@@ -967,6 +967,50 @@ UpdateMapHistory()
         setcvar("awe_map_history", buildRotationString(history));
 }
 
+UpdateGametypeHistory()
+{
+        size = getcvarint("awe_gametype_history_size");
+        if(!isdefined(size) || size <= 0)
+                return;
+
+        history = getGametypeHistory();
+
+        cur = getcvar("g_gametype");
+
+        for(i=0;i<history.size;i++)
+        {
+                if(history[i] == cur)
+                {
+                        history = removeRotationIndex(history, i);
+                        break;
+                }
+        }
+
+        while(history.size >= size)
+                history = removeRotationIndex(history, 0);
+
+        history[history.size] = cur;
+
+        setcvar("awe_gametype_history", buildGametypeString(history));
+}
+
+getGametypeHistory()
+{
+        histstr = strip(getcvar("awe_gametype_history"));
+        if(histstr == "")
+                return [];
+
+        return explode(histstr, " ");
+}
+
+buildGametypeString(arr)
+{
+        str = "";
+        for(i=0; i<arr.size; i++)
+                str += " " + arr[i];
+        return strip(str);
+}
+
 parseRotationString(rot)
 {
        j = 0;
