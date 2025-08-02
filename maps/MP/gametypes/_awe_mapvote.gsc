@@ -7,7 +7,9 @@ Initialise()
 {
 	if(!level.awe_mapvote) return;
 
-       // Use a consistent offset so vote counters line up correctly with the
+	LoadArenaFiles();
+
+// Use a consistent offset so vote counters line up correctly with the
        // printed map names across all game variants.  An offset of 0 caused the
        // counters to appear two rows below their maps in PAMUO Search & Destroy.
        level.awe_mapvotehudoffset = 0;
@@ -47,7 +49,57 @@ CleanUp()
 	if(isdefined(level.awe_alliednumber)) level.awe_alliednumber destroy();
 	if(isdefined(level.awe_deadalliedicon)) level.awe_deadalliedicon destroy();
 	if(isdefined(level.awe_deadalliednumber)) level.awe_deadalliednumber destroy();
-	if(isdefined(level.awe_warmupmsg)) level.awe_warmupmsg destroy();
+        if(isdefined(level.awe_warmupmsg)) level.awe_warmupmsg destroy();
+}
+
+LoadArenaFiles()
+{
+	level.arenaMaps = [];
+	files = getfilelist("mp","arena");
+	for(i=0;i<files.size;i++)
+	{
+	handle = fopen("mp/" + files[i]);
+	if(handle < 0)
+	continue;
+	
+	map = undefined;
+	longname = undefined;
+	gametypes = undefined;
+	
+	while(isdefined(line = freadln(handle)))
+	{
+	line = strip(line);
+	if(line == "" || line == "{")
+	continue;
+	if(line == "}")
+	{
+	if(isdefined(map) && isdefined(longname) && isdefined(gametypes))
+	{
+	info = spawnstruct();
+	info.map = map;
+	info.longname = longname;
+	info.gametypes = gametypes;
+	level.arenaMaps[level.arenaMaps.size] = info;
+	}
+	map = undefined;
+	longname = undefined;
+	gametypes = undefined;
+	continue;
+	}
+	
+	data = explode(line, "\"");
+	key = strip(data[0]);
+	value = strip(data[1]);
+	if(key == "map")
+	map = value;
+	else if(key == "longname")
+	longname = value;
+	else if(key == "gametype")
+	gametypes = explode(value, " ");
+	}
+	
+	fclose(handle);
+	}
 }
 
 CreateHud()
