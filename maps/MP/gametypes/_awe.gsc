@@ -95,9 +95,10 @@ Callback_StartGameType()
 	level.awe_disable = cvardef("awe_disable",0,0,1,"int");
 	if(level.awe_disable) return;
 
-	// Set up variables
+        // Set up variables
         maps\mp\gametypes\_awe_mapvote::UpdateMapHistory();
-	setupVariables();
+        maps\mp\gametypes\_awe_mapvote::UpdateGametypeHistory();
+        setupVariables();
 
 	// Find map limits
 	findmapdimensions();
@@ -2062,16 +2063,21 @@ updateGametypeCvars(init)
 	// Cold breath
 	level.awe_coldbreath = cvardef("awe_cold_breath", 0, 0, 1, "int");
 
-	// Map voting	
-	level.awe_mapvote = cvardef("awe_map_vote", 0, 0, 1, "int");
-	level.awe_mapvotetime = cvardef("awe_map_vote_time", 30, 10, 180, "int");
-	level.awe_mapvotereplay = cvardef("awe_map_vote_replay",0,0,1,"int");
+        // Map voting
+        level.awe_mapvote = cvardef("awe_map_vote", 0, 0, 1, "int");
+        level.awe_mapvotetime = cvardef("awe_map_vote_time", 30, 10, 180, "int");
+        level.awe_mapvotereplay = cvardef("awe_map_vote_replay",0,0,1,"int");
         // Map rotation history
         level.awe_maphistory = cvardef("awe_map_history", "", "", "", "string");
         level.awe_maphistorysize = cvardef("awe_map_history_size", 5, 1, 20, "int");
+        // Gametype rotation
+        level.awe_gametypemode = cvardef("awe_gametype_mode", 1, 1, 3, "int");
+        level.awe_allowedgametypes = cvardef("awe_allowed_gametypes", "", "", "", "string");
+        level.awe_gametypehistory = cvardef("awe_gametype_history", "", "", "", "string");
+        level.awe_gametypehistorysize = cvardef("awe_gametype_history_size", 5, 1, 20, "int");
 
-	// Show grenade cooking
-	level.awe_showcooking = cvardef("awe_show_cooking", 1, 0, 1, "int");
+        // Show grenade cooking
+        level.awe_showcooking = cvardef("awe_show_cooking", 1, 0, 1, "int");
 	
 	// First aid
 	level.awe_firstaid	= cvardef("awe_firstaid",0,0,1,"int");
