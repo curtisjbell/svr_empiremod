@@ -5,30 +5,40 @@
 
 Initialise()
 {
-	if(!level.awe_mapvote) return;
+       if(!level.awe_mapvote) return;
 
-       // Use a consistent offset so vote counters line up correctly with the
-       // printed map names across all game variants.  An offset of 0 caused the
-       // counters to appear two rows below their maps in PAMUO Search & Destroy.
-       level.awe_mapvotehudoffset = 0;
+       if(getcvar("awe_mapvote_autopick") == "")
+               setcvar("awe_mapvote_autopick", "0");
+       autopick = getcvarint("awe_mapvote_autopick");
 
-	// Small wait
-	wait .5;
+      // Use a consistent offset so vote counters line up correctly with the
+      // printed map names across all game variants.  An offset of 0 caused the
+      // counters to appear two rows below their maps in PAMUO Search & Destroy.
+      level.awe_mapvotehudoffset = 0;
 
-	// Cleanup some stuff to free up some resources
-	CleanUp();
+       // Small wait
+       wait .5;
 
-	// Create HUD
-	CreateHud();
+       // Cleanup some stuff to free up some resources
+       CleanUp();
 
-	// Start mapvote thread	
-	thread RunMapVote();
+       if(autopick != 1)
+       {
+               // Create HUD
+               CreateHud();
+       }
 
-	// Wait for voting to finish
-	level waittill("VotingComplete");
+       // Start mapvote thread
+       thread RunMapVote();
 
-	// Delete HUD
-	DeleteHud();
+       // Wait for voting to finish
+       level waittill("VotingComplete");
+
+       if(autopick != 1)
+       {
+               // Delete HUD
+               DeleteHud();
+       }
 }
 
 CleanUp()
@@ -196,11 +206,28 @@ RunMapVote()
 	if (!isdefined(maps) || maps.size <= 0)
 		return;
 	
-	// Extra single shuffle is fine (optional since we sample randomly anyway)
-	shuffleArray(maps);
-	
-	// Pick 5 unique random indices, skipping current map+gt
-	idxs = sampleRandomCandidateIndices(maps, 5, currentmap, currentgt);
+       // Extra single shuffle is fine (optional since we sample randomly anyway)
+       shuffleArray(maps);
+
+       if(getcvarint("awe_mapvote_autopick") == 1)
+       {
+               idxs = sampleRandomCandidateIndices(maps, 1, currentmap, currentgt);
+               if(idxs.size > 0)
+               {
+                       i = idxs[0];
+                       level.mapcandidate[0]["map"] = maps[i]["map"];
+                       level.mapcandidate[0]["mapname"] = maps\mp\gametypes\_awe::getMapName(maps[i]["map"]);
+                       level.mapcandidate[0]["gametype"] = maps[i]["gametype"];
+                       level.mapcandidate[0]["exec"] = maps[i]["exec"];
+                       level.mapcandidate[0]["jeep"] = maps[i]["jeep"];
+                       level.mapcandidate[0]["tank"] = maps[i]["tank"];
+               }
+               SetMapWinner(0);
+               return;
+       }
+
+       // Pick 5 unique random indices, skipping current map+gt
+       idxs = sampleRandomCandidateIndices(maps, 5, currentmap, currentgt);
 	
 	// Assign candidates
 	for (j = 0; j < idxs.size; j++)
@@ -436,6 +463,8 @@ SetMapWinner(winner)
 	iprintlnbold("^2" + mapname);
 	iprintlnbold("^2" + maps\mp\gametypes\_awe::getGametypeName(gametype));
 
+	if(getcvarint("awe_mapvote_autopick") != 1)
+	{
 	// Fade HUD elements
 	level.vote_headerText fadeOverTime (1);
 //	level.vote_hud_votestext fadeOverTime (1);
@@ -475,6 +504,7 @@ SetMapWinner(winner)
 			players[i].vote_indicator fadeOverTime (1);
 			players[i].vote_indicator.alpha = 0;
 		}
+	}
 	}
 
 	// Show winning map for a few seconds

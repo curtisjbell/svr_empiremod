@@ -12,6 +12,7 @@ For additional notes on mod changes see `the_empire_mod.txt`.
 
 ## Changelog
 
+- **v1.06** - Added `awe_mapvote_autopick` to auto-select a map without presenting the vote HUD.
 - **v1.05** - Added gametype rotation cvars for configuring allowed gametypes and history.
 - **v1.04** - Added `awe_map_vote_force` to always include specified maps in voting.
 - **v1.03** - Added map rotation history to improve map voting.
