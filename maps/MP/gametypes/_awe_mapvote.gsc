@@ -193,17 +193,20 @@ RunMapVote()
 	}
 	
 	//get candidates
-	i = 0;
-	for(j=0;j<5;j++)
+	if (!isdefined(maps) || maps.size <= 0)
+		return;
+	
+	// Extra single shuffle is fine (optional since we sample randomly anyway)
+	shuffleArray(maps);
+	
+	// Pick 5 unique random indices, skipping current map+gt
+	idxs = sampleRandomCandidateIndices(maps, 5, currentmap, currentgt);
+	
+	// Assign candidates
+	for (j = 0; j < idxs.size; j++)
 	{
-		// Skip current map and gametype combination
-		if(maps[i]["map"] == currentmap && maps[i]["gametype"] == currentgt)
-			i++;
-
-		// Any maps left?
-		if(!isdefined(maps[i]))
-			break;
-
+		i = idxs[j];
+		
 		level.mapcandidate[j]["map"] = maps[i]["map"];
 		level.mapcandidate[j]["mapname"] = maps\mp\gametypes\_awe::getMapName(maps[i]["map"]);
 		level.mapcandidate[j]["gametype"] = maps[i]["gametype"];
@@ -211,16 +214,17 @@ RunMapVote()
 		level.mapcandidate[j]["jeep"] = maps[i]["jeep"];
 		level.mapcandidate[j]["tank"] = maps[i]["tank"];
 		level.mapcandidate[j]["votes"] = 0;
-
-		i++;
-
-		// Any maps left?
-		if(!isdefined(maps[i]))
-			break;
-
-		// Keep current map as last alternative?
-		if(level.awe_mapvotereplay && j>2)
-			break;
+	}
+	
+	if (getcvarint("awe_map_vote_debug") == 1)
+	{
+		s = "Vote candidates: ";
+		for (k = 0; k < 5 && isdefined(level.mapcandidate[k]); k++)
+		{
+			if (isdefined(level.mapcandidate[k]["map"]) && isdefined(level.mapcandidate[k]["gametype"]))
+			s += level.mapcandidate[k]["map"] + "(" + level.mapcandidate[k]["gametype"] + ") ";
+		}
+		iprintlnbold(s);
 	}
 	
 	thread DisplayMapChoices();
@@ -710,8 +714,13 @@ getRandomMapRotation()
                }
        }
 
-        // Shuffle the array for better randomization
-        x.maps = shuffleArray(x.maps);
+	// Determine passes from cvar, default 3, clamp to [1..10]
+	passes = getcvarint("awe_map_vote_shufflepasses");
+	if (!isdefined(passes) || passes < 1) passes = 3;
+	if (passes > 10) passes = 10;
+	
+	// Shuffle multiple times to decorrelate early PRNG states
+	shuffleArrayNTimes(x.maps, passes);
 
 	return x;
 }
@@ -888,7 +897,73 @@ shuffleArray(arr)
                 arr[i] = arr[j];
                 arr[j] = temp;
         }
-		return arr;
+                return arr;
+}
+
+// Multi-shuffle wrapper: call the existing Fisher–Yates several times.
+shuffleArrayNTimes(arr, n)
+{
+	if (!isdefined(arr) || !isdefined(n)) return;
+	if (n < 1) n = 1;
+	for (p = 0; p < n; p++)
+		shuffleArray(arr);
+}
+
+// Return up to 'count' distinct random indices from 'maps'.
+// Skips the current (map, gt). Falls back to a non-duplicate sweep if needed.
+sampleRandomCandidateIndices(maps, count, currentmap, currentgt)
+{
+	picked = [];
+	tries = 0;
+	
+	if (!isdefined(maps) || maps.size <= 0)
+	return picked;
+	
+	// Random sampling phase
+	while (picked.size < count && tries < 200)
+	{
+		idx = randomInt(maps.size); // 0..size-1
+		
+		// Skip current exact (map,gt)
+		if (maps[idx]["map"] == currentmap && maps[idx]["gametype"] == currentgt)
+		{
+			tries++;
+			continue;
+		}
+		
+		// Unique index?
+		dup = false;
+		for (k = 0; k < picked.size; k++)
+		{
+			if (picked[k] == idx) { dup = true; break; }
+		}
+		if (dup) { tries++; continue; }
+		
+		picked[picked.size] = idx;
+	}
+	
+	// Fallback sweep to fill any remaining slots (no duplicates, still skip current)
+	if (picked.size < count)
+	{
+		for (i = 0; i < maps.size && picked.size < count; i++)
+		{
+			// Skip current
+			if (maps[i]["map"] == currentmap && maps[i]["gametype"] == currentgt)
+			continue;
+			
+			// Unique?
+			dup = false;
+			for (k = 0; k < picked.size; k++)
+			{
+				if (picked[k] == i) { dup = true; break; }
+			}
+			if (dup) continue;
+			
+			picked[picked.size] = i;
+		}
+	}
+	
+	return picked;
 }
 
 removeRotationIndex(arr, index)
