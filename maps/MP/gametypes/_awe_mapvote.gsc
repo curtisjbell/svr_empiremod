@@ -616,6 +616,21 @@ getRandomMapRotation()
                                 }
                         }
                 }
+
+                // Never allow the same map back-to-back,
+                // even when the gametype changes.
+                if(history.size > 0)
+                {
+                        lastmap = history[history.size-1]["map"];
+                        for(i=0; i<x.maps.size; i++)
+                        {
+                                if(x.maps[i]["map"] == lastmap)
+                                {
+                                        x.maps = removeRotationIndex(x.maps, i);
+                                        i--;
+                                }
+                        }
+                }
         }
 	count = getActivePlayerCount();
 
@@ -673,7 +688,7 @@ mergeRotationCandidates(basemaps, addmaps, history, applyhistory)
 		exists = false;
 		for(k=0; k<basemaps.size; k++)
 		{
-			if(basemaps[k]["map"] == addmaps[j]["map"] && basemaps[k]["gametype"] == addmaps[j]["gametype"])
+			if(basemaps[k]["map"] == addmaps[j]["map"])
 			{
 				exists = true;
 				break;
