@@ -4693,6 +4693,7 @@ monitorInput()
 {
     self endon("awe_spawned");
     self endon("awe_died");
+    self endon("disconnect");
 
     while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
     {
@@ -4714,6 +4715,7 @@ monitorWeaponSwitch()
 {
     self endon("awe_spawned");
     self endon("awe_died");
+    self endon("disconnect");
 
     previous_weapon = self GetCurrentWeapon();
 
@@ -4738,6 +4740,7 @@ monitorMenuResponse()
 {
     self endon("awe_spawned");
     self endon("awe_died");
+    self endon("disconnect");
 
     while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
     {
@@ -4752,6 +4755,7 @@ monitorStanceChange()
 {
     self endon("awe_spawned");
     self endon("awe_died");
+    self endon("disconnect");
 
     previous_stance = aweGetStance(false);
 
@@ -4779,6 +4783,7 @@ monitorme()
 {
         self endon("awe_spawned");
         self endon("awe_died");
+        self endon("disconnect");
 
         self.afk_count = 0;
         funcount = 0;
@@ -5027,6 +5032,8 @@ monitorme()
 camper()
 {
     self endon("awe_spawned");
+    self endon("awe_died");
+    self endon("disconnect");
     self endon("not_afk");
 
     // Skip AFK punishment if player is carrying the flag
@@ -5052,26 +5059,8 @@ camper()
     if (!isdefined(markTime) || markTime <= 0)
         markTime = 30; // default to 30 seconds if not set
     
-    // Inform all players that this player has been detected as AFK.
-    if (isdefined(level.awe_allplayers))
-    {
-        for (i = 0; i < level.awe_allplayers.size; i++)
-        {
-            if (isdefined(level.awe_allplayers[i]))
-            {
-                if (level.awe_allplayers[i] == self)
-                {
-                    //^1~^3empire ^2| ^1dev
-                                        level.awe_allplayers[i] iprintlnbold(formatMessage(getcvar("ui_AutoAdmin_AFK_NotifyPlayer"), self, markTime));
-                }
-                else
-                {
-                    //level.awe_allplayers[i] iprintln(self.name + " has been detected as AFK and will be forced into spectator mode in " + markTime + " seconds.");
-                                        level.awe_allplayers[i] iprintln(formatMessage(getcvar("ui_AutoAdmin_AFK_NotifyPublic"), self, markTime));
-                }
-            }
-        }
-    }
+    // Inform only the affected player that they have been detected as AFK.
+    self iprintlnbold(formatMessage(getcvar("ui_AutoAdmin_AFK_NotifyPlayer"), self, markTime));
     
     // Set up a HUD timer for feedback.
     self.awe_camptimer = newClientHudElem(self);
