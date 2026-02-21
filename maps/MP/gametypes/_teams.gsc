@@ -619,7 +619,7 @@ initGlobalCvars()
 	// AutoAdmin
 	level.ui_AutoAdmin_AFK_NotifyPlayer = getCvar("ui_AutoAdmin_AFK_NotifyPlayer");
 	if(level.ui_AutoAdmin_AFK_NotifyPlayer == "")
-		level.ui_AutoAdmin_AFK_NotifyPlayer = "^1~^3empire ^2| ^1automod: ^3You have been detected as ^1AFK^3. You will be forced into spectator mode in ^1" + markTime + "^3 seconds.";
+		level.ui_AutoAdmin_AFK_NotifyPlayer = "^1~^3empire ^2| ^1automod: ^3You have been detected as ^1AFK^3. You will be forced into spectator mode in {{TIME}}^3 seconds.";
 	setCvar("ui_AutoAdmin_AFK_NotifyPlayer", level.ui_AutoAdmin_AFK_NotifyPlayer);
 	makeCvarServerInfo("ui_AutoAdmin_AFK_NotifyPlayer", "^1~^3empire ^2| ^1automod: ^3You have been detected as ^1AFK^3. You will be forced into spectator mode in ");
 
