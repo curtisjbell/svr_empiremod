@@ -147,30 +147,8 @@ main() // Starts when map is loaded.
 {
 
 //////// Added by AWE ///////
-	if(getCvar("scr_actf_autoswitch")=="1")
-	{
-		spawnpoints = getentarray("mp_uo_spawn_allies", "classname");
-		if(!isdefined(spawnpoints) || !spawnpoints.size)
-		{
-			setcvar("g_gametype", "actf");
-			maps\mp\gametypes\actf::main();
-			return;
-		}
-		spawnpoints = getentarray("mp_uo_spawn_axis", "classname");
-		if(!isdefined(spawnpoints) || !spawnpoints.size)
-		{
-			setcvar("g_gametype", "actf");
-			maps\mp\gametypes\actf::main();
-			return;
-		}
-		spawnpoints = getentarray("mp_ctf_intermission", "classname");
-		if(!isdefined(spawnpoints) || !spawnpoints.size)
-		{
-			setcvar("g_gametype", "actf");
-			maps\mp\gametypes\actf::main();
-			return;
-		}
-	}
+	// ACTF was removed from the mod, so autoswitch can no longer redirect to it.
+	// Keep CTF initialization flow and let normal spawnpoint checks decide validity.
 ///////////////////////////////
 
 	// init the spawn points first because if they do not exist then abort the game
