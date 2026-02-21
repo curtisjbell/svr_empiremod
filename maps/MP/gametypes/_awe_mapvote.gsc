@@ -7,28 +7,17 @@ Initialise()
 {
 	if(!level.awe_mapvote) return;
 
-       // Use a consistent offset so vote counters line up correctly with the
-       // printed map names across all game variants.  An offset of 0 caused the
-       // counters to appear two rows below their maps in PAMUO Search & Destroy.
-       level.awe_mapvotehudoffset = 0;
-
 	// Small wait
 	wait .5;
 
 	// Cleanup some stuff to free up some resources
 	CleanUp();
 
-	// Create HUD
-	CreateHud();
-
-	// Start mapvote thread	
+	// Start automatic next-map selection thread
 	thread RunMapVote();
 
-	// Wait for voting to finish
+	// Wait for selection to finish
 	level waittill("VotingComplete");
-
-	// Delete HUD
-	DeleteHud();
 }
 
 CleanUp()
@@ -223,20 +212,77 @@ RunMapVote()
 			break;
 	}
 	
-	thread DisplayMapChoices();
-	
-	game["menu_team"] = "";
+	newmapnum = getBestCandidateIndex(currentmap, currentgt);
 
-	//start a voting thread per player
-	players = getentarray("player", "classname");
-	for(i = 0; i < players.size; i++)
-		players[i] thread PlayerVote();
-	
-	thread VoteLogic();
-	
+	SetMapWinner(newmapnum);
+
 	//Take a breath for players to restart with the map
-	wait 0.1;	
-	level.mapended = true;	
+	wait 0.1;
+	level.mapended = true;
+}
+
+getBestCandidateIndex(currentmap, currentgt)
+{
+	history = getRotationHistory();
+	gthistory = getGametypeHistory();
+
+	bestindex = 0;
+	bestscore = -9999;
+
+	for(i=0;i<5;i++)
+	{
+		// Avoid replaying current map+gametype unless no alternative exists
+		if(level.mapcandidate[i]["map"] == currentmap && level.mapcandidate[i]["gametype"] == currentgt)
+			score = -500;
+		else
+			score = 100;
+
+		score -= getMapHistoryPenalty(level.mapcandidate[i]["map"], level.mapcandidate[i]["gametype"], history);
+		score -= getGametypeHistoryPenalty(level.mapcandidate[i]["gametype"], gthistory);
+		score += randomInt(7); // Keep selection non-deterministic when scores tie
+
+		if(score > bestscore)
+		{
+			bestscore = score;
+			bestindex = i;
+		}
+	}
+
+	return bestindex;
+}
+
+getMapHistoryPenalty(map, gametype, history)
+{
+	if(!isdefined(history) || history.size <= 0)
+		return 0;
+
+	for(i=history.size-1;i>=0;i--)
+	{
+		if(history[i]["map"] == map && history[i]["gametype"] == gametype)
+		{
+			recency = history.size - i;
+			return (history.size - recency + 1) * 25;
+		}
+	}
+
+	return 0;
+}
+
+getGametypeHistoryPenalty(gametype, gthistory)
+{
+	if(!isdefined(gthistory) || gthistory.size <= 0)
+		return 0;
+
+	for(i=gthistory.size-1;i>=0;i--)
+	{
+		if(gthistory[i] == gametype)
+		{
+			recency = gthistory.size - i;
+			return (gthistory.size - recency + 1) * 10;
+		}
+	}
+
+	return 0;
 }
 
 DeleteHud()
@@ -392,7 +438,6 @@ VoteLogic()
 SetMapWinner(winner)
 {
 	map		= level.mapcandidate[winner]["map"];
-	mapname	= level.mapcandidate[winner]["mapname"];
 	gametype	= level.mapcandidate[winner]["gametype"];
 	exec		= level.mapcandidate[winner]["exec"];
 	jeep		= level.mapcandidate[winner]["jeep"];
@@ -418,63 +463,6 @@ SetMapWinner(winner)
 
 	wait 0.1;
 
-	// Stop threads
-	level notify( "VotingDone" );
-
-	// Wait for threads to die
-	wait 0.05;
-
-	// Announce winner
-	iprintlnbold(" ");
-	iprintlnbold(" ");
-	iprintlnbold(" ");
-	iprintlnbold("The winner is");
-	iprintlnbold("^2" + mapname);
-	iprintlnbold("^2" + maps\mp\gametypes\_awe::getGametypeName(gametype));
-
-	// Fade HUD elements
-	level.vote_headerText fadeOverTime (1);
-//	level.vote_hud_votestext fadeOverTime (1);
-	level.vote_hud_timeleft fadeOverTime (1);	
-	level.vote_hud_instructions fadeOverTime (1);
-	level.vote_map1 fadeOverTime (1);
-	level.vote_map2 fadeOverTime (1);
-	level.vote_map3 fadeOverTime (1);
-	level.vote_map4 fadeOverTime (1);
-	level.vote_map5 fadeOverTime (1);
-	level.vote_hud_bgnd fadeOverTime (1);
-	level.vote_header fadeOverTime (1);
-	level.vote_leftline fadeOverTime (1);
-	level.vote_rightline fadeOverTime (1);
-	level.vote_bottomline fadeOverTime (1);
-
-	level.vote_headerText.alpha = 0;
-//	level.vote_hud_votestext.alpha = 0;
-	level.vote_hud_timeleft.alpha = 0;	
-	level.vote_hud_instructions.alpha = 0;
-	level.vote_map1.alpha = 0;
-	level.vote_map2.alpha = 0;
-	level.vote_map3.alpha = 0;
-	level.vote_map4.alpha = 0;
-	level.vote_map5.alpha = 0;
-	level.vote_hud_bgnd.alpha = 0;
-	level.vote_header.alpha = 0;
-	level.vote_leftline.alpha = 0;
-	level.vote_rightline.alpha = 0;
-	level.vote_bottomline.alpha = 0;
-
-	players = getentarray("player", "classname");
-	for(i = 0; i < players.size; i++)
-	{
-		if(isdefined(players[i].vote_indicator))
-		{
-			players[i].vote_indicator fadeOverTime (1);
-			players[i].vote_indicator.alpha = 0;
-		}
-	}
-
-	// Show winning map for a few seconds
-	wait 4;
 	level notify( "VotingComplete" );
 }
 
@@ -627,94 +615,90 @@ getRandomMapRotation()
                         }
                 }
         }
-	   count = getActivePlayerCount();
-       if(x.maps.size < 5)
-       {
-               
-               for(offset = 1; offset < 32 && x.maps.size < 5; offset++)
-               {
-                       rot = strip(getcvar("sv_maprotation" + (count + offset)));
-                       if(rot != "")
-                       {
-                               addmaps = parseRotationString(rot);
-                               if(isdefined(history))
-                               {
-                                       for(h=0; h<history.size; h++)
-                                       {
-                                               for(j=0; j<addmaps.size; j++)
-                                               {
-                                                       if(addmaps[j]["map"] == history[h]["map"] && addmaps[j]["gametype"] == history[h]["gametype"])
-                                                       {
-                                                               addmaps = removeRotationIndex(addmaps, j);
-                                                               j--;
-                                                       }
-                                               }
-                                       }
-                               }
-                               for(j=0; j<addmaps.size && x.maps.size < 5; j++)
-                               {
-                                       exists = false;
-                                       for(k=0; k<x.maps.size; k++)
-                                       {
-                                               if(x.maps[k]["map"] == addmaps[j]["map"] && x.maps[k]["gametype"] == addmaps[j]["gametype"])
-                                               {
-                                                       exists = true;
-                                                       break;
-                                               }
-                                       }
-                                       if(!exists)
-                                               x.maps[x.maps.size] = addmaps[j];
-                               }
-                       }
+	count = getActivePlayerCount();
 
-                       if(x.maps.size >= 5)
-                               break;
+	if(x.maps.size < 5)
+		x.maps = addFallbackRotations(x.maps, count, history, true);
 
-                       below = count - offset;
-                       if(below > 0)
-                       {
-                               rot = strip(getcvar("sv_maprotation" + below));
-                               if(rot != "")
-                               {
-                                       addmaps = parseRotationString(rot);
-                                       if(isdefined(history))
-                                       {
-                                               for(h=0; h<history.size; h++)
-                                               {
-                                                       for(j=0; j<addmaps.size; j++)
-                                                       {
-                                                               if(addmaps[j]["map"] == history[h]["map"] && addmaps[j]["gametype"] == history[h]["gametype"])
-                                                               {
-                                                                       addmaps = removeRotationIndex(addmaps, j);
-                                                                       j--;
-                                                               }
-                                                       }
-                                               }
-                                       }
-                                       for(j=0; j<addmaps.size && x.maps.size < 5; j++)
-                                       {
-                                               exists = false;
-                                               for(k=0; k<x.maps.size; k++)
-                                               {
-                                                       if(x.maps[k]["map"] == addmaps[j]["map"] && x.maps[k]["gametype"] == addmaps[j]["gametype"])
-                                                       {
-                                                               exists = true;
-                                                               break;
-                                                       }
-                                               }
-                                               if(!exists)
-                                                       x.maps[x.maps.size] = addmaps[j];
-                                       }
-                               }
-                       }
-               }
-       }
+	// Hard fallback: if history filtering was too strict, progressively relax it
+	if(x.maps.size <= 0)
+	{
+		x.maps = parseRotationString(maprot);
+		x.maps = shuffleArray(x.maps);
+	}
+
+	if(x.maps.size < 5)
+		x.maps = addFallbackRotations(x.maps, count, history, false);
 
         // Shuffle the array for better randomization
         x.maps = shuffleArray(x.maps);
 
 	return x;
 }
+
+
+addFallbackRotations(basemaps, count, history, applyhistory)
+{
+	for(offset = 1; offset < 32 && basemaps.size < 5; offset++)
+	{
+		upper = count + offset;
+		rot = strip(getcvar("sv_maprotation" + upper));
+		if(rot != "")
+			basemaps = mergeRotationCandidates(basemaps, parseRotationString(rot), history, applyhistory);
+
+		if(basemaps.size >= 5)
+			break;
+
+		below = count - offset;
+		if(below > 0)
+		{
+			rot = strip(getcvar("sv_maprotation" + below));
+			if(rot != "")
+				basemaps = mergeRotationCandidates(basemaps, parseRotationString(rot), history, applyhistory);
+		}
+	}
+
+	return basemaps;
+}
+
+mergeRotationCandidates(basemaps, addmaps, history, applyhistory)
+{
+	for(j=0; j<addmaps.size && basemaps.size < 5; j++)
+	{
+		if(applyhistory && isMapInHistory(addmaps[j], history))
+			continue;
+
+		exists = false;
+		for(k=0; k<basemaps.size; k++)
+		{
+			if(basemaps[k]["map"] == addmaps[j]["map"] && basemaps[k]["gametype"] == addmaps[j]["gametype"])
+			{
+				exists = true;
+				break;
+			}
+		}
+
+		if(!exists)
+			basemaps[basemaps.size] = addmaps[j];
+	}
+
+	return basemaps;
+}
+
+isMapInHistory(mapentry, history)
+{
+	if(!isdefined(history) || history.size <= 0)
+		return false;
+
+	for(h=0; h<history.size; h++)
+	{
+		if(mapentry["map"] == history[h]["map"] && mapentry["gametype"] == history[h]["gametype"])
+			return true;
+	}
+
+	return false;
+}
+
 
 getActivePlayerCount()
 {
