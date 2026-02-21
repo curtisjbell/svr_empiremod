@@ -12002,14 +12002,42 @@ spawnSpectator(origin, angles)
 		self spawn(origin, angles);
 	else
 	{
-         	spawnpointname = level.awe_spawnspectatorname;
-		spawnpoints = getentarray(spawnpointname, "classname");
-		spawnpoint = maps\mp\gametypes\_spawnlogic::getSpawnpoint_Random(spawnpoints);
-	
-		if(isDefined(spawnpoint))
-			self spawn(spawnpoint.origin, spawnpoint.angles);
-		else
-			maps\mp\_utility::error("NO " + spawnpointname + " SPAWNPOINTS IN MAP");
+		spawnpointnames = [];
+		spawnpointnames[spawnpointnames.size] = level.awe_spawnspectatorname;
+		spawnpointnames[spawnpointnames.size] = "mp_teamdeathmatch_intermission";
+		spawnpointnames[spawnpointnames.size] = "mp_deathmatch_intermission";
+		spawnpointnames[spawnpointnames.size] = "mp_searchanddestroy_intermission";
+		spawnpointnames[spawnpointnames.size] = "mp_retrieval_intermission";
+		spawnpointnames[spawnpointnames.size] = "mp_ctf_intermission";
+		spawnpointnames[spawnpointnames.size] = "mp_dom_intermission";
+		spawnpointnames[spawnpointnames.size] = "mp_gmi_bas_intermission";
+		spawnpointnames[spawnpointnames.size] = "mp_teamdeathmatch_spawn";
+		spawnpointnames[spawnpointnames.size] = "mp_deathmatch_spawn";
+
+		spawnpoint = undefined;
+		for(i = 0; i < spawnpointnames.size; i++)
+		{
+			spawnpointname = spawnpointnames[i];
+
+			if(!isDefined(spawnpointname) || spawnpointname == "")
+				continue;
+
+			spawnpoints = getentarray(spawnpointname, "classname");
+			if(!isDefined(spawnpoints) || !spawnpoints.size)
+				continue;
+
+			spawnpoint = maps\mp\gametypes\_spawnlogic::getSpawnpoint_Random(spawnpoints);
+			if(isDefined(spawnpoint))
+			{
+				if(spawnpointname != level.awe_spawnspectatorname)
+					iprintln("^3AWE warning:^7 Missing spectator spawn classname '^1" + level.awe_spawnspectatorname + "^7', using fallback '^2" + spawnpointname + "^7'.");
+
+				self spawn(spawnpoint.origin, spawnpoint.angles);
+				return;
+			}
+		}
+
+		maps\mp\_utility::error("NO SPECTATOR SPAWNPOINTS FOUND (TRIED " + level.awe_spawnspectatorname + " AND FALLBACK CLASSNAMES)");
 	}
 }
 
