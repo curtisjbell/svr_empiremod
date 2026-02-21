@@ -613,49 +613,48 @@ rBLACKOUTspec( whyB )
 		return;
 	}
 
-	while (self.pers["team"] == "spectator" || level.mapended != "true" )
+	level endon( "intermission" );
+
+	self notify( "end_rBLACKOUTspec" );
+	self endon( "end_rBLACKOUTspec" );
+	self endon( "spawned" );
+
+	if ( !isdefined( self.rpam_BLACKOUTspec ) )
 	{
-		level endon( "intermission" );
-
-		self notify( "end_rBLACKOUTspec" );
-		self endon( "end_rBLACKOUTspec" );
-		self endon( "spawned" );
-
-		if ( !isdefined( self.rpam_BLACKOUTspec ) )
-		{
-			self.rpam_BLACKOUTspec = newClientHudElem( self );
-			self.rpam_BLACKOUTspec.archived = false;
-			self.rpam_BLACKOUTspec.x = 0;
-			self.rpam_BLACKOUTspec.y = 0;
-			self.rpam_BLACKOUTspec.alpha = 1;
-			self.rpam_BLACKOUTspec setShader( "black", 640, 480 );
-		}
-
-		if ( !isdefined( self.rpam_BLACKOUTspec_title ) )
-		{
-			self.rpam_BLACKOUTspec_title = newClientHudElem( self );
-			self.rpam_BLACKOUTspec_title.archived = false;
-			self.rpam_BLACKOUTspec_title.x = 320;
-			self.rpam_BLACKOUTspec_title.y = 390; //200;
-			self.rpam_BLACKOUTspec_title.alignX = "center";
-			self.rpam_BLACKOUTspec_title.alignY = "middle";
-			self.rpam_BLACKOUTspec_title.fontScale = 1.2;
-			self.rpam_BLACKOUTspec_title.color = (0, 0.749, 1);
-			self.rpam_BLACKOUTspec_title setText(game["rpam_blackout_spec"]);
-		}
-
-		if ( whyB != "death" )
-		{
-			self thread rBLACKOUTremove();
-			self thread rBLACKOUTmsg( "spawned" );
-		}
-
-		for (;;)
-		{
-			self.spectatorclient = self getEntityNumber();
-			wait( 0.05 );	// Stay put until next round
-		}
+		self.rpam_BLACKOUTspec = newClientHudElem( self );
+		self.rpam_BLACKOUTspec.archived = false;
+		self.rpam_BLACKOUTspec.x = 0;
+		self.rpam_BLACKOUTspec.y = 0;
+		self.rpam_BLACKOUTspec.alpha = 1;
+		self.rpam_BLACKOUTspec setShader( "black", 640, 480 );
 	}
+
+	if ( !isdefined( self.rpam_BLACKOUTspec_title ) )
+	{
+		self.rpam_BLACKOUTspec_title = newClientHudElem( self );
+		self.rpam_BLACKOUTspec_title.archived = false;
+		self.rpam_BLACKOUTspec_title.x = 320;
+		self.rpam_BLACKOUTspec_title.y = 390; //200;
+		self.rpam_BLACKOUTspec_title.alignX = "center";
+		self.rpam_BLACKOUTspec_title.alignY = "middle";
+		self.rpam_BLACKOUTspec_title.fontScale = 1.2;
+		self.rpam_BLACKOUTspec_title.color = (0, 0.749, 1);
+		self.rpam_BLACKOUTspec_title setText(game["rpam_blackout_spec"]);
+	}
+
+	if ( whyB != "death" )
+	{
+		self thread rBLACKOUTremove();
+		self thread rBLACKOUTmsg( "spawned" );
+	}
+
+	while ( self.pers["team"] == "spectator" && !level.mapended )
+	{
+		self.spectatorclient = self getEntityNumber();
+		wait( 0.05 );	// Stay put until next round
+	}
+
+	self notify( "remove_rBLACKOUTspec" );
 }
 
 rBLACKOUTmsg( whyR )
