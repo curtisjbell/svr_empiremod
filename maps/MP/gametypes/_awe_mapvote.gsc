@@ -707,10 +707,28 @@ getActivePlayerCount()
 	count = 0;
 	
 	players = getentarray("player", "classname"); 
-    for(i=0;i<players.size;i++) {
-		if(players[i].pers["team"] == "spectator"){
+	for(i = 0; i < players.size; i++)
+	{
+		if(!isdefined(players[i]))
+		{
 			continue;
 		}
+
+		if(!isdefined(players[i].pers) || !isdefined(players[i].pers["team"]) || players[i].pers["team"] == "")
+		{
+			continue;
+		}
+
+		if(isdefined(players[i].sessionstate) && players[i].sessionstate != "playing")
+		{
+			continue;
+		}
+
+		if(players[i].pers["team"] == "spectator")
+		{
+			continue;
+		}
+
 		count++;
 	}
 	
