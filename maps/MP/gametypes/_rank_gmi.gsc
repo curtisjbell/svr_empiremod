@@ -29,11 +29,11 @@
 //	awe_br2_smokegrenades - 1
 //	awe_br3_smokegrenades - 2
 //	awe_br4_smokegrenades - 2
-//	awe_br0_satchels - 0
-//	awe_br1_satchels - 0
-//	awe_br2_satchels - 0
-//	awe_br3_satchels - 0
-//	awe_br4_satchels - 1
+//	awe_br0_satchels or awe_br0_satchelcharge - 0
+//	awe_br1_satchels or awe_br1_satchelcharge - 0
+//	awe_br2_satchels or awe_br2_satchelcharge - 0
+//	awe_br3_satchels or awe_br3_satchelcharge - 0
+//	awe_br4_satchels or awe_br4_satchelcharge - 1
 //	scr_rank_ppr - 5
 //	scr_artillery_first_interval - 45
 //	scr_artillery_interval - 120
@@ -118,11 +118,11 @@ InitializeBattleRank()
 	game["br_ammo_smoke_grenades_3"] = getConfigInt("awe_br3_smokegrenades", 2);
 	game["br_ammo_smoke_grenades_4"] = getConfigInt("awe_br4_smokegrenades", 2);
 	
-	game["br_ammo_satchel_charge_0"] = getConfigInt("awe_br0_satchels", 0);
-	game["br_ammo_satchel_charge_1"] = getConfigInt("awe_br1_satchels", 0);
-	game["br_ammo_satchel_charge_2"] = getConfigInt("awe_br2_satchels", 0);
-	game["br_ammo_satchel_charge_3"] = getConfigInt("awe_br3_satchels", 0);
-	game["br_ammo_satchel_charge_4"] = getConfigInt("awe_br4_satchels", 1);
+	game["br_ammo_satchel_charge_0"] = getConfigIntEither("awe_br0_satchels", "awe_br0_satchelcharge", 0);
+	game["br_ammo_satchel_charge_1"] = getConfigIntEither("awe_br1_satchels", "awe_br1_satchelcharge", 0);
+	game["br_ammo_satchel_charge_2"] = getConfigIntEither("awe_br2_satchels", "awe_br2_satchelcharge", 0);
+	game["br_ammo_satchel_charge_3"] = getConfigIntEither("awe_br3_satchels", "awe_br3_satchelcharge", 0);
+	game["br_ammo_satchel_charge_4"] = getConfigIntEither("awe_br4_satchels", "awe_br4_satchelcharge", 1);
 	
 	if( GetCvar("scr_artillery_first_interval") == "" )
 		setCvar("scr_artillery_first_interval", "45"); 
@@ -149,6 +149,22 @@ getConfigInt(name, fallback)
                return fallback;
 
        return getCvarInt(name);
+}
+
+// -----------------------------------------------------------------------------
+//      getConfigIntEither
+//
+//              Returns primary cvar value, then secondary alias value, else fallback
+// -----------------------------------------------------------------------------
+getConfigIntEither(primaryName, secondaryName, fallback)
+{
+	if ( getCvar(primaryName) != "" )
+		return getCvarInt(primaryName);
+
+	if ( getCvar(secondaryName) != "" )
+		return getCvarInt(secondaryName);
+
+	return fallback;
 }
 
 // ----------------------------------------------------------------------------------
