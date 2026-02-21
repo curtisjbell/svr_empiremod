@@ -623,11 +623,6 @@ initGlobalCvars()
 	setCvar("ui_AutoAdmin_AFK_NotifyPlayer", level.ui_AutoAdmin_AFK_NotifyPlayer);
 	makeCvarServerInfo("ui_AutoAdmin_AFK_NotifyPlayer", "^1~^3empire ^2| ^1automod: ^3You have been detected as ^1AFK^3. You will be forced into spectator mode in ");
 
-	level.ui_AutoAdmin_AFK_NotifyPublic = getCvar("ui_AutoAdmin_AFK_NotifyPublic");
-	if(level.ui_AutoAdmin_AFK_NotifyPublic == "")
-		level.ui_AutoAdmin_AFK_NotifyPublic = " ^3has been detected as AFK and will be forced into spectator mode in ";
-	setCvar("ui_AutoAdmin_AFK_NotifyPublic", level.ui_AutoAdmin_AFK_NotifyPublic);
-	makeCvarServerInfo("ui_AutoAdmin_AFK_NotifyPublic", " has been detected as AFK and will be forced into spectator mode in ");
 
 	level.ui_AutoAdmin_AFK_NotifyActionTaken = getCvar("ui_AutoAdmin_AFK_NotifyActionTaken");
 	if(level.ui_AutoAdmin_AFK_NotifyActionTaken == "")
@@ -998,10 +993,6 @@ updateGlobalCvars()
 			setCvar("ui_AutoAdmin_AFK_NotifyPlayer", level.ui_AutoAdmin_AFK_NotifyPlayer);
 		}
 
-		if(level.ui_AutoAdmin_AFK_NotifyPublic != getCvar("ui_AutoAdmin_AFK_NotifyPublic")) {
-			level.ui_AutoAdmin_AFK_NotifyPublic = getCvar("ui_AutoAdmin_AFK_NotifyPublic");
-			setCvar("ui_AutoAdmin_AFK_NotifyPublic", level.ui_AutoAdmin_AFK_NotifyPublic);
-		}
 
 		if(level.ui_AutoAdmin_AFK_NotifyActionTaken != getCvar("ui_AutoAdmin_AFK_NotifyActionTaken")) {
 			level.ui_AutoAdmin_AFK_NotifyActionTaken = getCvar("ui_AutoAdmin_AFK_NotifyActionTaken");
