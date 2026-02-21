@@ -102,7 +102,7 @@ CYBERGAMERstartmatch()
 		self iprintlnbold("^7 ");
 		wait 0.1;
 		self iprintlnbold("^3ANY ^7concerns, so please contact an");
-		self iprintlnbold("^5CoDBase^7 admin on Discord.");
+		self iprintlnbold("^5CoDBase^7 admin immediately.");
 		self iprintlnbold("^3ISSUES ^1after ^7the match are ^1non^7-^1disputable^7!");
 		// FAST MESSAGES
 		wait 3.5;
@@ -171,7 +171,7 @@ CYBERGAMERmatchhalf()
 		self iprintlnbold("^7 ");
 		wait 0.1;
 		self iprintlnbold("^3ANY ^7concerns, so please contact an");
-		self iprintlnbold("^5CoDBase^7 admin on Discord.");
+		self iprintlnbold("^5CoDBase^7 admin immediately.");
 		// FAST MESSAGES
 		wait 3.5;
 		self iprintlnbold("^7 ");
