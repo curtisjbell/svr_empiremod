@@ -165,6 +165,8 @@ RunMapVote()
 	if(!isdefined(maps))
 	{
 		wait 0.05;
+		// Keep end-of-round state consistent with normal vote completion.
+		level.mapended = true;
 		level notify("VotingComplete");
 		return;
 	}
