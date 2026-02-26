@@ -601,37 +601,11 @@ getRandomMapRotation()
 			break;
 	}
 
-        // Remove recently played maps
+        // Remove recently played maps using map-only history blocking.
+        // If a map appears in the last awe_map_history_size entries,
+        // it is not eligible regardless of gametype.
         history = getRotationHistory();
-        if(isdefined(history))
-        {
-                for(h=0; h<history.size; h++)
-                {
-                        for(i=0; i<x.maps.size; i++)
-                        {
-                                if(x.maps[i]["map"] == history[h]["map"] && x.maps[i]["gametype"] == history[h]["gametype"])
-                                {
-                                        x.maps = removeRotationIndex(x.maps, i);
-                                        i--;
-                                }
-                        }
-                }
-
-                // Never allow the same map back-to-back,
-                // even when the gametype changes.
-                if(history.size > 0)
-                {
-                        lastmap = history[history.size-1]["map"];
-                        for(i=0; i<x.maps.size; i++)
-                        {
-                                if(x.maps[i]["map"] == lastmap)
-                                {
-                                        x.maps = removeRotationIndex(x.maps, i);
-                                        i--;
-                                }
-                        }
-                }
-        }
+        x.maps = filterMapsByHistory(x.maps, history);
 	count = getActivePlayerCount();
 
 	if(x.maps.size < 5)
@@ -646,6 +620,10 @@ getRandomMapRotation()
 
 	if(x.maps.size < 5)
 		x.maps = addFallbackRotations(x.maps, count, history, false);
+
+	// Enforce history blocking as a final gate so recently played maps
+	// can never be offered, even after fallback expansion.
+	x.maps = filterMapsByHistory(x.maps, history);
 
         // Shuffle the array for better randomization
         x.maps = shuffleArray(x.maps);
@@ -682,7 +660,7 @@ mergeRotationCandidates(basemaps, addmaps, history, applyhistory)
 {
 	for(j=0; j<addmaps.size && basemaps.size < 5; j++)
 	{
-		if(applyhistory && isMapInHistory(addmaps[j], history))
+		if(applyhistory && isMapBlockedByHistory(addmaps[j], history))
 			continue;
 
 		exists = false;
@@ -702,18 +680,36 @@ mergeRotationCandidates(basemaps, addmaps, history, applyhistory)
 	return basemaps;
 }
 
-isMapInHistory(mapentry, history)
+isMapBlockedByHistory(mapentry, history)
 {
 	if(!isdefined(history) || history.size <= 0)
 		return false;
 
 	for(h=0; h<history.size; h++)
 	{
-		if(mapentry["map"] == history[h]["map"] && mapentry["gametype"] == history[h]["gametype"])
+		if(mapentry["map"] == history[h]["map"])
 			return true;
 	}
 
 	return false;
+}
+
+filterMapsByHistory(maps, history)
+{
+	if(!isdefined(maps) || maps.size <= 0)
+		return maps;
+
+	if(!isdefined(history) || history.size <= 0)
+		return maps;
+
+	filtered = [];
+	for(i=0; i<maps.size; i++)
+	{
+		if(!isMapBlockedByHistory(maps[i], history))
+			filtered[filtered.size] = maps[i];
+	}
+
+	return filtered;
 }
 
 
