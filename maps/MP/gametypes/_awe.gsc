@@ -2075,6 +2075,12 @@ updateGametypeCvars(init)
         level.awe_allowedgametypes = cvardef("awe_allowed_gametypes", "", "", "", "string");
         level.awe_gametypehistory = cvardef("awe_gametype_history", "", "", "", "string");
         level.awe_gametypehistorysize = cvardef("awe_gametype_history_size", 5, 1, 20, "int");
+        level.awe_mapcandidatepoolsize = cvardef("awe_map_candidate_pool_size", 10, 5, 12, "int");
+        level.awe_mapcooldownwindow = cvardef("awe_map_cooldown_window", 8, 1, 40, "int");
+        level.awe_mapcooldownpenalty = cvardef("awe_map_cooldown_penalty", 20, 1, 200, "int");
+        level.awe_mapfrequencywindow = cvardef("awe_map_frequency_window", 16, 5, 60, "int");
+        level.awe_mapfrequencypenalty = cvardef("awe_map_frequency_penalty", 14, 1, 200, "int");
+        level.awe_gametypepenaltyscale = cvardef("awe_gametype_penalty_scale", 100, 25, 300, "int");
 
         // Show grenade cooking
         level.awe_showcooking = cvardef("awe_show_cooking", 1, 0, 1, "int");
