@@ -152,6 +152,8 @@ RunMapVote()
 {
 	currentgt = getcvar("g_gametype");
 	currentmap = getcvar("mapname");
+	history = getRotationHistory();
+	gthistory = getGametypeHistory();
  
        x = getRandomMapRotation();
 	if(isdefined(x))
@@ -160,6 +162,9 @@ RunMapVote()
 			maps = x.maps;
 		x delete();
 	}
+
+	if(isdefined(maps))
+		maps = buildCandidatePool(maps, currentmap, currentgt, history, gthistory, 5);
 
 	// Any maps?
 	if(!isdefined(maps))
@@ -240,7 +245,9 @@ getBestCandidateIndex(currentmap, currentgt)
 			score = 100;
 
 		score -= getMapHistoryPenalty(level.mapcandidate[i]["map"], level.mapcandidate[i]["gametype"], history);
-		score -= getGametypeHistoryPenalty(level.mapcandidate[i]["gametype"], gthistory);
+		score -= getMapCooldownPenalty(level.mapcandidate[i]["map"], history);
+		score -= getMapFrequencyPenalty(level.mapcandidate[i]["map"], history);
+		score -= getScaledGametypePenalty(level.mapcandidate[i]["gametype"], gthistory);
 		score += randomInt(7); // Keep selection non-deterministic when scores tie
 
 		if(score > bestscore)
@@ -251,6 +258,58 @@ getBestCandidateIndex(currentmap, currentgt)
 	}
 
 	return bestindex;
+}
+
+buildCandidatePool(maps, currentmap, currentgt, history, gthistory, targetsize)
+{
+	if(!isdefined(maps) || maps.size <= targetsize)
+		return maps;
+
+	for(i=0; i<maps.size; i++)
+	{
+		maps[i]["score"] = getCandidateScore(maps[i], currentmap, currentgt, history, gthistory);
+	}
+
+	for(i=0; i<maps.size-1; i++)
+	{
+		best = i;
+		for(j=i+1; j<maps.size; j++)
+		{
+			if(maps[j]["score"] > maps[best]["score"])
+				best = j;
+		}
+
+		if(best != i)
+		{
+			temp = maps[i];
+			maps[i] = maps[best];
+			maps[best] = temp;
+		}
+	}
+
+	selected = [];
+	for(i=0; i<maps.size && selected.size < targetsize; i++)
+	{
+		selected[selected.size] = maps[i];
+	}
+
+	return shuffleArray(selected);
+}
+
+getCandidateScore(entry, currentmap, currentgt, history, gthistory)
+{
+	if(entry["map"] == currentmap && entry["gametype"] == currentgt)
+		score = -500;
+	else
+		score = 100;
+
+	score -= getMapHistoryPenalty(entry["map"], entry["gametype"], history);
+	score -= getMapCooldownPenalty(entry["map"], history);
+	score -= getMapFrequencyPenalty(entry["map"], history);
+	score -= getScaledGametypePenalty(entry["gametype"], gthistory);
+	score += randomInt(5);
+
+	return score;
 }
 
 getMapHistoryPenalty(map, gametype, history)
@@ -285,6 +344,78 @@ getGametypeHistoryPenalty(gametype, gthistory)
 	}
 
 	return 0;
+}
+
+getScaledGametypePenalty(gametype, gthistory)
+{
+	scale = getcvarint("awe_gametype_penalty_scale");
+	if(!isdefined(scale) || scale <= 0)
+		scale = 100;
+
+	penalty = getGametypeHistoryPenalty(gametype, gthistory);
+	return (penalty * scale) / 100;
+}
+
+getMapCooldownPenalty(map, history)
+{
+	window = getcvarint("awe_map_cooldown_window");
+	if(!isdefined(window) || window <= 0)
+		window = 8;
+
+	base = getcvarint("awe_map_cooldown_penalty");
+	if(!isdefined(base) || base <= 0)
+		base = 20;
+
+	if(!isdefined(history) || history.size <= 0)
+		return 0;
+
+	penalty = 0;
+	for(i=history.size-1; i>=0; i--)
+	{
+		recency = history.size - i;
+		if(recency > window)
+			break;
+
+		if(history[i]["map"] == map)
+		{
+			step = window - recency + 1;
+			penalty += (base * step) / window;
+		}
+	}
+
+	return penalty;
+}
+
+getMapFrequencyPenalty(map, history)
+{
+	window = getcvarint("awe_map_frequency_window");
+	if(!isdefined(window) || window <= 0)
+		window = 16;
+
+	scale = getcvarint("awe_map_frequency_penalty");
+	if(!isdefined(scale) || scale <= 0)
+		scale = 14;
+
+	if(!isdefined(history) || history.size <= 0)
+		return 0;
+
+	start = history.size - window;
+	if(start < 0)
+		start = 0;
+
+	counts = 0;
+	entries = 0;
+	for(i=start; i<history.size; i++)
+	{
+		entries++;
+		if(history[i]["map"] == map)
+			counts++;
+	}
+
+	if(entries <= 0)
+		return 0;
+
+	return (counts * scale * 10) / entries;
 }
 
 DeleteHud()
@@ -634,14 +765,16 @@ getRandomMapRotation()
 
 addFallbackRotations(basemaps, count, history, applyhistory)
 {
-	for(offset = 1; offset < 32 && basemaps.size < 5; offset++)
+	targetsize = getCandidatePoolSize();
+
+	for(offset = 1; offset < 32 && basemaps.size < targetsize; offset++)
 	{
 		upper = count + offset;
 		rot = strip(getcvar("sv_maprotation" + upper));
 		if(rot != "")
 			basemaps = mergeRotationCandidates(basemaps, parseRotationString(rot), history, applyhistory);
 
-		if(basemaps.size >= 5)
+		if(basemaps.size >= targetsize)
 			break;
 
 		below = count - offset;
@@ -658,7 +791,8 @@ addFallbackRotations(basemaps, count, history, applyhistory)
 
 mergeRotationCandidates(basemaps, addmaps, history, applyhistory)
 {
-	for(j=0; j<addmaps.size && basemaps.size < 5; j++)
+	targetsize = getCandidatePoolSize();
+	for(j=0; j<addmaps.size && basemaps.size < targetsize; j++)
 	{
 		if(applyhistory && isMapBlockedByHistory(addmaps[j], history))
 			continue;
@@ -678,6 +812,20 @@ mergeRotationCandidates(basemaps, addmaps, history, applyhistory)
 	}
 
 	return basemaps;
+}
+
+getCandidatePoolSize()
+{
+	size = getcvarint("awe_map_candidate_pool_size");
+	if(!isdefined(size) || size <= 0)
+		size = 10;
+
+	if(size < 5)
+		size = 5;
+	if(size > 12)
+		size = 12;
+
+	return size;
 }
 
 isMapBlockedByHistory(mapentry, history)
@@ -965,17 +1113,8 @@ UpdateMapHistory()
         cur["map"] = getcvar("mapname");
         cur["gametype"] = getcvar("g_gametype");
 
-        for(i=0;i<history.size;i++)
-        {
-                if(history[i]["map"] == cur["map"] && history[i]["gametype"] == cur["gametype"])
-                {
-                        history = removeRotationIndex(history, i);
-                        break;
-                }
-        }
-
-        while(history.size >= size)
-                history = removeRotationIndex(history, 0);
+	while(history.size >= size)
+		history = removeRotationIndex(history, 0);
 
         history[history.size] = cur;
 
@@ -992,17 +1131,8 @@ UpdateGametypeHistory()
 
         cur = getcvar("g_gametype");
 
-        for(i=0;i<history.size;i++)
-        {
-                if(history[i] == cur)
-                {
-                        history = removeRotationIndex(history, i);
-                        break;
-                }
-        }
-
-        while(history.size >= size)
-                history = removeRotationIndex(history, 0);
+	while(history.size >= size)
+		history = removeRotationIndex(history, 0);
 
         history[history.size] = cur;
 
