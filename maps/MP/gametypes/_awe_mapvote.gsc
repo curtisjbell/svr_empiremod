@@ -156,7 +156,7 @@ RunMapVote()
 	gthistory = getGametypeHistory();
 	gtweights = ParseMapVoteGametypeWeights();
  
-       x = getRandomMapRotation();
+	x = getRandomMapRotation();
 	if(isdefined(x))
 	{
 		if(isdefined(x.maps))
