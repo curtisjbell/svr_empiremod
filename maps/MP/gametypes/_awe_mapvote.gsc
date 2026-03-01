@@ -765,14 +765,14 @@ parseRotationPoolString(rot)
 			{
 				if(tokens[i] == "minsize" && isdefined(tokens[i+1]))
 				{
-					maps[mapindex]["minsize"] = int(tokens[i+1]);
+					maps[mapindex]["minsize"] = (int)tokens[i+1];
 					i += 2;
 					continue;
 				}
 
 				if(tokens[i] == "maxsize" && isdefined(tokens[i+1]))
 				{
-					maps[mapindex]["maxsize"] = int(tokens[i+1]);
+					maps[mapindex]["maxsize"] = (int)tokens[i+1];
 					i += 2;
 					continue;
 				}
@@ -909,7 +909,7 @@ getPoolInt(entry, key, fallback)
 	if(!isdefined(entry[key]))
 		return fallback;
 
-	return int(entry[key]);
+	return (int)entry[key];
 }
 
 explode(s,delimiter)
