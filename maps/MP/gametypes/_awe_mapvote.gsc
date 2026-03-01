@@ -335,7 +335,7 @@ ParseMapVoteGametypeWeights()
 	parsed["sum"] = 0;
 	parsed["count"] = 0;
 
-	weightsraw = cvardef("awe_random_gametype_weights", "", "", "", "string");
+	weightsraw = maps\mp\gametypes\_awe::cvardef("awe_random_gametype_weights", "", "", "", "string");
 	weightsraw = strip(weightsraw);
 	if(weightsraw == "")
 		return parsed;
