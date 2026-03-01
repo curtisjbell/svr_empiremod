@@ -602,7 +602,7 @@ SetMapWinner(winner)
 getRandomMapRotation()
 {
 	baseRotation = strip(getcvar("sv_maprotation"));
-	poolRotation = strip(getcvar("sv_maprotationpool"));
+	poolRotation = getMapRotationPool();
 
 	if(baseRotation == "" && poolRotation == "")
 		return undefined;
@@ -634,6 +634,42 @@ getRandomMapRotation()
 	setcvar("awe_prev_player_count", "" + count);
 
 	return x;
+}
+
+getMapRotationPool()
+{
+	poolRotation = strip(getcvar("sv_maprotationpool"));
+	index = 0;
+	emptyStreak = 0;
+
+	while(emptyStreak < 2)
+	{
+		namedRotation = strip(getcvar("svmaprotation" + index));
+		legacyRotation = strip(getcvar("sv_maprotation" + index));
+
+		found = false;
+
+		if(namedRotation != "")
+		{
+			poolRotation = strip(poolRotation + " " + namedRotation);
+			found = true;
+		}
+
+		if(legacyRotation != "")
+		{
+			poolRotation = strip(poolRotation + " " + legacyRotation);
+			found = true;
+		}
+
+		if(found)
+			emptyStreak = 0;
+		else
+			emptyStreak++;
+
+		index++;
+	}
+
+	return poolRotation;
 }
 
 rankPoolByPopulation(poolmaps, count, trend, targetsize)
