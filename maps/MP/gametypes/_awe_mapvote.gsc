@@ -192,10 +192,6 @@ RunMapVote()
 	i = 0;
 	for(j=0;j<5;j++)
 	{
-		// Skip current map and gametype combination
-		if(maps[i]["map"] == currentmap && maps[i]["gametype"] == currentgt)
-			i++;
-
 		// Any maps left?
 		if(!isdefined(maps[i]))
 			break;
@@ -288,6 +284,14 @@ buildCandidatePool(maps, currentmap, currentgt, history, gthistory, targetsize)
 	}
 
 	selected = [];
+	for(i=0; i<maps.size && selected.size < targetsize; i++)
+	{
+		if(maps[i]["map"] == currentmap && maps[i]["gametype"] == currentgt)
+			continue;
+
+		selected[selected.size] = maps[i];
+	}
+
 	for(i=0; i<maps.size && selected.size < targetsize; i++)
 	{
 		selected[selected.size] = maps[i];
