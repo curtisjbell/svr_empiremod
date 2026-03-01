@@ -615,6 +615,7 @@ getRandomMapRotation()
 	poolmaps = mergeRotationCandidates([], poolmaps, history, false);
 	basemaps = parseRotationString(baseRotation);
 	poolmaps = mergeRotationCandidates(poolmaps, basemaps, history, false);
+	poolmaps = filterMapsByGametypePlayerCount(poolmaps, count);
 
 	// Never offer recently played maps, regardless of gametype.
 	poolmaps = filterMapsByHistory(poolmaps, history);
@@ -867,6 +868,104 @@ filterMapsByHistory(maps, history)
 	}
 
 	return filtered;
+}
+
+filterMapsByGametypePlayerCount(maps, count)
+{
+	rules = getGametypePlayerCountRules();
+
+	if(!isdefined(rules) || rules.size <= 0)
+		return maps;
+
+	filtered = [];
+	for(i=0; i<maps.size; i++)
+	{
+		rule = getGametypePlayerCountRule(maps[i]["gametype"], rules);
+
+		if(!isdefined(rule))
+		{
+			filtered[filtered.size] = maps[i];
+			continue;
+		}
+
+		if(count >= rule["minsize"] && count <= rule["maxsize"])
+			filtered[filtered.size] = maps[i];
+	}
+
+	if(filtered.size <= 0)
+		return maps;
+
+	return filtered;
+}
+
+getGametypePlayerCountRules()
+{
+	rulestr = strip(getcvar("awe_gametype_playercount_limits"));
+	if(rulestr == "")
+		return [];
+
+	tokens = explode(rulestr, " ");
+	rules = [];
+	ruleindex = -1;
+
+	for(i=0; i<tokens.size; i++)
+	{
+		if(tokens[i] == "gametype" && isdefined(tokens[i+1]))
+		{
+			rules[rules.size]["gametype"] = tokens[i+1];
+			rules[rules.size-1]["minsize"] = 0;
+			rules[rules.size-1]["maxsize"] = 64;
+			ruleindex = rules.size - 1;
+			i++;
+			continue;
+		}
+
+		if(ruleindex < 0)
+			continue;
+
+		if(tokens[i] == "minsize" && isdefined(tokens[i+1]))
+		{
+			rules[ruleindex]["minsize"] = (int)tokens[i+1];
+			i++;
+			continue;
+		}
+
+		if(tokens[i] == "maxsize" && isdefined(tokens[i+1]))
+		{
+			rules[ruleindex]["maxsize"] = (int)tokens[i+1];
+			i++;
+			continue;
+		}
+	}
+
+	for(i=0; i<rules.size; i++)
+	{
+		rules[i]["minsize"] = clampInt(rules[i]["minsize"], 0, 64);
+		rules[i]["maxsize"] = clampInt(rules[i]["maxsize"], 0, 64);
+
+		if(rules[i]["maxsize"] < rules[i]["minsize"])
+		{
+			tmp = rules[i]["minsize"];
+			rules[i]["minsize"] = rules[i]["maxsize"];
+			rules[i]["maxsize"] = tmp;
+		}
+	}
+
+	return rules;
+}
+
+getGametypePlayerCountRule(gametype, rules)
+{
+	if(!isdefined(gametype) || !isdefined(rules) || rules.size <= 0)
+		return undefined;
+
+	for(i=0; i<rules.size; i++)
+	{
+		if(rules[i]["gametype"] == gametype)
+			return rules[i];
+	}
+
+	return undefined;
 }
 
 

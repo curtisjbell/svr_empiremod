@@ -2075,6 +2075,7 @@ updateGametypeCvars(init)
         level.awe_allowedgametypes = cvardef("awe_allowed_gametypes", "", "", "", "string");
         level.awe_gametypehistory = cvardef("awe_gametype_history", "", "", "", "string");
         level.awe_gametypehistorysize = cvardef("awe_gametype_history_size", 5, 1, 20, "int");
+        level.awe_gametypeplayercountlimits = cvardef("awe_gametype_playercount_limits", "", "", "", "string");
         level.awe_mapcandidatepoolsize = cvardef("awe_map_candidate_pool_size", 10, 5, 12, "int");
         level.awe_mapcooldownwindow = cvardef("awe_map_cooldown_window", 8, 1, 40, "int");
         level.awe_mapcooldownpenalty = cvardef("awe_map_cooldown_penalty", 20, 1, 200, "int");
