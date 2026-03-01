@@ -632,7 +632,7 @@ PlayerVote()
 			self playLocalSound("hq_score");
 		}					
 		while(self attackButtonPressed() == true)
-			wait.01;
+			wait .01;
 
 		self.sessionstate = "spectator";
 		self.spectatorclient = -1;
