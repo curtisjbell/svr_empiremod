@@ -2436,6 +2436,10 @@ updateGametypeCvars(init)
 		// Use random maprotation?
 		level.awe_randommaprotation = cvardef("awe_random_maprotation", 0, 0, 2, "int");	
 
+		// Optional gametype weighting for random map rotation.
+		// Format example: "ctf:60,dm:20,tdm:10,hq:5,bel:5"
+		level.awe_randomgametypeweights = cvardef("awe_random_gametype_weights", "", "", "", "string");
+
 		// Rotate map if server is empty?
 		level.awe_rotateifempty = cvardef("awe_rotate_if_empty", 30, 0, 1440, "int");
 
@@ -11905,20 +11909,155 @@ GetMapRotation(random, current, number)
 
 	if(random)
 	{
-		// Shuffle the array 20 times
-		for(k = 0; k < 20; k++)
+		tuning = ParseGametypeRotationWeights();
+
+		if(!isdefined(tuning) || !isdefined(tuning["enabled"]) || !tuning["enabled"])
 		{
-			for(i = 0; i < x.maps.size; i++)
+			// Shuffle the array 20 times
+			for(k = 0; k < 20; k++)
 			{
-				j = randomInt(x.maps.size);
-				element = x.maps[i];
-				x.maps[i] = x.maps[j];
-				x.maps[j] = element;
+				for(i = 0; i < x.maps.size; i++)
+				{
+					j = randomInt(x.maps.size);
+					element = x.maps[i];
+					x.maps[i] = x.maps[j];
+					x.maps[j] = element;
+				}
+			}
+		}
+		else
+		{
+			remainingmaps = [];
+			for(i = 0; i < x.maps.size; i++)
+				remainingmaps[remainingmaps.size] = x.maps[i];
+
+			x.maps = [];
+			while(remainingmaps.size)
+			{
+				availablegametypes = [];
+				for(i = 0; i < remainingmaps.size; i++)
+				{
+					gt = remainingmaps[i]["gametype"];
+
+					exists = false;
+					for(j = 0; j < availablegametypes.size; j++)
+					{
+						if(availablegametypes[j] == gt)
+						{
+							exists = true;
+							break;
+						}
+					}
+
+					if(!exists)
+						availablegametypes[availablegametypes.size] = gt;
+				}
+
+				totalweight = 0;
+				for(i = 0; i < availablegametypes.size; i++)
+				{
+					gt = availablegametypes[i];
+					weight = 0;
+					if(isdefined(tuning[gt]))
+						weight = tuning[gt];
+
+					if(weight > 0)
+						totalweight += weight;
+				}
+
+				selectedgt = undefined;
+				if(totalweight > 0)
+				{
+					roll = randomInt(totalweight);
+					bucket = 0;
+					for(i = 0; i < availablegametypes.size; i++)
+					{
+						gt = availablegametypes[i];
+						weight = 0;
+						if(isdefined(tuning[gt]))
+							weight = tuning[gt];
+
+						if(weight <= 0)
+							continue;
+
+						bucket += weight;
+						if(roll < bucket)
+						{
+							selectedgt = gt;
+							break;
+						}
+					}
+				}
+
+				// Fallback when no weighted gametype is available in the remaining pool.
+				if(!isdefined(selectedgt))
+					selectedgt = availablegametypes[randomInt(availablegametypes.size)];
+
+				candidates = [];
+				for(i = 0; i < remainingmaps.size; i++)
+				{
+					if(remainingmaps[i]["gametype"] == selectedgt)
+						candidates[candidates.size] = i;
+				}
+
+				if(!candidates.size)
+					mapindex = randomInt(remainingmaps.size);
+				else
+					mapindex = candidates[randomInt(candidates.size)];
+
+				x.maps[x.maps.size] = remainingmaps[mapindex];
+				remainingmaps = removeIndex(remainingmaps, mapindex);
 			}
 		}
 	}
 
 	return x;
+}
+
+ParseGametypeRotationWeights()
+{
+	parsed = [];
+	parsed["enabled"] = false;
+
+	weightsraw = cvardef("awe_random_gametype_weights", "", "", "", "string");
+	weightsraw = strip(weightsraw);
+	if(weightsraw == "")
+		return parsed;
+
+	entries = explode(weightsraw, ",");
+	if(!isdefined(entries) || !entries.size)
+		return parsed;
+
+	validweights = 0;
+	for(i = 0; i < entries.size; i++)
+	{
+		entry = strip(entries[i]);
+		if(entry == "")
+			continue;
+
+		pair = explode(entry, ":");
+		if(!isdefined(pair) || pair.size < 2)
+			pair = explode(entry, "=");
+
+		if(!isdefined(pair) || pair.size < 2)
+			continue;
+
+		gt = strip(pair[0]);
+		if(gt == "" || !isGametype(gt))
+			continue;
+
+		weight = (int)strip(pair[1]);
+		if(weight <= 0)
+			continue;
+
+		parsed[gt] = weight;
+		validweights += weight;
+	}
+
+	if(validweights > 0)
+		parsed["enabled"] = true;
+
+	return parsed;
 }
 
 isConfig(cfg)
