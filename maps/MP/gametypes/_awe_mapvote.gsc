@@ -154,6 +154,7 @@ RunMapVote()
 	currentmap = getcvar("mapname");
 	history = getRotationHistory();
 	gthistory = getGametypeHistory();
+	gtweights = ParseMapVoteGametypeWeights();
  
        x = getRandomMapRotation();
 	if(isdefined(x))
@@ -164,7 +165,7 @@ RunMapVote()
 	}
 
 	if(isdefined(maps))
-		maps = buildCandidatePool(maps, currentmap, currentgt, history, gthistory, 5);
+		maps = buildCandidatePool(maps, currentmap, currentgt, history, gthistory, gtweights, 5);
 
 	// Any maps?
 	if(!isdefined(maps))
@@ -215,7 +216,7 @@ RunMapVote()
 			break;
 	}
 	
-	newmapnum = getBestCandidateIndex(currentmap, currentgt);
+	newmapnum = getBestCandidateIndex(currentmap, currentgt, gtweights);
 
 	SetMapWinner(newmapnum);
 
@@ -224,10 +225,12 @@ RunMapVote()
 	level.mapended = true;
 }
 
-getBestCandidateIndex(currentmap, currentgt)
+getBestCandidateIndex(currentmap, currentgt, gtweights)
 {
 	history = getRotationHistory();
 	gthistory = getGametypeHistory();
+	if(!isdefined(gtweights))
+		gtweights = ParseMapVoteGametypeWeights();
 
 	bestindex = 0;
 	bestscore = -9999;
@@ -244,6 +247,9 @@ getBestCandidateIndex(currentmap, currentgt)
 		score -= getMapCooldownPenalty(level.mapcandidate[i]["map"], history);
 		score -= getMapFrequencyPenalty(level.mapcandidate[i]["map"], history);
 		score -= getScaledGametypePenalty(level.mapcandidate[i]["gametype"], gthistory);
+		// Apply explicit gametype weighting in the map-vote path so final winner selection
+		// follows the same preference policy used for candidate-pool scoring.
+		score += getGametypeWeightScoreAdjustment(level.mapcandidate[i]["gametype"], gtweights);
 		score += randomInt(7); // Keep selection non-deterministic when scores tie
 
 		if(score > bestscore)
@@ -256,14 +262,17 @@ getBestCandidateIndex(currentmap, currentgt)
 	return bestindex;
 }
 
-buildCandidatePool(maps, currentmap, currentgt, history, gthistory, targetsize)
+buildCandidatePool(maps, currentmap, currentgt, history, gthistory, gtweights, targetsize)
 {
 	if(!isdefined(maps) || maps.size <= targetsize)
 		return maps;
 
+	if(!isdefined(gtweights))
+		gtweights = ParseMapVoteGametypeWeights();
+
 	for(i=0; i<maps.size; i++)
 	{
-		maps[i]["score"] = getCandidateScore(maps[i], currentmap, currentgt, history, gthistory);
+		maps[i]["score"] = getCandidateScore(maps[i], currentmap, currentgt, history, gthistory, gtweights);
 	}
 
 	for(i=0; i<maps.size-1; i++)
@@ -300,7 +309,7 @@ buildCandidatePool(maps, currentmap, currentgt, history, gthistory, targetsize)
 	return shuffleArray(selected);
 }
 
-getCandidateScore(entry, currentmap, currentgt, history, gthistory)
+getCandidateScore(entry, currentmap, currentgt, history, gthistory, gtweights)
 {
 	if(entry["map"] == currentmap && entry["gametype"] == currentgt)
 		score = -500;
@@ -311,9 +320,110 @@ getCandidateScore(entry, currentmap, currentgt, history, gthistory)
 	score -= getMapCooldownPenalty(entry["map"], history);
 	score -= getMapFrequencyPenalty(entry["map"], history);
 	score -= getScaledGametypePenalty(entry["gametype"], gthistory);
+	// Keep map-vote pool ranking aligned with winner scoring by using the same
+	// gametype weight adjustment logic in both paths.
+	score += getGametypeWeightScoreAdjustment(entry["gametype"], gtweights);
 	score += randomInt(5);
 
 	return score;
+}
+
+ParseMapVoteGametypeWeights()
+{
+	parsed = [];
+	parsed["enabled"] = false;
+	parsed["sum"] = 0;
+	parsed["count"] = 0;
+
+	weightsraw = cvardef("awe_random_gametype_weights", "", "", "", "string");
+	weightsraw = strip(weightsraw);
+	if(weightsraw == "")
+		return parsed;
+
+	entries = explode(weightsraw, ",");
+	if(!isdefined(entries) || !entries.size)
+		return parsed;
+
+	for(i = 0; i < entries.size; i++)
+	{
+		entry = strip(entries[i]);
+		if(entry == "")
+			continue;
+
+		pair = explode(entry, ":");
+		if(!isdefined(pair) || pair.size < 2)
+			pair = explode(entry, "=");
+
+		if(!isdefined(pair) || pair.size < 2)
+			continue;
+
+		gt = strip(pair[0]);
+		if(gt == "" || !isGametype(gt))
+			continue;
+
+		weight = (int)strip(pair[1]);
+		if(weight <= 0)
+			continue;
+
+		parsed[gt] = weight;
+		parsed["sum"] += weight;
+		parsed["count"]++;
+	}
+
+	if(parsed["count"] > 0)
+	{
+		parsed["enabled"] = true;
+		parsed["baseline"] = parsed["sum"] / parsed["count"];
+	}
+	else
+		parsed["baseline"] = 0;
+
+	return parsed;
+}
+
+getGametypeWeightScoreAdjustment(gametype, gtweights)
+{
+	if(!isdefined(gtweights) || !isdefined(gtweights["enabled"]) || !gtweights["enabled"])
+		return 0;
+
+	baseline = getcvarint("awe_gametype_weight_baseline");
+	if(!isdefined(baseline) || baseline <= 0)
+		baseline = gtweights["baseline"];
+
+	effective = 0;
+	if(isdefined(gtweights[gametype]))
+		effective = gtweights[gametype];
+	else
+	{
+		strict = getcvarint("awe_gametype_weight_unlisted_strict");
+		if(isdefined(strict) && strict > 0)
+			effective = 0;
+		else
+		{
+			// Unlisted gametypes can either be forced near-zero (strict mode), or
+			// use a low fallback/default weight via awe_gametype_weight_default.
+			effective = getcvarint("awe_gametype_weight_default");
+			if(!isdefined(effective) || effective < 0)
+				effective = 0;
+		}
+	}
+
+	scale = getcvarint("awe_gametype_weight_adjust_scale");
+	if(!isdefined(scale) || scale <= 0)
+		scale = 2;
+
+	adjustment = (effective - baseline) * scale;
+
+	clamp = getcvarint("awe_gametype_weight_adjust_clamp");
+	if(!isdefined(clamp) || clamp <= 0)
+		clamp = 25;
+
+	if(adjustment > clamp)
+		adjustment = clamp;
+	else if(adjustment < -clamp)
+		adjustment = -clamp;
+
+	return adjustment;
 }
 
 getMapHistoryPenalty(map, gametype, history)
