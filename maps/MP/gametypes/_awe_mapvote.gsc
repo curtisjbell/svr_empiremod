@@ -601,198 +601,165 @@ SetMapWinner(winner)
 
 getRandomMapRotation()
 {
-	maprot = "";
-	number = 0;	
-	
-	random = true;
+	baseRotation = strip(getcvar("sv_maprotation"));
+	poolRotation = strip(getcvar("sv_maprotationpool"));
 
-	count = getActivePlayerCount();
-	// Get maprotation if current empty or not the one we want
-	if(maprot == "")
-		maprot = strip(getPlayerBasedMapRotation(count));
-
-	// No map rotation setup!
-	if(maprot == "")
+	if(baseRotation == "" && poolRotation == "")
 		return undefined;
-	
-	// Explode entries into an array
-//	temparr2 = explode(maprot," ");
-	j=0;
-	temparr2[j] = "";	
-	for(i=0;i<maprot.size;i++)
-	{
-		if(maprot[i]==" ")
-		{
-			j++;
-			temparr2[j] = "";
-		}
-		else
-			temparr2[j] += maprot[i];
-	}
 
-	// Remove empty elements (double spaces)
-	temparr = [];
-	for(i=0;i<temparr2.size;i++)
-	{
-		element = strip(temparr2[i]);
-		if(element != "")
-		{
-			temparr[temparr.size] = element;
-		}
-	}
-
-	// Spawn entity to hold the array
 	x = spawn("script_origin",(0,0,0));
-
-	x.maps = [];
-	lastexec = undefined;
-	lastjeep = undefined;
-	lasttank = undefined;
-	lastgt = getcvar("g_gametype");
-	for(i=0;i<temparr.size;)
-	{
-		switch(temparr[i])
-		{
-			case "allow_jeeps":
-				if(isdefined(temparr[i+1]))
-					lastjeep = temparr[i+1];
-				i += 2;
-				break;
-
-			case "allow_tanks":
-				if(isdefined(temparr[i+1]))
-					lasttank = temparr[i+1];
-				i += 2;
-				break;
-	
-			case "exec":
-				if(isdefined(temparr[i+1]))
-					lastexec = temparr[i+1];
-				i += 2;
-				break;
-
-			case "gametype":
-				if(isdefined(temparr[i+1]))
-					lastgt = temparr[i+1];
-				i += 2;
-				break;
-
-			case "map":
-				if(isdefined(temparr[i+1]))
-				{
-					x.maps[x.maps.size]["exec"]		= lastexec;
-					x.maps[x.maps.size-1]["jeep"]	= lastjeep;
-					x.maps[x.maps.size-1]["tank"]	= lasttank;
-					x.maps[x.maps.size-1]["gametype"]	= lastgt;
-					x.maps[x.maps.size-1]["map"]	= temparr[i+1];
-				}
-				// Only need to save this for random rotations
-				if(!random)
-				{
-					lastexec = undefined;
-					lastjeep = undefined;
-					lasttank = undefined;
-					lastgt = undefined;
-				}
-
-				i += 2;
-				break;
-
-			// If code get here, then the maprotation is corrupt so we have to fix it
-			default:
-				iprintlnbold("ERROR IN MAPROTATION!!! Will try to fix.");
-	
-				if(isGametype(temparr[i]))
-					lastgt = temparr[i];
-				else if(isConfig(temparr[i]))
-					lastexec = temparr[i];
-				else
-				{
-					x.maps[x.maps.size]["exec"]		= lastexec;
-					x.maps[x.maps.size-1]["jeep"]	= lastjeep;
-					x.maps[x.maps.size-1]["tank"]	= lasttank;
-					x.maps[x.maps.size-1]["gametype"]	= lastgt;
-					x.maps[x.maps.size-1]["map"]	= temparr[i];
-	
-					// Only need to save this for random rotations
-					if(!random)
-					{
-						lastexec = undefined;
-						lastjeep = undefined;
-						lasttank = undefined;
-						lastgt = undefined;
-					}
-				}
-					
-
-				i += 1;
-				break;
-		}
-		if(number && x.maps.size >= number)
-			break;
-	}
-
-        // Remove recently played maps using map-only history blocking.
-        // If a map appears in the last awe_map_history_size entries,
-        // it is not eligible regardless of gametype.
-        history = getRotationHistory();
-        x.maps = filterMapsByHistory(x.maps, history);
+	history = getRotationHistory();
 	count = getActivePlayerCount();
 
-	if(x.maps.size < 5)
-		x.maps = addFallbackRotations(x.maps, count, history, true);
+	poolmaps = parseRotationPoolString(poolRotation);
+	poolmaps = mergeRotationCandidates([], poolmaps, history, false);
+	basemaps = parseRotationString(baseRotation);
+	poolmaps = mergeRotationCandidates(poolmaps, basemaps, history, false);
 
-	// Hard fallback: if history filtering was too strict, progressively relax it
-	if(x.maps.size <= 0)
+	// Never offer recently played maps, regardless of gametype.
+	poolmaps = filterMapsByHistory(poolmaps, history);
+	if(poolmaps.size <= 0)
 	{
-		x.maps = parseRotationString(maprot);
-		x.maps = shuffleArray(x.maps);
+		x.maps = [];
+		return x;
 	}
 
-	if(x.maps.size < 5)
-		x.maps = addFallbackRotations(x.maps, count, history, false);
+	prevCount = getcvarint("awe_prev_player_count");
+	if(!isdefined(prevCount))
+		prevCount = count;
+	trend = clampInt(count - prevCount, -4, 4);
 
-	// Enforce history blocking as a final gate so recently played maps
-	// can never be offered, even after fallback expansion.
-	x.maps = filterMapsByHistory(x.maps, history);
+	x.maps = rankPoolByPopulation(poolmaps, count, trend, getCandidatePoolSize());
 
-        // Shuffle the array for better randomization
-        x.maps = shuffleArray(x.maps);
+	setcvar("awe_prev_player_count", "" + count);
 
 	return x;
 }
 
-
-addFallbackRotations(basemaps, count, history, applyhistory)
+rankPoolByPopulation(poolmaps, count, trend, targetsize)
 {
-	targetsize = getCandidatePoolSize();
+	ranked = [];
+	local = [];
 
-	for(offset = 1; offset < 32 && basemaps.size < targetsize; offset++)
+	for(i=0; i<poolmaps.size; i++)
+		local[local.size] = poolmaps[i];
+
+	while(local.size > 0 && ranked.size < targetsize)
 	{
-		upper = count + offset;
-		rot = strip(getcvar("sv_maprotation" + upper));
-		if(rot != "")
-			basemaps = mergeRotationCandidates(basemaps, parseRotationString(rot), history, applyhistory);
-
-		if(basemaps.size >= targetsize)
-			break;
-
-		below = count - offset;
-		if(below > 0)
+		winner = 0;
+		winnerscore = -99999;
+		for(i=0; i<local.size; i++)
 		{
-			rot = strip(getcvar("sv_maprotation" + below));
-			if(rot != "")
-				basemaps = mergeRotationCandidates(basemaps, parseRotationString(rot), history, applyhistory);
+			score = getPoolEntryScore(local[i], count, trend);
+			if(score > winnerscore)
+			{
+				winnerscore = score;
+				winner = i;
+			}
+		}
+
+		ranked[ranked.size] = local[winner];
+		local = removeRotationIndex(local, winner);
+	}
+
+	return ranked;
+}
+
+getPoolEntryScore(entry, count, trend)
+{
+	minsize = getPoolInt(entry, "minsize", 0);
+	maxsize = getPoolInt(entry, "maxsize", 64);
+
+	if(maxsize < minsize)
+	{
+		tmp = minsize;
+		minsize = maxsize;
+		maxsize = tmp;
+	}
+
+	target = clampInt(count + trend, 0, 64);
+	distTarget = distanceToRange(target, minsize, maxsize);
+	distCurrent = distanceToRange(count, minsize, maxsize);
+
+	score = 120;
+	score -= distTarget * 14;
+	score -= distCurrent * 8;
+	score += randomInt(35);
+
+	return score;
+}
+
+distanceToRange(value, minvalue, maxvalue)
+{
+	if(value < minvalue)
+		return minvalue - value;
+
+	if(value > maxvalue)
+		return value - maxvalue;
+
+	return 0;
+}
+
+clampInt(value, minvalue, maxvalue)
+{
+	if(value < minvalue)
+		return minvalue;
+	if(value > maxvalue)
+		return maxvalue;
+	return value;
+}
+
+parseRotationPoolString(rot)
+{
+	maps = parseRotationString(rot);
+	tokens = explode(strip(rot), " ");
+
+	if(!isdefined(maps) || maps.size <= 0)
+		return [];
+
+	mapindex = 0;
+	for(i=0; i<tokens.size && mapindex < maps.size; i++)
+	{
+		if(tokens[i] == "map" && isdefined(tokens[i+1]))
+		{
+			maps[mapindex]["minsize"] = 0;
+			maps[mapindex]["maxsize"] = 64;
+			i += 2;
+			while(i < tokens.size)
+			{
+				if(tokens[i] == "minsize" && isdefined(tokens[i+1]))
+				{
+					maps[mapindex]["minsize"] = int(tokens[i+1]);
+					i += 2;
+					continue;
+				}
+
+				if(tokens[i] == "maxsize" && isdefined(tokens[i+1]))
+				{
+					maps[mapindex]["maxsize"] = int(tokens[i+1]);
+					i += 2;
+					continue;
+				}
+
+				if(tokens[i] == "map" || tokens[i] == "gametype" || tokens[i] == "exec" || tokens[i] == "allow_jeeps" || tokens[i] == "allow_tanks")
+				{
+					i--;
+					break;
+				}
+
+				i++;
+			}
+
+			mapindex++;
 		}
 	}
 
-	return basemaps;
+	return maps;
 }
 
 mergeRotationCandidates(basemaps, addmaps, history, applyhistory)
 {
-	targetsize = getCandidatePoolSize();
-	for(j=0; j<addmaps.size && basemaps.size < targetsize; j++)
+	for(j=0; j<addmaps.size; j++)
 	{
 		if(applyhistory && isMapBlockedByHistory(addmaps[j], history))
 			continue;
@@ -800,7 +767,7 @@ mergeRotationCandidates(basemaps, addmaps, history, applyhistory)
 		exists = false;
 		for(k=0; k<basemaps.size; k++)
 		{
-			if(basemaps[k]["map"] == addmaps[j]["map"])
+			if(basemaps[k]["map"] == addmaps[j]["map"] && basemaps[k]["gametype"] == addmaps[j]["gametype"])
 			{
 				exists = true;
 				break;
@@ -808,7 +775,13 @@ mergeRotationCandidates(basemaps, addmaps, history, applyhistory)
 		}
 
 		if(!exists)
+		{
+			if(!isdefined(addmaps[j]["minsize"]))
+				addmaps[j]["minsize"] = 0;
+			if(!isdefined(addmaps[j]["maxsize"]))
+				addmaps[j]["maxsize"] = 64;
 			basemaps[basemaps.size] = addmaps[j];
+		}
 	}
 
 	return basemaps;
@@ -895,23 +868,14 @@ getActivePlayerCount()
 	
 }
 
-getPlayerBasedMapRotation(count)
+getPoolInt(entry, key, fallback)
 {
-	if(!isDefined(count) || count <= 0)
-	{
-		return getcvar("sv_maprotation");
-	}
-	
-	for(i = count; i > 0; i--)
-	{
-		if(getcvar("sv_maprotation" + i) == "")
-		{
-			continue;
-		}
-		return getcvar("sv_maprotation" + i);
-	}
-	return getcvar("sv_maprotation");
+	if(!isdefined(entry[key]))
+		return fallback;
+
+	return int(entry[key]);
 }
+
 explode(s,delimiter)
 {
 	j=0;
