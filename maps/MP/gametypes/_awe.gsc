@@ -11170,6 +11170,20 @@ removeFromArray(array, element)
 	return newarray;
 }
 
+removeArrayIndex(array, index)
+{
+	newarray = [];
+	for(i = 0; i < array.size; i++)
+	{
+		if(i == index)
+			continue;
+
+		newarray[newarray.size] = array[i];
+	}
+
+	return newarray;
+}
+
 limitWeapons(team)
 {
 	if(level.awe_disable) return;
@@ -12006,7 +12020,7 @@ GetMapRotation(random, current, number)
 					mapindex = candidates[randomInt(candidates.size)];
 
 				x.maps[x.maps.size] = remainingmaps[mapindex];
-				remainingmaps = removeIndex(remainingmaps, mapindex);
+				remainingmaps = removeArrayIndex(remainingmaps, mapindex);
 			}
 		}
 	}
