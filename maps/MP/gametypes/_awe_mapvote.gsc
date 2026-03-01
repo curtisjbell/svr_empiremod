@@ -366,8 +366,8 @@ ParseMapVoteGametypeWeights()
 			continue;
 
 		parsed[gt] = weight;
-		parsed["sum"] += weight;
-		parsed["count"]++;
+		parsed["sum"] = parsed["sum"] + weight;
+		parsed["count"] = parsed["count"] + 1;
 	}
 
 	if(parsed["count"] > 0)
@@ -418,10 +418,12 @@ getGametypeWeightScoreAdjustment(gametype, gtweights)
 	if(!isdefined(clamp) || clamp <= 0)
 		clamp = 25;
 
+	minadjust = 0 - clamp;
+
 	if(adjustment > clamp)
 		adjustment = clamp;
-	else if(adjustment < -clamp)
-		adjustment = -clamp;
+	else if(adjustment < minadjust)
+		adjustment = minadjust;
 
 	return adjustment;
 }
