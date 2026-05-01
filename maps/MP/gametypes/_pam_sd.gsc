@@ -151,6 +151,7 @@ PamMain()
 	if(getCvar("sv_messagecenter") == "")
 		setCvar("sv_messagecenter", "0");
 
+	ApplyStartupProfileBoundary();
 	initSharedPAMCvars();
 	initSdPAMRules();
 
@@ -465,6 +466,82 @@ PamMain()
 isSdGametype()
 {
 	return getCvar("g_gametype") == "sd";
+}
+
+ApplyStartupProfileBoundary()
+{
+	isSd = isSdGametype();
+	activeProfile = "awe";
+	oppositeProfile = "pam";
+
+	if (isSd)
+	{
+		activeProfile = "pam";
+		oppositeProfile = "awe";
+	}
+
+	ApplyOwnedProfileCvars(activeProfile);
+	if (getCvar("empire_last_profile") != activeProfile)
+		ResetOwnedProfileCvars(oppositeProfile);
+
+	setCvar("empire_last_profile", activeProfile);
+	LogEffectiveProfile(activeProfile);
+}
+
+ApplyOwnedProfileCvars(profile)
+{
+	// Shared ownership (PAM + AWE)
+	EnsureCvar("pam_mode", "aw_mr12");
+	EnsureCvar("sv_messagecenter", "0");
+	EnsureCvar("scr_friendlyfire", "1");
+
+	if (profile == "pam")
+	{
+		// PAM-only ownership
+		EnsureCvar("sv_pamenable", "1");
+		EnsureCvar("rpam_playersleft", "0");
+		EnsureCvar("rpam_streaming", "0");
+		EnsureCvar("sv_showstats", "1");
+		return;
+	}
+
+	// AWE-only ownership
+	EnsureCvar("sv_pamenable", "0");
+	EnsureCvar("awe_disablehud", "0");
+	EnsureCvar("awe_hudgun", "1");
+	EnsureCvar("awe_hudhealth", "1");
+}
+
+ResetOwnedProfileCvars(profile)
+{
+	if (profile == "pam")
+	{
+		// Reset PAM-only knobs to safe non-SD defaults
+		setCvar("rpam_playersleft", "0");
+		setCvar("rpam_streaming", "0");
+		setCvar("sv_showstats", "0");
+		return;
+	}
+
+	// Reset AWE-only knobs to safe SD/PAM defaults
+	setCvar("awe_disablehud", "0");
+	setCvar("awe_hudgun", "1");
+	setCvar("awe_hudhealth", "1");
+}
+
+LogEffectiveProfile(profile)
+{
+	gt = getCvar("g_gametype");
+	iprintln("^3[profile]^7 map init | gametype=" + gt + " | effective=" + profile);
+	iprintln("^3[profile]^7 shared: pam_mode=" + getCvar("pam_mode") + ", ff=" + getCvar("scr_friendlyfire") + ", msgcenter=" + getCvar("sv_messagecenter"));
+	iprintln("^3[profile]^7 pam: sv_pamenable=" + getCvar("sv_pamenable") + ", rpam_playersleft=" + getCvar("rpam_playersleft") + ", rpam_streaming=" + getCvar("rpam_streaming"));
+	iprintln("^3[profile]^7 awe: awe_disablehud=" + getCvar("awe_disablehud") + ", awe_hudgun=" + getCvar("awe_hudgun") + ", awe_hudhealth=" + getCvar("awe_hudhealth"));
+}
+
+EnsureCvar(name, value)
+{
+	if (getCvar(name) == "")
+		setCvar(name, value);
 }
 
 initSharedPAMCvars()
