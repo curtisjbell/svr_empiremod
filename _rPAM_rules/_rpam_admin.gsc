@@ -770,13 +770,24 @@ toaxis(all)
 		self setWeaponSlotWeapon("primary", "kar98k_mp");
 		self setWeaponSlotWeapon("primaryb", "mosin_nagant_mp");
 		self setClientCvar("g_scriptMainMenu", game["menu_weapon_" + team]);
-		self maps\mp\gametypes\_pam_sd::spawnPlayer();
+
+		if (gt == "sd")
+		{
+			iprintln(level._prefix + "^3[rPAM admin] toaxis respawn branch: sd");
+			self maps\mp\gametypes\_pam_sd::spawnPlayer();
+		}
+		else
+		{
+			iprintln(level._prefix + "^3[rPAM admin] toaxis respawn branch: non-sd");
+			self openMenu(game["menu_weapon_" + team]);
+		}
 	}
 	else if(getCvar("scr_force_bolt_rifles") == "0")
 	{
 		//self _rPAM_rules\_rpam_admin_utils::spawnSpectator();
 		self setClientCvar("ui_weapontab", "1");			// for uo
 		self setClientCvar("g_scriptMainMenu", game["menu_weapon_" + team]);
+		iprintln(level._prefix + "^3[rPAM admin] toaxis respawn branch: non-sd");
 		self openMenu(game["menu_weapon_" + team]);
 	}
 
@@ -852,12 +863,23 @@ toallies(all)
 		self setWeaponSlotWeapon("primary", "mosin_nagant_mp");
 		self setWeaponSlotWeapon("primaryb", "kar98k_mp");
 		self setClientCvar("g_scriptMainMenu", game["menu_weapon_" + team]);
-		self maps\mp\gametypes\_pam_sd::spawnPlayer();
+
+		if (gt == "sd")
+		{
+			iprintln(level._prefix + "^3[rPAM admin] toallies respawn branch: sd");
+			self maps\mp\gametypes\_pam_sd::spawnPlayer();
+		}
+		else
+		{
+			iprintln(level._prefix + "^3[rPAM admin] toallies respawn branch: non-sd");
+			self openMenu(game["menu_weapon_" + team]);
+		}
 	}
 	else if(getCvar("scr_force_bolt_rifles") == "0")
 	{
 		self setClientCvar("ui_weapontab", "1");			// for uo
 		self setClientCvar("g_scriptMainMenu", game["menu_weapon_" + team]);
+		iprintln(level._prefix + "^3[rPAM admin] toallies respawn branch: non-sd");
 		self openMenu(game["menu_weapon_" + team]);
 	}
 
