@@ -114,49 +114,144 @@ Change_Log()
 	exec("_rPAM_rules/pb/PBLog/pb_sv_newlog.cfg");
 }
 
+PB_Init_Thread_Flags()
+{
+	level.pam_pb_stop_threads = false;
+	level.pam_pb_scriptchecker_running = false;
+	level.pam_pb_joinwatcher_running = false;
+	level.pam_pb_randomchecker_running = false;
+	level.pam_pb_lifecycle_running = false;
+}
+
+PB_Stop_Threads()
+{
+	level.pam_pb_stop_threads = true;
+	level.pam_pb_scriptchecker_running = false;
+	level.pam_pb_joinwatcher_running = false;
+	level.pam_pb_randomchecker_running = false;
+	level.pam_pb_lifecycle_running = false;
+}
+
+PB_Should_Stop_Threads()
+{
+	if (isDefined(level.pam_pb_stop_threads) && level.pam_pb_stop_threads)
+		return true;
+
+	return false;
+}
+
+
+PB_Thread_Lifecycle_Manager()
+{
+	if (isDefined(level.pam_pb_lifecycle_running) && level.pam_pb_lifecycle_running)
+		return;
+
+	level.pam_pb_lifecycle_running = true;
+	level waittill_any("game_ended", "map_restart", "disconnect");
+	PB_Stop_Threads();
+	level.pam_pb_lifecycle_running = false;
+}
+
+PB_Set_Player_Entity_Data(player)
+{
+	if (!isDefined(player))
+		return false;
+
+	if (!isDefined(player.pers) || !isDefined(player.pers["tk_count"]))
+		return false;
+
+	player.pers["CoD_Ent"] = player getEntityNumber();
+	player.pers["PB_Ent"] = player.pers["CoD_Ent"] + 1;
+	player.pers["CoD_GUID"] = player getGuid();
+
+	return true;
+}
+
 PB_ScriptChecker()
 {
-	if (getcvarint("pam_pb_scriptchecker") > 0)
+	if (!isDefined(level.pam_pb_scriptchecker_running) || !isDefined(level.pam_pb_joinwatcher_running) || !isDefined(level.pam_pb_randomchecker_running) || !isDefined(level.pam_pb_stop_threads))
+		PB_Init_Thread_Flags();
+
+	if (isDefined(level.pam_pb_scriptchecker_running) && level.pam_pb_scriptchecker_running)
+		return;
+
+	level.pam_pb_scriptchecker_running = true;
+	level.pam_pb_stop_threads = false;
+	thread PB_Thread_Lifecycle_Manager();
+
+	level endon("game_ended");
+	level endon("map_restart");
+	level endon("disconnect");
+
+	if (getcvarint("pam_pb_scriptchecker") <= 0)
 	{
-		// Give us some time before we start &
-		// Allow players to join the server
-		wait 20;
+		PB_Stop_Threads();
+		return;
+	}
 
-		// Lets begin, shall we
-		players = getentarray("player", "classname");
-		for(i = 0; i < players.size; i++)
+	// Give us some time before we start &
+	// Allow players to join the server
+	wait 20;
+
+	if (PB_Should_Stop_Threads())
+	{
+		PB_Stop_Threads();
+		return;
+	}
+
+	// Lets begin, shall we
+	players = getentarray("player", "classname");
+	for(i = 0; i < players.size; i++)
+	{
+		if (PB_Should_Stop_Threads())
+			break;
+
+		player = players[i];
+
+		if (!PB_Set_Player_Entity_Data(player))
 		{
-			player = players[i];
-
-			player.pers["CoD_Ent"] = player getEntityNumber();
-			player.pers["PB_Ent"] = player.pers["CoD_Ent"] + 1;
-			player.pers["CoD_GUID"] = player getGuid();
-
-			if (isDefined(player.pers["tk_count"]) && isDefined(player.pers["PB_Ent"]))
-			{
-				// The above IF is just to make sure we dont catch someone that
-				// is connecting, but not connected.
-				Do_ScriptCheck(player.pers["PB_Ent"]);
-			}
-
 			wait 2;
+			continue;
 		}
 
+		if (isDefined(player) && isDefined(player.pers) && isDefined(player.pers["PB_Ent"]))
+			Do_ScriptCheck(player.pers["PB_Ent"]);
+
+		wait 2;
+	}
+
+	if (!PB_Should_Stop_Threads())
 		thread ScriptChecker_Watch_for_New_Joins();
 
-		if (getcvarint("pam_pb_scriptchecker") > 1)
-			thread Random_Script_Checker();
-	}
+	if (!PB_Should_Stop_Threads() && getcvarint("pam_pb_scriptchecker") > 1)
+		thread Random_Script_Checker();
+
+	level.pam_pb_scriptchecker_running = false;
 }
 
 ScriptChecker_Watch_for_New_Joins()
 {
-	while (1)
+	if (isDefined(level.pam_pb_joinwatcher_running) && level.pam_pb_joinwatcher_running)
+		return;
+
+	level.pam_pb_joinwatcher_running = true;
+
+	level endon("game_ended");
+	level endon("map_restart");
+	level endon("disconnect");
+
+	while (!PB_Should_Stop_Threads())
 	{
 		players = getentarray("player", "classname");
 		for(i = 0; i < players.size; i++)
 		{
+			if (PB_Should_Stop_Threads())
+				break;
+
 			player = players[i];
+
+			if (!isDefined(player) || !isDefined(player.pers))
+				continue;
 
 			if (isDefined(player.pers["PB_Ent"]) )
 			{
@@ -164,7 +259,7 @@ ScriptChecker_Watch_for_New_Joins()
 				continue;
 			}
 
-			if (!isDefined(player.pers["tk_count"]) )
+			if (!PB_Set_Player_Entity_Data(player))
 			{
 				//Player is connecting, but not yet connected
 				// Lets give the player some time
@@ -172,27 +267,35 @@ ScriptChecker_Watch_for_New_Joins()
 				continue;
 			}
 
-			player.pers["CoD_Ent"] = player getEntityNumber();
-			player.pers["PB_Ent"] = player.pers["CoD_Ent"] + 1;
-			player.pers["CoD_GUID"] = player getGuid();
-
-			Do_ScriptCheck(player.pers["PB_Ent"]);
+			if (isDefined(player) && isDefined(player.pers) && isDefined(player.pers["PB_Ent"]))
+				Do_ScriptCheck(player.pers["PB_Ent"]);
 			wait 3;
 		}
 
 		// lets only scan for new players every once in a while
 		wait 10;
 	}
+
+	level.pam_pb_joinwatcher_running = false;
 }
 
 Random_Script_Checker()
 {
+	if (isDefined(level.pam_pb_randomchecker_running) && level.pam_pb_randomchecker_running)
+		return;
+
+	level.pam_pb_randomchecker_running = true;
+
+	level endon("game_ended");
+	level endon("map_restart");
+	level endon("disconnect");
+
 	//Set-up future variables
 	last_checked_1 = -1;
 	last_checked_2 = -1;
 	last_checked_3 = -1;
 
-	while (1)
+	while (!PB_Should_Stop_Threads())
 	{
 		if (getcvar("pam_pb_scriptcheck_timer") == "")
 			setcvar("pam_pb_scriptcheck_timer", 90);
@@ -216,7 +319,7 @@ Random_Script_Checker()
 
 		player = players[checkplayer];
 
-		if (!isDefined(player.pers["tk_count"]) )
+		if (!PB_Set_Player_Entity_Data(player))
 		{
 			//Player is connecting, but not yet connected
 			// Lets give the player some time
@@ -224,10 +327,8 @@ Random_Script_Checker()
 			continue;
 		}
 
-		if (!isDefined(player.pers["PB_Ent"]) )
+		if (!isDefined(player) || !isDefined(player.pers) || !isDefined(player.pers["PB_Ent"]) || !isDefined(player.pers["CoD_Ent"]) || !isDefined(player.pers["CoD_GUID"]))
 		{
-			// This is not defined so hes never been scanned
-			// we'll catch him on the connect scan.
 			wait 3;
 			continue;
 		}
@@ -252,21 +353,13 @@ Random_Script_Checker()
 
 		wait timer;
 	}
+
+	level.pam_pb_randomchecker_running = false;
+	level.pam_pb_lifecycle_running = false;
 }
 
 Do_ScriptCheck(pb_ent)
 {
 	exec("_rPAM_rules/pb/PBScriptScan/pb_bindcheck_1_" + pb_ent);
 	wait 1.5;
-	exec("_rPAM_rules/pb/PBScriptScan/pb_bindcheck_2_" + pb_ent);
-	wait 1.5;
-	exec("_rPAM_rules/pb/PBScriptScan/pb_bindcheck_3_" + pb_ent);
-	wait 1.5;
-
-	// Log all user-changed cvars
-	exec("_rPAM_rules/pb/CvarChanged/changed_" + pb_ent);
-	wait 2;
-
-	// Log all user-made cvars
-	exec("_rPAM_rules/pb/CvarCreated/created_" + pb_ent);
 }
