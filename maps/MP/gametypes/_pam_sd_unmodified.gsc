@@ -151,8 +151,8 @@ PamMain()
 	if(getCvar("sv_messagecenter") == "")
 		setCvar("sv_messagecenter", "0");
 
-	if(getCvar("pam_mode") == "")
-		thread _rPAM_rules\_rPAM_rulesets_sd::rPAMMODEdefault();
+	initSharedPAMCvars();
+	initSdPAMRules();
 
 	if(!isdefined(game["runonce"]))
 	{
@@ -161,7 +161,8 @@ PamMain()
 		level.scorelimit = getCvarInt("scr_sd_scorelimit");
 		level.roundlimit = getCvarInt("scr_sd_roundlimit");
 
-		thread _rPAM_rules\_rPAM_rulesets_sd::rPAMMODES();
+		if (isSdGametype())
+			thread _rPAM_rules\_rPAM_rulesets_sd::rPAMMODES();
 
 		if(!isDefined(game["mode"]))
 			game["mode"] = "match";
@@ -459,6 +460,30 @@ PamMain()
 	if(level.killcam >= 1)
 		setarchive(true);
 	
+}
+
+isSdGametype()
+{
+	return getCvar("g_gametype") == "sd";
+}
+
+initSharedPAMCvars()
+{
+	if(getCvar("pam_mode") == "")
+		setCvar("pam_mode", "aw_mr12");
+}
+
+initSdPAMRules()
+{
+	if (isSdGametype())
+	{
+		iprintln("^3[rPAM]^7 " + level.mapname + ": PAM SD ruleset path selected (g_gametype=sd).");
+		thread _rPAM_rules\_rPAM_rulesets_sd::rPAMMODEdefault();
+	}
+	else
+	{
+		iprintln("^3[rPAM]^7 " + level.mapname + ": AWE/general path selected (g_gametype=" + getCvar("g_gametype") + "), skipping SD-only PAM rules.");
+	}
 }
 
 rRIFLEHITBLIP()
@@ -3273,6 +3298,13 @@ updateGametypeCvars()
 		league = getCvar("pam_mode");
 		if(league != level.league && !enabling)
 		{
+			if(!isSdGametype())
+			{
+				level.league = league;
+				wait .05;
+				continue;
+			}
+
 			ValidPamMode = _rPAM_rules\_rPAM_rulesets_sd::rCHECKPAMMODES(league);
 
 			if (ValidPamMode)
