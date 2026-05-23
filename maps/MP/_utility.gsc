@@ -150,10 +150,10 @@ saveModel()
 {
 	info["model"] = self.model;
 	info["viewmodel"] = self getViewModel();
-	if(isdefined(self.awe_headmodel))
-		info["awe_headmodel"] = self.awe_headmodel;
+	if(isdefined(self.empire_headmodel))
+		info["empire_headmodel"] = self.empire_headmodel;
 	if(isdefined(self.hatModel))
-		info["awe_hatmodel"] = self.hatModel;
+		info["empire_hatmodel"] = self.hatModel;
 	attachSize = self getAttachSize();
 	
 	for(i = 0; i < attachSize; i++)
@@ -172,10 +172,10 @@ loadModel(info)
 	self setModel(info["model"]);
 	self setViewModel(info["viewmodel"]);
 
-	if(isdefined(info["awe_headmodel"]))
-		self.awe_headmodel = info["awe_headmodel"];
-	if(isdefined(info["awe_hatmodel"]))
-		self.hatModel = info["awe_hatmodel"];
+	if(isdefined(info["empire_headmodel"]))
+		self.empire_headmodel = info["empire_headmodel"];
+	if(isdefined(info["empire_hatmodel"]))
+		self.hatModel = info["empire_hatmodel"];
 
 	attachInfo = info["attach"];
 	attachSize = attachInfo.size;

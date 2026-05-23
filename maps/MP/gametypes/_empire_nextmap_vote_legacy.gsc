@@ -5,7 +5,7 @@
 
 Initialise()
 {
-	if(!level.awe_mapvote) return;
+	if(!level.empire_mapvote) return;
 
 	// Small wait
 	wait .5;
@@ -22,21 +22,21 @@ Initialise()
 
 CleanUp()
 {
-	// Kill AWE threads
-	level notify("awe_boot");
+	// Kill empire_mod threads
+	level notify("empire_boot");
 	// Wait for threads to die
 	wait .05;
 	// Delete some HUD elements
 	if(isdefined(level.clock)) level.clock destroy();
-	if(isdefined(level.awe_axisicon)) level.awe_axisicon destroy();
-	if(isdefined(level.awe_axisnumber)) level.awe_axisnumber destroy();
-	if(isdefined(level.awe_deadaxisicon)) level.awe_deadaxisicon destroy();
-	if(isdefined(level.awe_deadaxisnumber)) level.awe_deadaxisnumber destroy();
-	if(isdefined(level.awe_alliedicon)) level.awe_alliedicon destroy();
-	if(isdefined(level.awe_alliednumber)) level.awe_alliednumber destroy();
-	if(isdefined(level.awe_deadalliedicon)) level.awe_deadalliedicon destroy();
-	if(isdefined(level.awe_deadalliednumber)) level.awe_deadalliednumber destroy();
-	if(isdefined(level.awe_warmupmsg)) level.awe_warmupmsg destroy();
+	if(isdefined(level.empire_axisicon)) level.empire_axisicon destroy();
+	if(isdefined(level.empire_axisnumber)) level.empire_axisnumber destroy();
+	if(isdefined(level.empire_deadaxisicon)) level.empire_deadaxisicon destroy();
+	if(isdefined(level.empire_deadaxisnumber)) level.empire_deadaxisnumber destroy();
+	if(isdefined(level.empire_alliedicon)) level.empire_alliedicon destroy();
+	if(isdefined(level.empire_alliednumber)) level.empire_alliednumber destroy();
+	if(isdefined(level.empire_deadalliedicon)) level.empire_deadalliedicon destroy();
+	if(isdefined(level.empire_deadalliednumber)) level.empire_deadalliednumber destroy();
+	if(isdefined(level.empire_warmupmsg)) level.empire_warmupmsg destroy();
 }
 
 CreateHud()
@@ -45,7 +45,7 @@ CreateHud()
 	level.vote_hud_bgnd.archived = false;
 	level.vote_hud_bgnd.alpha = .7;
 	level.vote_hud_bgnd.x = 205;
-	level.vote_hud_bgnd.y = level.awe_mapvotehudoffset + 17;
+	level.vote_hud_bgnd.y = level.empire_mapvotehudoffset + 17;
 	level.vote_hud_bgnd.sort = 9000;
 	level.vote_hud_bgnd.color = (0,0,0);
 	level.vote_hud_bgnd setShader("white", 260, 140);
@@ -54,14 +54,14 @@ CreateHud()
 	level.vote_header.archived = false;
 	level.vote_header.alpha = .3;
 	level.vote_header.x = 208;
-	level.vote_header.y = level.awe_mapvotehudoffset + 19;
+	level.vote_header.y = level.empire_mapvotehudoffset + 19;
 	level.vote_header.sort = 9001;
 	level.vote_header setShader("white", 254, 21);
 	
 	level.vote_headerText = newHudElem();
 	level.vote_headerText.archived = false;
 	level.vote_headerText.x = 210;
-	level.vote_headerText.y = level.awe_mapvotehudoffset + 21;
+	level.vote_headerText.y = level.empire_mapvotehudoffset + 21;
 	level.vote_headerText.sort = 9998;
 	level.vote_headerText.label = level.mapvotetext["MapVoteHeader"];
 	level.vote_headerText.fontscale = 1.3;
@@ -70,7 +70,7 @@ CreateHud()
 	level.vote_leftline.archived = false;
 	level.vote_leftline.alpha = .3;
 	level.vote_leftline.x = 207;
-	level.vote_leftline.y = level.awe_mapvotehudoffset + 19;
+	level.vote_leftline.y = level.empire_mapvotehudoffset + 19;
 	level.vote_leftline.sort = 9001;
 	level.vote_leftline setShader("white", 1, 135);
 	
@@ -78,7 +78,7 @@ CreateHud()
 	level.vote_rightline.archived = false;
 	level.vote_rightline.alpha = .3;
 	level.vote_rightline.x = 462;
-	level.vote_rightline.y = level.awe_mapvotehudoffset + 19;
+	level.vote_rightline.y = level.empire_mapvotehudoffset + 19;
 	level.vote_rightline.sort = 9001;
 	level.vote_rightline setShader("white", 1, 135);
 	
@@ -86,14 +86,14 @@ CreateHud()
 	level.vote_bottomline.archived = false;
 	level.vote_bottomline.alpha = .3;
 	level.vote_bottomline.x = 207;
-	level.vote_bottomline.y = level.awe_mapvotehudoffset + 154;
+	level.vote_bottomline.y = level.empire_mapvotehudoffset + 154;
 	level.vote_bottomline.sort = 9001;
 	level.vote_bottomline setShader("white", 256, 1);
 
 /*	level.vote_hud_votestext = newHudElem();
 	level.vote_hud_votestext.archived = false;
 	level.vote_hud_votestext.x = 435;
-	level.vote_hud_votestext.y = level.awe_mapvotehudoffset + 56;
+	level.vote_hud_votestext.y = level.empire_mapvotehudoffset + 56;
 	level.vote_hud_votestext.sort = 9998;
 	level.vote_hud_votestext.fontscale = 0.8;
 	level.vote_hud_votestext.label = level.mapvotetext["Votes"];*/
@@ -101,16 +101,16 @@ CreateHud()
 	level.vote_hud_timeleft = newHudElem();
 	level.vote_hud_timeleft.archived = false;
 	level.vote_hud_timeleft.x = 400;
-	level.vote_hud_timeleft.y = level.awe_mapvotehudoffset + 26;
+	level.vote_hud_timeleft.y = level.empire_mapvotehudoffset + 26;
 	level.vote_hud_timeleft.sort = 9998;
 	level.vote_hud_timeleft.fontscale = .8;
 	level.vote_hud_timeleft.label = level.mapvotetext["TimeLeft"];
-	level.vote_hud_timeleft setValue( level.awe_mapvotetime );	
+	level.vote_hud_timeleft setValue( level.empire_mapvotetime );	
 	
 	level.vote_hud_instructions = newHudElem();
 	level.vote_hud_instructions.archived = false;
 	level.vote_hud_instructions.x = 340;
-	level.vote_hud_instructions.y = level.awe_mapvotehudoffset + 56;
+	level.vote_hud_instructions.y = level.empire_mapvotehudoffset + 56;
 	level.vote_hud_instructions.sort = 9998;
 	level.vote_hud_instructions.fontscale = 1;
 	level.vote_hud_instructions.label = level.mapvotetext["MapVote"];
@@ -120,31 +120,31 @@ CreateHud()
 	level.vote_map1 = newHudElem();
 	level.vote_map1.archived = false;
 	level.vote_map1.x = 434;
-	level.vote_map1.y = level.awe_mapvotehudoffset + 69;
+	level.vote_map1.y = level.empire_mapvotehudoffset + 69;
 	level.vote_map1.sort = 9998;
 		
 	level.vote_map2 = newHudElem();
 	level.vote_map2.archived = false;
 	level.vote_map2.x = 434;
-	level.vote_map2.y = level.awe_mapvotehudoffset + 85;
+	level.vote_map2.y = level.empire_mapvotehudoffset + 85;
 	level.vote_map2.sort = 9998;
 		
 	level.vote_map3 = newHudElem();
 	level.vote_map3.archived = false;
 	level.vote_map3.x = 434;
-	level.vote_map3.y = level.awe_mapvotehudoffset + 101;
+	level.vote_map3.y = level.empire_mapvotehudoffset + 101;
 	level.vote_map3.sort = 9998;	
 
 	level.vote_map4 = newHudElem();
 	level.vote_map4.archived = false;
 	level.vote_map4.x = 434;
-	level.vote_map4.y = level.awe_mapvotehudoffset + 117;
+	level.vote_map4.y = level.empire_mapvotehudoffset + 117;
 	level.vote_map4.sort = 9998;	
 
 	level.vote_map5 = newHudElem();
 	level.vote_map5.archived = false;
 	level.vote_map5.x = 434;
-	level.vote_map5.y = level.awe_mapvotehudoffset + 133;
+	level.vote_map5.y = level.empire_mapvotehudoffset + 133;
 	level.vote_map5.sort = 9998;	
 }
 
@@ -198,7 +198,7 @@ RunMapVote()
 			break;
 
 		level.mapcandidate[j]["map"] = maps[i]["map"];
-		level.mapcandidate[j]["mapname"] = maps\mp\gametypes\_awe::getMapName(maps[i]["map"]);
+		level.mapcandidate[j]["mapname"] = maps\mp\gametypes\_empire::getMapName(maps[i]["map"]);
 		level.mapcandidate[j]["gametype"] = maps[i]["gametype"];
 		level.mapcandidate[j]["exec"] = maps[i]["exec"];
 		level.mapcandidate[j]["jeep"] = maps[i]["jeep"];
@@ -212,7 +212,7 @@ RunMapVote()
 			break;
 
 		// Keep current map as last alternative?
-		if(level.awe_mapvotereplay && j>2)
+		if(level.empire_mapvotereplay && j>2)
 			break;
 	}
 	
@@ -335,7 +335,7 @@ ParseMapVoteGametypeWeights()
 	parsed["sum"] = 0;
 	parsed["count"] = 0;
 
-	weightsraw = maps\mp\gametypes\_awe::cvardef("awe_random_gametype_weights", "", "", "", "string");
+	weightsraw = maps\mp\gametypes\_empire::cvardef("empire_random_gametype_weights", "", "", "", "string");
 	weightsraw = strip(weightsraw);
 	if(weightsraw == "")
 		return parsed;
@@ -386,7 +386,7 @@ getGametypeWeightScoreAdjustment(gametype, gtweights)
 	if(!isdefined(gtweights) || !isdefined(gtweights["enabled"]) || !gtweights["enabled"])
 		return 0;
 
-	baseline = getcvarint("awe_gametype_weight_baseline");
+	baseline = getcvarint("empire_gametype_weight_baseline");
 	if(!isdefined(baseline) || baseline <= 0)
 		baseline = gtweights["baseline"];
 
@@ -395,26 +395,26 @@ getGametypeWeightScoreAdjustment(gametype, gtweights)
 		effective = gtweights[gametype];
 	else
 	{
-		strict = getcvarint("awe_gametype_weight_unlisted_strict");
+		strict = getcvarint("empire_gametype_weight_unlisted_strict");
 		if(isdefined(strict) && strict > 0)
 			effective = 0;
 		else
 		{
 			// Unlisted gametypes can either be forced near-zero (strict mode), or
-			// use a low fallback/default weight via awe_gametype_weight_default.
-			effective = getcvarint("awe_gametype_weight_default");
+			// use a low fallback/default weight via empire_gametype_weight_default.
+			effective = getcvarint("empire_gametype_weight_default");
 			if(!isdefined(effective) || effective < 0)
 				effective = 0;
 		}
 	}
 
-	scale = getcvarint("awe_gametype_weight_adjust_scale");
+	scale = getcvarint("empire_gametype_weight_adjust_scale");
 	if(!isdefined(scale) || scale <= 0)
 		scale = 2;
 
 	adjustment = (effective - baseline) * scale;
 
-	clamp = getcvarint("awe_gametype_weight_adjust_clamp");
+	clamp = getcvarint("empire_gametype_weight_adjust_clamp");
 	if(!isdefined(clamp) || clamp <= 0)
 		clamp = 25;
 
@@ -464,7 +464,7 @@ getGametypeHistoryPenalty(gametype, gthistory)
 
 getScaledGametypePenalty(gametype, gthistory)
 {
-	scale = getcvarint("awe_gametype_penalty_scale");
+	scale = getcvarint("empire_gametype_penalty_scale");
 	if(!isdefined(scale) || scale <= 0)
 		scale = 100;
 
@@ -474,11 +474,11 @@ getScaledGametypePenalty(gametype, gthistory)
 
 getMapCooldownPenalty(map, history)
 {
-	window = getcvarint("awe_map_cooldown_window");
+	window = getcvarint("empire_map_cooldown_window");
 	if(!isdefined(window) || window <= 0)
 		window = 8;
 
-	base = getcvarint("awe_map_cooldown_penalty");
+	base = getcvarint("empire_map_cooldown_penalty");
 	if(!isdefined(base) || base <= 0)
 		base = 20;
 
@@ -504,11 +504,11 @@ getMapCooldownPenalty(map, history)
 
 getMapFrequencyPenalty(map, history)
 {
-	window = getcvarint("awe_map_frequency_window");
+	window = getcvarint("empire_map_frequency_window");
 	if(!isdefined(window) || window <= 0)
 		window = 16;
 
-	scale = getcvarint("awe_map_frequency_penalty");
+	scale = getcvarint("empire_map_frequency_penalty");
 	if(!isdefined(scale) || scale <= 0)
 		scale = 14;
 
@@ -582,7 +582,7 @@ PlayerVote()
 		novote = true;
 
 	// Spawn player as spectator
-	self maps\mp\gametypes\_awe::spawnSpectator();
+	self maps\mp\gametypes\_empire::spawnSpectator();
 	self.sessionstate = "spectator";
 	self.spectatorclient = -1;
 	resettimeout();
@@ -610,7 +610,7 @@ PlayerVote()
 	self.vote_indicator = newClientHudElem( self );
 	self.vote_indicator.alignY = "middle";
 	self.vote_indicator.x = 208;
-	self.vote_indicator.y = level.awe_mapvotehudoffset + 75;
+	self.vote_indicator.y = level.empire_mapvotehudoffset + 75;
 	self.vote_indicator.archived = false;
 	self.vote_indicator.sort = 9998;
 	self.vote_indicator.alpha = .3;
@@ -628,7 +628,7 @@ PlayerVote()
 				self.votechoice = 0;
 
 			self iprintln("You have voted for ^2" + level.mapcandidate[self.votechoice]["mapname"]);
-			self.vote_indicator.y = level.awe_mapvotehudoffset + 77 + self.votechoice * 16;			
+			self.vote_indicator.y = level.empire_mapvotehudoffset + 77 + self.votechoice * 16;			
 			self.vote_indicator.color = colors[self.votechoice];
 
 			self playLocalSound("hq_score");
@@ -645,7 +645,7 @@ PlayerVote()
 VoteLogic()
 {
 	//Vote Timer
-	for (;level.awe_mapvotetime>=0;level.awe_mapvotetime--)
+	for (;level.empire_mapvotetime>=0;level.empire_mapvotetime--)
 	{
 		for(j=0;j<10;j++)
 		{
@@ -664,7 +664,7 @@ VoteLogic()
 			level.vote_map5 setValue( level.mapcandidate[4]["votes"] );
 			wait .1;
 		}
-		level.vote_hud_timeleft setValue( level.awe_mapvotetime );
+		level.vote_hud_timeleft setValue( level.empire_mapvotetime );
 	}	
 
 	wait 0.2;
@@ -741,14 +741,14 @@ getRandomMapRotation()
 		return x;
 	}
 
-	prevCount = getcvarint("awe_prev_player_count");
+	prevCount = getcvarint("empire_prev_player_count");
 	if(!isdefined(prevCount))
 		prevCount = count;
 	trend = clampInt(count - prevCount, -4, 4);
 
 	x.maps = rankPoolByPopulation(poolmaps, count, trend, getCandidatePoolSize());
 
-	setcvar("awe_prev_player_count", "" + count);
+	setcvar("empire_prev_player_count", "" + count);
 
 	return x;
 }
@@ -942,7 +942,7 @@ mergeRotationCandidates(basemaps, addmaps, history, applyhistory)
 
 getCandidatePoolSize()
 {
-	size = getcvarint("awe_map_candidate_pool_size");
+	size = getcvarint("empire_map_candidate_pool_size");
 	if(!isdefined(size) || size <= 0)
 		size = 10;
 
@@ -1016,7 +1016,7 @@ filterMapsByGametypePlayerCount(maps, count)
 
 getGametypePlayerCountRules()
 {
-	rulestr = strip(getcvar("awe_gametype_playercount_limits"));
+	rulestr = strip(getcvar("empire_gametype_playercount_limits"));
 	if(rulestr == "")
 		return [];
 
@@ -1282,7 +1282,7 @@ removeRotationIndex(arr, index)
 
 getRotationHistory()
 {
-        histstr = strip(getcvar("awe_map_history"));
+        histstr = strip(getcvar("empire_map_history"));
         if(histstr == "")
                 return [];
 
@@ -1319,7 +1319,7 @@ buildRotationString(arr)
 
 UpdateMapHistory()
 {
-        size = getcvarint("awe_map_history_size");
+        size = getcvarint("empire_map_history_size");
         if(!isdefined(size) || size <= 0)
                 return;
 
@@ -1333,12 +1333,12 @@ UpdateMapHistory()
 
         history[history.size] = cur;
 
-        setcvar("awe_map_history", buildRotationString(history));
+        setcvar("empire_map_history", buildRotationString(history));
 }
 
 UpdateGametypeHistory()
 {
-        size = getcvarint("awe_gametype_history_size");
+        size = getcvarint("empire_gametype_history_size");
         if(!isdefined(size) || size <= 0)
                 return;
 
@@ -1351,12 +1351,12 @@ UpdateGametypeHistory()
 
         history[history.size] = cur;
 
-        setcvar("awe_gametype_history", buildGametypeString(history));
+        setcvar("empire_gametype_history", buildGametypeString(history));
 }
 
 getGametypeHistory()
 {
-        histstr = strip(getcvar("awe_gametype_history"));
+        histstr = strip(getcvar("empire_gametype_history"));
         if(histstr == "")
                 return [];
 

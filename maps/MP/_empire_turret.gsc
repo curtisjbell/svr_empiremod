@@ -1,28 +1,28 @@
 turret_think(num)
 {
-//////// Added by AWE ////////
-	self notify("awe_turret_think");	// Make sure only one thread is running
-	self endon("awe_turret_think");
+//////// Added by empire_mod ////////
+	self notify("empire_turret_think");	// Make sure only one thread is running
+	self endon("empire_turret_think");
 //////////////////////////////
 
-//	self endon("death");  // Removed by AWE
+//	self endon("death");  // Removed by empire_mod
 
 	self waittill("activated",gunner);
 
-//////// Added by AWE ////////
-	gunner.awe_usingturret = num;
+//////// Added by empire_mod ////////
+	gunner.empire_usingturret = num;
 //////////////////////////////
 
-/////// Changed by AWE /////
+/////// Changed by empire_mod /////
 	self thread turret_activated_delay(gunner,num);
 //////////////////////////////
 }
 
-turret_activated_delay(gunner,num) /////// Changed by AWE /////
+turret_activated_delay(gunner,num) /////// Changed by empire_mod /////
 {
 	wait 0.1;	// wait for a dismount to be processed if on same frame
 
-	if(level.awe_turrets[num]["type"] != "misc_ptrs")   ///////// Added by AWE ///////
+	if(level.empire_turrets[num]["type"] != "misc_ptrs")   ///////// Added by empire_mod ///////
 	{
 		overheat_back = newClientHudElem( gunner );
 		overheat_back setShader("gfx/hud/hud@vehiclehealth.dds", 128, 7, 1.0, 0.20);
@@ -39,15 +39,15 @@ turret_activated_delay(gunner,num) /////// Changed by AWE /////
 		overheat.y = 450;
 
 		level thread turret_hud_destroy_think( self, gunner, overheat, overheat_back);
-	}	///////// Added by AWE ///////
+	}	///////// Added by empire_mod ///////
 
 	// Incase we want to use this else where.
 	self.gunner = gunner; 
 
-	if(level.awe_turrets[num]["type"] != "misc_ptrs")	///////// Added by AWE ///////
+	if(level.empire_turrets[num]["type"] != "misc_ptrs")	///////// Added by empire_mod ///////
 		self thread turret_hud_overheat_run( gunner, overheat );
 
-/////// Changed by AWE /////
+/////// Changed by empire_mod /////
 	self thread turret_dismount(num);
 //////////////////////////////
 }
@@ -62,15 +62,15 @@ turret_hud_destroy_think(turret, gunner, overheat, overheat_back)
 		return;
 	}
 
-	if(isdefined(overheat))	///////// Added by AWE ///////
+	if(isdefined(overheat))	///////// Added by empire_mod ///////
 		overheat destroy();
-	if(isdefined(overheat_back))	///////// Added by AWE ///////
+	if(isdefined(overheat_back))	///////// Added by empire_mod ///////
 		overheat_back destroy();
 }
 
 turret_hud_overheat_run(activator, overheat)
 {
-//	self endon("death");	// Removed by AWE
+//	self endon("death");	// Removed by empire_mod
 	activator endon("death");
 	activator endon("stop_turret_hud");
 	
@@ -105,20 +105,20 @@ turret_hud_overheat_run(activator, overheat)
 	}
 }
 
-turret_dismount(num)/////// Changed by AWE /////
+turret_dismount(num)/////// Changed by empire_mod /////
 {
-	self endon("awe_turret_think");	///////// Added by AWE ///////
+	self endon("empire_turret_think");	///////// Added by empire_mod ///////
 
 	self waittill("deactivated");
 	
 	self.gunner notify("stop_turret_hud");
 
 	// now restart the thinking for the next user
-/////// Changed by AWE /////
+/////// Changed by empire_mod /////
 	self thread turret_think(num);
 //////////////////////////////
 
-//////// Added by AWE ////////
-	self.gunner.awe_usingturret = undefined;
+//////// Added by empire_mod ////////
+	self.gunner.empire_usingturret = undefined;
 //////////////////////////////
 }

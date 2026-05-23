@@ -5,7 +5,7 @@ Ambient sounds made by Intuitive-Gaming.com
 main()
 {
 	//setCullFog (500, 7000, .61, .66, .68, 0 );
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 
 	// sound for the lampposts.  Needs to be before calling _treefall_gmi
 	game["treefall_sound"] = "streetlamp_fall";
@@ -107,7 +107,7 @@ fixExploits() {
 	
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

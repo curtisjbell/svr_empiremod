@@ -5,7 +5,7 @@ Ambient sounds made by Intuitive-Gaming.com
 main()
 {
 	setExpFog (0.00005, .72, .59, .63, 0 );
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 
 	// Looping windmill sounds -SG
 	level thread windmill_sounds();
@@ -180,7 +180,7 @@ fixExploits() {
 
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

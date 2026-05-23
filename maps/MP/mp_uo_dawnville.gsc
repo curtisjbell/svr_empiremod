@@ -6,7 +6,7 @@ main()
 {
 //	setCullFog (0, 16500, 0.7, 0.85, 1.0, 0);
 	setCullFog (0, 8000, .32, .36, .40, 0);
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 
 	// set the nighttime flag to be off
 	setcvar("sv_night", "0" );
@@ -110,7 +110,7 @@ layout_images()
 	game["layoutimage"] = "mp_uo_dawnville";
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

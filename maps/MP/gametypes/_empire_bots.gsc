@@ -1,19 +1,19 @@
 addBotClients()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
 	wait 2;
 
-	if(level.awe_debug)
-		iprintln(level.awe_allplayers.size + " players found.");
+	if(level.empire_debug)
+		iprintln(level.empire_allplayers.size + " players found.");
 
 	numbots = 0;
 	// Catch & count running bots and start their think threads.
-	for(i=0;i<level.awe_allplayers.size;i++)
+	for(i=0;i<level.empire_allplayers.size;i++)
 	{
-		if(isdefined(level.awe_allplayers[i]))
+		if(isdefined(level.empire_allplayers[i]))
 		{
-			player = level.awe_allplayers[i];
+			player = level.empire_allplayers[i];
 			if(player.name.size==4 || player.name.size==5)
 			{
 				if(player.name[0] == "b" && player.name[1] == "o" && player.name[2] == "t")
@@ -30,7 +30,7 @@ addBotClients()
 		wait 3;
 
 		// Any new bots to add?
-		newbots = level.awe_bots - numbots;
+		newbots = level.empire_bots - numbots;
 	
 		// Any new bots to add?
 		if(newbots<=0)
@@ -49,9 +49,9 @@ addBotClients()
 
 bot_think()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
-	if(level.awe_debug)
+	if(level.empire_debug)
 		iprintln("Starting think thread for: " + self.name);
 
 	if(getcvar("g_gametype") == "bel" || getcvar("g_gametype") == "mc_bel")
@@ -65,7 +65,7 @@ bot_think()
 		{
 			if(!isAlive(self) && self.sessionstate != "playing")
 			{
-				if(level.awe_debug)
+				if(level.empire_debug)
 					iprintln(self.name + " is sending menu responses.");
 
 				if(bel == "")

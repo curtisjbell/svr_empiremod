@@ -16,7 +16,7 @@ main()
 	thread noProne();
 
 	setExpFog(0.00001, 0, 0, 0, 0);
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 	//The map's background sound was professionally recorded 	//by "DigitalDials" (Youtube channel).
 
 	game["allies"] = "american";
@@ -98,7 +98,7 @@ noprone() //Part of Roger Abrahamsson's _noprone.gsc script.
 		}
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

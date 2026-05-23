@@ -6,7 +6,7 @@ main()
 {
 
 	setCullFog(500, 15000, .0273, .0820, .1601, 0 );
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 	precacheModel("xmodel/turret_flak88_static_antitank");
 	level thread firesounds();
 		
@@ -181,7 +181,7 @@ fixExploits() {
 
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

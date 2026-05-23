@@ -1,5 +1,5 @@
 attachFromArray(a)
 {
-	self.awe_headmodel = character\_utility::randomElement(a);
-	self attach(self.awe_headmodel, "", true);
+	self.empire_headmodel = character\_utility::randomElement(a);
+	self attach(self.empire_headmodel, "", true);
 }

@@ -5,7 +5,7 @@ Ambient sounds made by Intuitive-Gaming.com
 main()
 {
 	setExpFog(0.0001, (float)135/(float)255,(float)130/(float)255,(float)111/(float)255, 0);
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 
 	//hq settings
 	if (getcvar("g_gametype") != "hq")
@@ -41,7 +41,7 @@ main()
 	game["re_spectator_obj_text"] = (&"PATCH_1_3_BOCAGE_OBJ_SPECTATOR");
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

@@ -11,7 +11,7 @@ main()
 	// set the nighttime flag to be off
 	setcvar("sv_night", "0" );
 
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 	maps\mp\mp_rhinevalley::layout_images();
 	maps\mp\mp_rhinevalley::vehicle_spawner();
 	//maps\mp\mp_rhinevalley::base_swapper();  
@@ -218,7 +218,7 @@ fixExploits() {
 	level thread maps\mp\_exploit_blocker::blockBox((-4300,-7282,2295), (1,350,40));
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

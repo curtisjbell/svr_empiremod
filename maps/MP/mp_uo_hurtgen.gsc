@@ -5,7 +5,7 @@ Ambient sounds made by Intuitive-Gaming.com
 main()
 {
 	setCullFog (0, 3200, .32, .36, .40, 0 );
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 
 	// set the nighttime flag to be off
 	setcvar("sv_night", "0" );
@@ -114,7 +114,7 @@ layout_images()
 	game["layoutimage"] = "mp_uo_hurtgen";
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

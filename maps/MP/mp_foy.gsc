@@ -5,7 +5,7 @@ Ambient sounds made by Intuitive-Gaming.com
 main()
 {
     setCullFog (500, 5500, .5254, .6117, .7215, 0 );
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 	
 	// set the nighttime flag to be off
 	setcvar("sv_night", "0" );
@@ -270,7 +270,7 @@ fixExploits () {
 
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

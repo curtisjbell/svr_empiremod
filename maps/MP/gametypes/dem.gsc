@@ -195,7 +195,7 @@ main()
 	setCvar("cg_hudcompassMaxRange", game["compass_range"]);
 	makeCvarServerInfo("cg_hudcompassMaxRange", "0");
 
-////// Added by AWE ////	
+////// Added by empire_mod ////	
 	if(getCvar("scr_drophealth") == "")		// Drop health?
 		setCvar("scr_drophealth", "1");
 ////////////////////////
@@ -327,8 +327,8 @@ main()
 Callback_StartGameType()
 {
 
-///////// Added for AWE //////////
-	maps\mp\gametypes\_awe::Callback_StartGameType();
+///////// Added for empire_mod //////////
+	maps\mp\gametypes\_empire::Callback_StartGameType();
 //////////////////////////////////
 
 	// if this is a fresh map start, set nationalities based on cvars, otherwise leave game variable nationalities as set in the level script
@@ -583,7 +583,7 @@ Callback_PlayerConnect()
         for(;;)
         {
                 self waittill("menuresponse", menu, response);
-                maps\mp\gametypes\_awe::NotAFK();
+                maps\mp\gametypes\_empire::NotAFK();
 		
 /*		if(menu == game["menu_serverinfo"] && response == "close")
 		{
@@ -902,8 +902,8 @@ Callback_PlayerConnect()
 Callback_PlayerDisconnect()
 {
 
-///// Added by AWE ////////
-	self maps\mp\gametypes\_awe::PlayerDisconnect();
+///// Added by empire_mod ////////
+	self maps\mp\gametypes\_empire::PlayerDisconnect();
 ///////////////////////////
 
 	if(isdefined(self.carrying) && self.carrying == true)
@@ -957,17 +957,17 @@ Callback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sW
 		{
 			if(level.friendlyfire == 0)
 				return;
-// Added for AWE
+// Added for empire_mod
 			if(level.friendlyfire == 1)
-				eAttacker maps\mp\gametypes\_awe::teamdamage(self, iDamage);
+				eAttacker maps\mp\gametypes\_empire::teamdamage(self, iDamage);
 
-			if(level.friendlyfire == 2 || isdefined(eAttacker.pers["awe_teamkiller"]) )
+			if(level.friendlyfire == 2 || isdefined(eAttacker.pers["empire_teamkiller"]) )
 			{
 				eDamage = iDamage * 0.5;
 				iDamage = 0;
 			}
 
-			if( (level.friendlyfire == 3 || sMeansOfDeath == "MOD_CRUSH_TANK" || sMeansOfDeath == "MOD_CRUSH_JEEP") && !isdefined(eAttacker.pers["awe_teamkiller"]) )
+			if( (level.friendlyfire == 3 || sMeansOfDeath == "MOD_CRUSH_TANK" || sMeansOfDeath == "MOD_CRUSH_JEEP") && !isdefined(eAttacker.pers["empire_teamkiller"]) )
 			{
 				iDamage = iDamage * 0.5;
 				eDamage = iDamage;
@@ -984,8 +984,8 @@ Callback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sW
 
 		self finishPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
 
-////////////// Added by AWE //////////////////
-		self maps\mp\gametypes\_awe::DoPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
+////////////// Added by empire_mod //////////////////
+		self maps\mp\gametypes\_empire::DoPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
 //////////////////////////////////////////////
 	}
 	if(eDamage > 0)
@@ -1049,8 +1049,8 @@ Callback_PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 	self endon("spawned");
 	self notify("killed");
 
-/////////// Added by AWE ///////////
-	self thread maps\mp\gametypes\_awe::PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc);
+/////////// Added by empire_mod ///////////
+	self thread maps\mp\gametypes\_empire::PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc);
 ////////////////////////////////////
 
 	team = self.pers["team"];
@@ -1198,7 +1198,7 @@ if(isplayer(attacker))
 		sMeansOfDeath = "MOD_ARTILLERY";
 
 	// send out an obituary message to all clients about the kill
-////////// Removed by AWE ///////
+////////// Removed by empire_mod ///////
 //	if(attackerGotBonus == 0 && sMeansOfDeath != "MOD_MELEE")  // don't flood with redundant kill reports
 //		obituary(self, attacker, sWeapon, sMeansOfDeath);
 /////////////////////////////////
@@ -1267,8 +1267,8 @@ if(isplayer(attacker))
 			{
 				attacker.pers["score"]--;
 				attacker.score = attacker.pers["score"];
-// Added for AWE
-				attacker maps\mp\gametypes\_awe::teamkill();
+// Added for empire_mod
+				attacker maps\mp\gametypes\_empire::teamkill();
 			}
 			else
 			{
@@ -1297,7 +1297,7 @@ if(isplayer(attacker))
 
 	// Make the player drop his weapon
 
-///// Removed by AWE /////
+///// Removed by empire_mod /////
 //	if (!isdefined (self.autobalance))
 //		self dropItem(self getcurrentweapon());
 //////////////////////////
@@ -1308,7 +1308,7 @@ if(isplayer(attacker))
 
 	self.autobalance = undefined;
 
-///// Removed by AWE /////
+///// Removed by empire_mod /////
 //	if (!isdefined (self.autobalance))
 //		body = self cloneplayer();
 //////////////////////////
@@ -1481,8 +1481,8 @@ spawnPlayer(spawnpoint)
 
 	wait 0.05;
 
-// Added for AWE
-	self maps\mp\gametypes\_awe::spawnPlayer();
+// Added for empire_mod
+	self maps\mp\gametypes\_empire::spawnPlayer();
 }
 
 spawnSpectator(origin, angles)
@@ -2077,8 +2077,8 @@ endRound(roundwinner, timeexpired)
 	}
 
 
-////////// Added by AWE //////////	
-	maps\mp\gametypes\_awe::swapteams();
+////////// Added by empire_mod //////////	
+	maps\mp\gametypes\_empire::swapteams();
 //////////////////////////////////
 
 	map_restart(true);
@@ -2087,8 +2087,8 @@ endRound(roundwinner, timeexpired)
 endMap()
 {
 
-////// Added by AWE ///////////
-	maps\mp\gametypes\_awe::endMap();
+////// Added by empire_mod ///////////
+	maps\mp\gametypes\_empire::endMap();
 /////////////////////////////////
 
 	game["state"] = "intermission";
@@ -2962,10 +2962,10 @@ expackThinker()
 				continue;
 
 			// player disconnected, or has pressed the USE key
-			if (self.player.sessionstate=="playing" && self.player usebuttonpressed() && !(isdefined(self.player.awe_sprinting)) && self.player isOnGround())
+			if (self.player.sessionstate=="playing" && self.player usebuttonpressed() && !(isdefined(self.player.empire_sprinting)) && self.player isOnGround())
 			{
 				self.holdtime = 0;
-				if(self.player usebuttonpressed() && !(self.player attackButtonPressed()) && !(self.player meleeButtonPressed()) && !(isdefined(self.player.awe_sprinting)) && self.player isOnGround()) // set up the "dropping bomb" animation
+				if(self.player usebuttonpressed() && !(self.player attackButtonPressed()) && !(self.player meleeButtonPressed()) && !(isdefined(self.player.empire_sprinting)) && self.player isOnGround()) // set up the "dropping bomb" animation
 				{
 					// first, don't wanna do anything if they just tap USE to pick something up
 					pausetime = 0;
@@ -2973,7 +2973,7 @@ expackThinker()
 						&& self.player usebuttonpressed() 
 						&& !(self.player attackButtonPressed()) 
 						&& !(self.player meleeButtonPressed())
-						&& !(isdefined(self.player.awe_sprinting))
+						&& !(isdefined(self.player.empire_sprinting))
 						&& self.player isOnGround() 
 						&& pausetime < 0.5)
 					{
@@ -4290,13 +4290,13 @@ updatebombcounter()
 dropHealth()
 {
 
-//////// Added by AWE ///////
+//////// Added by empire_mod ///////
 	if ( !getcvarint("scr_drophealth") )
 		return;
 		
-	if(isdefined(self.awe_nohealthpack))
+	if(isdefined(self.empire_nohealthpack))
 		return;
-	self.awe_nohealthpack = true;
+	self.empire_nohealthpack = true;
 /////////////////////////////
 
 	if(isdefined(level.healthqueue[level.healthqueuecurrent]))

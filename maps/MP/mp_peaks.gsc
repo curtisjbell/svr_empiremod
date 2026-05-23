@@ -5,7 +5,7 @@ Ambient sounds made by Intuitive-Gaming.com
 main()
 {
 	//setCullFog (500, 7000, .61, .66, .68, 0 );
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 
 	maps\mp\_load::main();
 	level thread maps\mp\_tankdrive_gmi::main();
@@ -140,7 +140,7 @@ MG42_Health_Regen()
 	}
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

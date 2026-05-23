@@ -30,8 +30,8 @@ main()
 
 	initVehicleCvars();
 	
-/////// Changed by AWE //////
-	level.tank_capture_time = maps\mp\gametypes\_awe::cvardef("scr_tank_capture_time",15000,0,999999,"int");
+/////// Changed by empire_mod //////
+	level.tank_capture_time = maps\mp\gametypes\_empire::cvardef("scr_tank_capture_time",15000,0,999999,"int");
 /////////////////////////////
 
 	// !! TEMP HACK !!
