@@ -6,7 +6,7 @@ main()
 {
 //	setCullFog (0, 5500, .32, .36, .40, 0); //stormyfogged sky fog color
 	setCullFog (0, 6500, .8, .8, .8, 0);	//pavlovtest sky color
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 
 	maps\mp\_load::main();
 	//maps\mp\mp_railyard_fx::main();
@@ -65,7 +65,7 @@ main()
 	}
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

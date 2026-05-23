@@ -157,8 +157,8 @@ main()
 Callback_StartGameType()
 {
 
-////////// Added by AWE ///////////////
-	maps\mp\gametypes\_awe::Callback_StartGameType();
+////////// Added by empire_mod ///////////////
+	maps\mp\gametypes\_empire::Callback_StartGameType();
 ///////////////////////////////////////
 
 	// defaults if not defined in level script
@@ -296,7 +296,7 @@ Callback_PlayerConnect()
         for(;;)
         {
                 self waittill("menuresponse", menu, response);
-                maps\mp\gametypes\_awe::NotAFK();
+                maps\mp\gametypes\_empire::NotAFK();
 
 		if(menu == game["menu_serverinfo"] && response == "close")
 		{
@@ -477,8 +477,8 @@ Callback_PlayerConnect()
 Callback_PlayerDisconnect()
 {
 
-///// Added by AWE ////////
-	self maps\mp\gametypes\_awe::PlayerDisconnect();
+///// Added by empire_mod ////////
+	self maps\mp\gametypes\_empire::PlayerDisconnect();
 ///////////////////////////
 
 	iprintln(&"MPSCRIPT_DISCONNECTED", self);
@@ -518,8 +518,8 @@ Callback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sW
 	// Apply the damage to the player
 	self finishPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
 
-////////////// Added by AWE //////////////////
-	self maps\mp\gametypes\_awe::DoPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
+////////////// Added by empire_mod //////////////////
+	self maps\mp\gametypes\_empire::DoPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
 //////////////////////////////////////////////
 
 	if(self.sessionstate != "dead")
@@ -556,8 +556,8 @@ Callback_PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 	if(self.sessionteam == "spectator")
 		return;
 
-/////////// Added by AWE ///////////
-	self thread maps\mp\gametypes\_awe::PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc);
+/////////// Added by empire_mod ///////////
+	self thread maps\mp\gametypes\_empire::PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc);
 ////////////////////////////////////
 
 	// If the player was killed by a head shot, let players know it was a head shot kill
@@ -575,7 +575,7 @@ Callback_PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 		sMeansOfDeath = "MOD_ARTILLERY";
 
 	// send out an obituary message to all clients about the kill
-////////// Removed by AWE ///////
+////////// Removed by empire_mod ///////
 //	obituary(self, attacker, sWeapon, sMeansOfDeath);
 /////////////////////////////////
 
@@ -632,14 +632,14 @@ Callback_PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 
 	// Make the player drop his weapon
 
-///// Removed by AWE /////
+///// Removed by empire_mod /////
 //	self dropItem(self getcurrentweapon());
 //////////////////////////
 
 	// Make the player drop health
 	self dropHealth();
 
-///// Removed by AWE /////
+///// Removed by empire_mod /////
 //	body = self cloneplayer();
 //////////////////////////
 
@@ -757,8 +757,8 @@ spawnPlayer()
 	// setup the hud rank indicator
 	self thread maps\mp\gametypes\_rank_gmi::RankHudInit();
 
-////////////// Added by AWE /////////////////
-	self maps\mp\gametypes\_awe::spawnPlayer();
+////////////// Added by empire_mod /////////////////
+	self maps\mp\gametypes\_empire::spawnPlayer();
 /////////////////////////////////////////////
 
 }
@@ -851,7 +851,7 @@ respawn()
 		firsttime++;
 	
                 self waittill("menuresponse");
-                maps\mp\gametypes\_awe::NotAFK();
+                maps\mp\gametypes\_empire::NotAFK();
 		
 		wait 0.2;
 	}
@@ -1098,8 +1098,8 @@ startGame()
 endMap()
 {
 
-////// Added by AWE ///////////
-	maps\mp\gametypes\_awe::endMap();
+////// Added by empire_mod ///////////
+	maps\mp\gametypes\_empire::endMap();
 /////////////////////////////////
 
 	game["state"] = "intermission";
@@ -1303,10 +1303,10 @@ dropHealth()
 	if ( !getcvarint("scr_drophealth") )
 		return;
 		
-//// Added by AWE ////
-	if(isdefined(self.awe_nohealthpack))
+//// Added by empire_mod ////
+	if(isdefined(self.empire_nohealthpack))
 		return;
-	self.awe_nohealthpack = true;
+	self.empire_nohealthpack = true;
 //////////////////////
 
 	if(isDefined(level.healthqueue[level.healthqueuecurrent]))

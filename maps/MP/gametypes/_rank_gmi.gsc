@@ -5,35 +5,35 @@
 // ----------------------------------------------------------------------------------
 //	
 //	Supported CVars and fallback values when unset:
-//	awe_br1 - br_ppr * 3 (15 if scr_rank_ppr = 5)
-//	awe_br2 - br_ppr * 6 (30 if scr_rank_ppr = 5)
-//	awe_br3 - br_ppr * 9 (45 if scr_rank_ppr = 5)
-//	awe_br4 - br_ppr * 12 (60 if scr_rank_ppr = 5)
-//	awe_br0_gunclips - 4
-//	awe_br1_gunclips - 4
-//	awe_br2_gunclips - 5
-//	awe_br3_gunclips - 5
-//	awe_br4_gunclips - 6
-//	awe_br0_pistolclips - 2
-//	awe_br1_pistolclips - 3
-//	awe_br2_pistolclips - 3
-//	awe_br3_pistolclips - 4
-//	awe_br4_pistolclips - 4
-//	awe_br0_grenades - 1
-//	awe_br1_grenades - 1
-//	awe_br2_grenades - 1
-//	awe_br3_grenades - 2
-//	awe_br4_grenades - 2
-//	awe_br0_smokegrenades - 1
-//	awe_br1_smokegrenades - 1
-//	awe_br2_smokegrenades - 1
-//	awe_br3_smokegrenades - 2
-//	awe_br4_smokegrenades - 2
-//	awe_br0_satchels or awe_br0_satchelcharge - 0
-//	awe_br1_satchels or awe_br1_satchelcharge - 0
-//	awe_br2_satchels or awe_br2_satchelcharge - 0
-//	awe_br3_satchels or awe_br3_satchelcharge - 0
-//	awe_br4_satchels or awe_br4_satchelcharge - 1
+//	empire_br1 - br_ppr * 3 (15 if scr_rank_ppr = 5)
+//	empire_br2 - br_ppr * 6 (30 if scr_rank_ppr = 5)
+//	empire_br3 - br_ppr * 9 (45 if scr_rank_ppr = 5)
+//	empire_br4 - br_ppr * 12 (60 if scr_rank_ppr = 5)
+//	empire_br0_gunclips - 4
+//	empire_br1_gunclips - 4
+//	empire_br2_gunclips - 5
+//	empire_br3_gunclips - 5
+//	empire_br4_gunclips - 6
+//	empire_br0_pistolclips - 2
+//	empire_br1_pistolclips - 3
+//	empire_br2_pistolclips - 3
+//	empire_br3_pistolclips - 4
+//	empire_br4_pistolclips - 4
+//	empire_br0_grenades - 1
+//	empire_br1_grenades - 1
+//	empire_br2_grenades - 1
+//	empire_br3_grenades - 2
+//	empire_br4_grenades - 2
+//	empire_br0_smokegrenades - 1
+//	empire_br1_smokegrenades - 1
+//	empire_br2_smokegrenades - 1
+//	empire_br3_smokegrenades - 2
+//	empire_br4_smokegrenades - 2
+//	empire_br0_satchels or empire_br0_satchelcharge - 0
+//	empire_br1_satchels or empire_br1_satchelcharge - 0
+//	empire_br2_satchels or empire_br2_satchelcharge - 0
+//	empire_br3_satchels or empire_br3_satchelcharge - 0
+//	empire_br4_satchels or empire_br4_satchelcharge - 1
 //	scr_rank_ppr - 5
 //	scr_artillery_first_interval - 45
 //	scr_artillery_interval - 120
@@ -84,45 +84,45 @@ InitializeBattleRank()
 
 	// set up the rank points
 	if(!isdefined(game["br_rank_1"]))	// points to achieve first rank
-		game["br_rank_1"] = getConfigInt("awe_br1", game["br_ppr"] * 3);
+		game["br_rank_1"] = getConfigInt("empire_br1", game["br_ppr"] * 3);
 	if(!isdefined(game["br_rank_2"]))	// points to achieve second rank
-		game["br_rank_2"] = getConfigInt("awe_br2", game["br_ppr"] * 6);
+		game["br_rank_2"] = getConfigInt("empire_br2", game["br_ppr"] * 6);
 	if(!isdefined(game["br_rank_3"]))	// points to achieve third rank
-		game["br_rank_3"] = getConfigInt("awe_br3", game["br_ppr"] * 9);
+		game["br_rank_3"] = getConfigInt("empire_br3", game["br_ppr"] * 9);
 	if(!isdefined(game["br_rank_4"]))	// points to achieve fourth rank
-		game["br_rank_4"] = getConfigInt("awe_br4", game["br_ppr"] * 12);
+		game["br_rank_4"] = getConfigInt("empire_br4", game["br_ppr"] * 12);
 		
 	// set up the ammo values for the various ranks
 	// remember that they will already have one clip in the gun
-	game["br_ammo_gunclips_0"] = getConfigInt("awe_br0_gunclips", 4);
-	game["br_ammo_gunclips_1"] = getConfigInt("awe_br1_gunclips", 4);
-	game["br_ammo_gunclips_2"] = getConfigInt("awe_br2_gunclips", 5);
-	game["br_ammo_gunclips_3"] = getConfigInt("awe_br3_gunclips", 5);
-	game["br_ammo_gunclips_4"] = getConfigInt("awe_br4_gunclips", 6);
+	game["br_ammo_gunclips_0"] = getConfigInt("empire_br0_gunclips", 4);
+	game["br_ammo_gunclips_1"] = getConfigInt("empire_br1_gunclips", 4);
+	game["br_ammo_gunclips_2"] = getConfigInt("empire_br2_gunclips", 5);
+	game["br_ammo_gunclips_3"] = getConfigInt("empire_br3_gunclips", 5);
+	game["br_ammo_gunclips_4"] = getConfigInt("empire_br4_gunclips", 6);
 
-	game["br_ammo_pistolclips_0"] = getConfigInt("awe_br0_pistolclips", 2);
-	game["br_ammo_pistolclips_1"] = getConfigInt("awe_br1_pistolclips", 3);
-	game["br_ammo_pistolclips_2"] = getConfigInt("awe_br2_pistolclips", 3);
-	game["br_ammo_pistolclips_3"] = getConfigInt("awe_br3_pistolclips", 4);
-	game["br_ammo_pistolclips_4"] = getConfigInt("awe_br4_pistolclips", 4);
+	game["br_ammo_pistolclips_0"] = getConfigInt("empire_br0_pistolclips", 2);
+	game["br_ammo_pistolclips_1"] = getConfigInt("empire_br1_pistolclips", 3);
+	game["br_ammo_pistolclips_2"] = getConfigInt("empire_br2_pistolclips", 3);
+	game["br_ammo_pistolclips_3"] = getConfigInt("empire_br3_pistolclips", 4);
+	game["br_ammo_pistolclips_4"] = getConfigInt("empire_br4_pistolclips", 4);
 
-	game["br_ammo_grenades_0"] = getConfigInt("awe_br0_grenades", 1);
-	game["br_ammo_grenades_1"] = getConfigInt("awe_br1_grenades", 1);
-	game["br_ammo_grenades_2"] = getConfigInt("awe_br2_grenades", 1);
-	game["br_ammo_grenades_3"] = getConfigInt("awe_br3_grenades", 2);
-	game["br_ammo_grenades_4"] = getConfigInt("awe_br4_grenades", 2);
+	game["br_ammo_grenades_0"] = getConfigInt("empire_br0_grenades", 1);
+	game["br_ammo_grenades_1"] = getConfigInt("empire_br1_grenades", 1);
+	game["br_ammo_grenades_2"] = getConfigInt("empire_br2_grenades", 1);
+	game["br_ammo_grenades_3"] = getConfigInt("empire_br3_grenades", 2);
+	game["br_ammo_grenades_4"] = getConfigInt("empire_br4_grenades", 2);
 
-	game["br_ammo_smoke_grenades_0"] = getConfigInt("awe_br0_smokegrenades", 1);
-	game["br_ammo_smoke_grenades_1"] = getConfigInt("awe_br1_smokegrenades", 1);
-	game["br_ammo_smoke_grenades_2"] = getConfigInt("awe_br2_smokegrenades", 1);
-	game["br_ammo_smoke_grenades_3"] = getConfigInt("awe_br3_smokegrenades", 2);
-	game["br_ammo_smoke_grenades_4"] = getConfigInt("awe_br4_smokegrenades", 2);
+	game["br_ammo_smoke_grenades_0"] = getConfigInt("empire_br0_smokegrenades", 1);
+	game["br_ammo_smoke_grenades_1"] = getConfigInt("empire_br1_smokegrenades", 1);
+	game["br_ammo_smoke_grenades_2"] = getConfigInt("empire_br2_smokegrenades", 1);
+	game["br_ammo_smoke_grenades_3"] = getConfigInt("empire_br3_smokegrenades", 2);
+	game["br_ammo_smoke_grenades_4"] = getConfigInt("empire_br4_smokegrenades", 2);
 	
-	game["br_ammo_satchel_charge_0"] = getConfigIntEither("awe_br0_satchels", "awe_br0_satchelcharge", 0);
-	game["br_ammo_satchel_charge_1"] = getConfigIntEither("awe_br1_satchels", "awe_br1_satchelcharge", 0);
-	game["br_ammo_satchel_charge_2"] = getConfigIntEither("awe_br2_satchels", "awe_br2_satchelcharge", 0);
-	game["br_ammo_satchel_charge_3"] = getConfigIntEither("awe_br3_satchels", "awe_br3_satchelcharge", 0);
-	game["br_ammo_satchel_charge_4"] = getConfigIntEither("awe_br4_satchels", "awe_br4_satchelcharge", 1);
+	game["br_ammo_satchel_charge_0"] = getConfigIntEither("empire_br0_satchels", "empire_br0_satchelcharge", 0);
+	game["br_ammo_satchel_charge_1"] = getConfigIntEither("empire_br1_satchels", "empire_br1_satchelcharge", 0);
+	game["br_ammo_satchel_charge_2"] = getConfigIntEither("empire_br2_satchels", "empire_br2_satchelcharge", 0);
+	game["br_ammo_satchel_charge_3"] = getConfigIntEither("empire_br3_satchels", "empire_br3_satchelcharge", 0);
+	game["br_ammo_satchel_charge_4"] = getConfigIntEither("empire_br4_satchels", "empire_br4_satchelcharge", 1);
 	
 	if( GetCvar("scr_artillery_first_interval") == "" )
 		setCvar("scr_artillery_first_interval", "45"); 

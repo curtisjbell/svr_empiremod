@@ -5,7 +5,7 @@ Ambient sounds made by Intuitive-Gaming.com
 main()
 {
 	setCullFog (0, 16500, 0.7, 0.85, 1.0, 0);
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 
 	maps\mp\_load::main();
 	maps\mp\german_town_fx::main();
@@ -24,7 +24,7 @@ main()
 	game["layoutimage"] = "german_town";
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

@@ -7,6 +7,6 @@
 
 ## Battle rank handling alignment
 - `scr_battlerank` is the runtime switch read by gametype scripts; if set to `0` it disables battle rank logic/HUD updates.
-- `_rank_gmi.gsc` reads rank thresholds and ammo values from `awe_br*` cvars through `getConfigInt`, but only if battle rank is enabled by `scr_battlerank`.
-- Potential mismatch: config uses `awe_br*_satchelcharge`, while script expects `awe_br*_satchels`. Because of this key mismatch, satchel values from `empire.cfg` are not consumed and script fallbacks are used.
+- `_rank_gmi.gsc` reads rank thresholds and ammo values from `empire_br*` cvars through `getConfigInt`, but only if battle rank is enabled by `scr_battlerank`.
+- Potential mismatch: config uses `empire_br*_satchelcharge`, while script expects `empire_br*_satchels`. Because of this key mismatch, satchel values from `empire.cfg` are not consumed and script fallbacks are used.
 - Additional override risk: rPAM BO3 scripts set `scr_battlerank=1` and `scr_rank_ppr=10`; if those scripts run in a mode, they override `empire.cfg` rank cvars.

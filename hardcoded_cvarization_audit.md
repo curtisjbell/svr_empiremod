@@ -38,7 +38,7 @@
 
 ### Option C (larger): structured message namespace
 - Standardize naming and ownership:
-  - `msg_pam_*`, `msg_awe_*`, `msg_rpam_*`
+  - `msg_pam_*`, `msg_empire_*`, `msg_rpam_*`
 - Centralize defaults in one file + expose key subset in `empire.cfg`.
 - Best long-term maintainability, but broad touch surface.
 

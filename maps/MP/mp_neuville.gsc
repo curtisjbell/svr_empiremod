@@ -5,7 +5,7 @@ Ambient sounds made by Intuitive-Gaming.com
 main()
 {
 	setExpFog(0.00025, .32, .36, .40, 0);
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 
 	maps\mp\_load::main();
 	maps\mp\mp_neuville_fx::main();
@@ -89,7 +89,7 @@ main()
 	*/
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

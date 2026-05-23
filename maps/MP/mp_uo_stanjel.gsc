@@ -1,7 +1,7 @@
 main()
 {
 	setCullFog (1500, 10000, 0.78, 0.84, 0.86, 0);
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 
 	// set the nighttime flag to be off
 	setcvar("sv_night", "0" );
@@ -155,7 +155,7 @@ fixExploits() {
 
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

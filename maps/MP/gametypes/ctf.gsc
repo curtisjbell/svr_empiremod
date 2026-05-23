@@ -146,7 +146,7 @@ This is the flag location.  There needs to be one for each team
 main() // Starts when map is loaded.
 {
 
-//////// Added by AWE ///////
+//////// Added by empire_mod ///////
 	// ACTF was removed from the mod, so autoswitch can no longer redirect to it.
 	// Keep CTF initialization flow and let normal spawnpoint checks decide validity.
 ///////////////////////////////
@@ -385,8 +385,8 @@ main() // Starts when map is loaded.
 Callback_StartGameType() // Setup the game.
 {
 
-/////////////// Added by AWE ////////////////////
-	maps\mp\gametypes\_awe::Callback_StartGameType();
+/////////////// Added by empire_mod ////////////////////
+	maps\mp\gametypes\_empire::Callback_StartGameType();
 /////////////////////////////////////////////////
 
 	// if this is a fresh map start, set nationalities based on cvars, otherwise leave game variable nationalities as set in the level script
@@ -793,7 +793,7 @@ Callback_PlayerConnect()
         for(;;)
         {
                 self waittill("menuresponse", menu, response);
-                maps\mp\gametypes\_awe::NotAFK();
+                maps\mp\gametypes\_empire::NotAFK();
 		
 		if(menu == game["menu_serverinfo"] && response == "close")
 		{
@@ -1090,8 +1090,8 @@ Callback_PlayerConnect()
 Callback_PlayerDisconnect()
 {
 
-///// Added by AWE ////////
-	self maps\mp\gametypes\_awe::PlayerDisconnect();
+///// Added by empire_mod ////////
+	self maps\mp\gametypes\_empire::PlayerDisconnect();
 ///////////////////////////
 
 	iprintln(&"MPSCRIPT_DISCONNECTED", self);
@@ -1136,33 +1136,33 @@ Callback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sW
 	{
 		if(isPlayer(eAttacker) && (self != eAttacker) && (self.pers["team"] == eAttacker.pers["team"]))
 		{
-///////////// Changed by AWE ///////////////
-			if( level.friendlyfire == "1" && !isdefined(eAttacker.pers["awe_teamkiller"]) && !(sMeansOfDeath == "MOD_CRUSH_TANK" || sMeansOfDeath == "MOD_CRUSH_JEEP") )
+///////////// Changed by empire_mod ///////////////
+			if( level.friendlyfire == "1" && !isdefined(eAttacker.pers["empire_teamkiller"]) && !(sMeansOfDeath == "MOD_CRUSH_TANK" || sMeansOfDeath == "MOD_CRUSH_JEEP") )
 ////////////////////////////////////////////
 			{
 				// Make sure at least one point of damage is done
 				if(iDamage < 1)
 					iDamage = 1;
 
-//////////// Added by AWE /////////////////////
-				eAttacker maps\mp\gametypes\_awe::teamdamage(self, iDamage);
+//////////// Added by empire_mod /////////////////////
+				eAttacker maps\mp\gametypes\_empire::teamdamage(self, iDamage);
 ///////////////////////////////////////////////
 
 				self finishPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
 
-////////////// Added by AWE //////////////////
-				self maps\mp\gametypes\_awe::DoPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
+////////////// Added by empire_mod //////////////////
+				self maps\mp\gametypes\_empire::DoPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
 //////////////////////////////////////////////
 
 			}
-////////////// Changed by AWE /////////
+////////////// Changed by empire_mod /////////
 			else if(level.friendlyfire == "0" && !(sMeansOfDeath == "MOD_CRUSH_TANK" || sMeansOfDeath == "MOD_CRUSH_JEEP"))
 ///////////////////////////////////////
 			{
 				return;
 			}
-////////////// Changed by AWE /////////
-			else if( (level.friendlyfire == "2" && !(sMeansOfDeath == "MOD_CRUSH_TANK" || sMeansOfDeath == "MOD_CRUSH_JEEP")) || isdefined(eAttacker.pers["awe_teamkiller"]))
+////////////// Changed by empire_mod /////////
+			else if( (level.friendlyfire == "2" && !(sMeansOfDeath == "MOD_CRUSH_TANK" || sMeansOfDeath == "MOD_CRUSH_JEEP")) || isdefined(eAttacker.pers["empire_teamkiller"]))
 ///////////////////////////////////////
 			{
 				eAttacker.friendlydamage = true;
@@ -1178,7 +1178,7 @@ Callback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sW
 				
 				friendly = true;
 			}
-////////////// Changed by AWE /////////
+////////////// Changed by empire_mod /////////
 			else if(level.friendlyfire == "3" || sMeansOfDeath == "MOD_CRUSH_TANK" || sMeansOfDeath == "MOD_CRUSH_JEEP" )
 ///////////////////////////////////////
 			{
@@ -1205,8 +1205,8 @@ Callback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sW
 
 			self finishPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
 
-////////////// Added by AWE //////////////////
-			self maps\mp\gametypes\_awe::DoPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
+////////////// Added by empire_mod //////////////////
+			self maps\mp\gametypes\_empire::DoPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
 //////////////////////////////////////////////
 
 		}
@@ -1267,8 +1267,8 @@ Callback_PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 	if(self.sessionteam == "spectator")
 		return;
 
-/////////// Added by AWE ///////////
-	self thread maps\mp\gametypes\_awe::PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc);
+/////////// Added by empire_mod ///////////
+	self thread maps\mp\gametypes\_empire::PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc);
 ////////////////////////////////////
 
 	// If the player was killed by a head shot, let players know it was a head shot kill
@@ -1286,7 +1286,7 @@ Callback_PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 		sMeansOfDeath = "MOD_ARTILLERY";
 
 	// send out an obituary message to all clients about the kill
-////////// Removed by AWE ///////
+////////// Removed by empire_mod ///////
 //	obituary(self, attacker, sWeapon, sMeansOfDeath);
 /////////////////////////////////
 
@@ -1339,8 +1339,8 @@ Callback_PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 				{
 					attacker.pers["score"] += maps\mp\gametypes\_scoring_gmi::GetPoints( -1, game["br_points_teamkill"]);
 
-//////////// Added by AWE /////////////////////
-					attacker maps\mp\gametypes\_awe::teamkill();
+//////////// Added by empire_mod /////////////////////
+					attacker maps\mp\gametypes\_empire::teamkill();
 ///////////////////////////////////////////////
 
 					// mark the teamkiller as such, punish him next time he dies.
@@ -1426,7 +1426,7 @@ Callback_PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 
 	// Make the player drop his weapon
 
-///// Removed by AWE /////
+///// Removed by empire_mod /////
 //	if (!isdefined (self.autobalance))
 //		self dropItem(self getcurrentweapon());
 //////////////////////////
@@ -1446,7 +1446,7 @@ Callback_PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 	if (!isdefined (self.autobalance))
 	{
 
-///// Removed by AWE /////
+///// Removed by empire_mod /////
 //		body = self cloneplayer();
 //////////////////////////
 		
@@ -1647,7 +1647,7 @@ Respawn()
 		firsttime++;
 	
                 self waittill("menuresponse");
-                maps\mp\gametypes\_awe::NotAFK();
+                maps\mp\gametypes\_empire::NotAFK();
 		
 		wait 0.2;
 	}
@@ -1783,8 +1783,8 @@ SpawnPlayer()
 	// setup the hud rank indicator
 	self thread maps\mp\gametypes\_rank_gmi::RankHudInit();
 
-//////////// Added by AWE /////////////////////
-	self maps\mp\gametypes\_awe::spawnPlayer();
+//////////// Added by empire_mod /////////////////////
+	self maps\mp\gametypes\_empire::spawnPlayer();
 ///////////////////////////////////////////////
 
 }
@@ -2208,8 +2208,8 @@ RestartMap( )
 
 	level notify("cleanup match starting");
 
-////////// Added by AWE //////////	
-	maps\mp\gametypes\_awe::swapteams();
+////////// Added by empire_mod //////////	
+	maps\mp\gametypes\_empire::swapteams();
 //////////////////////////////////
 
 	map_restart(true);
@@ -2223,8 +2223,8 @@ RestartMap( )
 endMap()
 {
 
-////// Added by AWE ///////////
-	maps\mp\gametypes\_awe::endMap();
+////// Added by empire_mod ///////////
+	maps\mp\gametypes\_empire::endMap();
 /////////////////////////////////
 
 	game["state"] = "intermission";
@@ -3936,10 +3936,10 @@ dropHealth()
 	if ( !getcvarint("scr_drophealth") )
 		return;
 		
-//// Added by AWE ////
-	if(isdefined(self.awe_nohealthpack))
+//// Added by empire_mod ////
+	if(isdefined(self.empire_nohealthpack))
 		return;
-	self.awe_nohealthpack = true;
+	self.empire_nohealthpack = true;
 //////////////////////
 
 	if(isDefined(level.healthqueue[level.healthqueuecurrent]))

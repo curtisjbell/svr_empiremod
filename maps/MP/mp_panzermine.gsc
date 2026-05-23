@@ -1,7 +1,7 @@
 main()
 {
 setCullFog (0, 24000, 0.8, 0.8, 0.8, 0);
-thread pam_ambientsounds();
+thread empire_ambientsounds();
 
 maps\mp\_load::main();
 maps\mp\mp_panzermine_fx::main();
@@ -74,9 +74,9 @@ game["layoutimage"] = "mp_panzermine";
 
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
-	if (getcvar("rpam_ambientsounds") != "0")
+	if (getcvar("rempire_ambientsounds") != "0")
 	{
 		ambientPlay("ambient_panzermine");
 	}

@@ -35,7 +35,7 @@
 			type 1
 			rect 10 472 0 0
 			visible 1
-			text "AWE 2.1 (www.awemod.com)"
+			text "empire_mod 2.1 (www.empire_mod.com)"
 			decoration
 			textscale .23
 			textalign ITEM_ALIGN_LEFT

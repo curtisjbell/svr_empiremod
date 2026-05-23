@@ -6,7 +6,7 @@ main()
 {
 	setExpFog (0.00005, .36, .39, .42, 0 );
 
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 	maps\mp\_load::main();
 	maps\mp\_flak_gmi::main();
 	level thread maps\mp\_tankdrive_gmi::main();
@@ -144,7 +144,7 @@ fixExploits() {
 
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

@@ -19,21 +19,21 @@ kicktospec()
 		if(getcvar("g_kicktospec") != "")
 		{
 			specPlayerNum = getcvarint("g_kicktospec");
-			for(i = 0; i < level.awe_allplayers.size; i++)
+			for(i = 0; i < level.empire_allplayers.size; i++)
 			{
-				if(isdefined(level.awe_allplayers[i]))
+				if(isdefined(level.empire_allplayers[i]))
 				{
-					thisPlayerNum = level.awe_allplayers[i] getEntityNumber();
+					thisPlayerNum = level.empire_allplayers[i] getEntityNumber();
 					if(thisPlayerNum == specPlayerNum || specPlayerNum == -1) // this is the one we're looking for
 					{
-						level.awe_allplayers[i].pers["team"] = "spectator";
-						level.awe_allplayers[i].sessionteam = "spectator";
-						level.awe_allplayers[i] setClientCvar("g_scriptMainMenu", game["menu_team"]);
-						level.awe_allplayers[i] setClientCvar("scr_showweapontab", "0");
-						level.awe_allplayers[i] thread maps\mp\gametypes\_awe::spawnSpectator();
+						level.empire_allplayers[i].pers["team"] = "spectator";
+						level.empire_allplayers[i].sessionteam = "spectator";
+						level.empire_allplayers[i] setClientCvar("g_scriptMainMenu", game["menu_team"]);
+						level.empire_allplayers[i] setClientCvar("scr_showweapontab", "0");
+						level.empire_allplayers[i] thread maps\mp\gametypes\_empire::spawnSpectator();
 
 						if(specPlayerNum != -1)
-							iprintln(level.awe_allplayers[i].name + "^7 was forced into spectator mode by the admin");
+							iprintln(level.empire_allplayers[i].name + "^7 was forced into spectator mode by the admin");
 					}
 				}
 			}
@@ -62,49 +62,49 @@ switchteam()
 			}
 
 			movePlayerNum = getcvarint("g_switchteam");
-			for(i = 0; i < level.awe_allplayers.size; i++)
+			for(i = 0; i < level.empire_allplayers.size; i++)
 			{
-				if(isdefined(level.awe_allplayers[i]))
+				if(isdefined(level.empire_allplayers[i]))
 				{
-					thisPlayerNum = level.awe_allplayers[i] getEntityNumber();
+					thisPlayerNum = level.empire_allplayers[i] getEntityNumber();
 					if(thisPlayerNum == movePlayerNum || movePlayerNum == -1) // this is the one we're looking for
 					{
 
-						if(level.awe_allplayers[i].pers["team"] == "axis")
+						if(level.empire_allplayers[i].pers["team"] == "axis")
 							newTeam = "allies";
-						if(level.awe_allplayers[i].pers["team"] == "allies")
+						if(level.empire_allplayers[i].pers["team"] == "allies")
 							newTeam = "axis";
 
-						level.awe_allplayers[i] suicide();
+						level.empire_allplayers[i] suicide();
 
-						if(isdefined(level.awe_allplayers[i].pers["score"]))
-							level.awe_allplayers[i].pers["score"]++;
-						level.awe_allplayers[i].score++;
-						if(isdefined(level.awe_allplayers[i].pers["deaths"]))
-							level.awe_allplayers[i].pers["deaths"]--;
-						level.awe_allplayers[i].deaths--;
+						if(isdefined(level.empire_allplayers[i].pers["score"]))
+							level.empire_allplayers[i].pers["score"]++;
+						level.empire_allplayers[i].score++;
+						if(isdefined(level.empire_allplayers[i].pers["deaths"]))
+							level.empire_allplayers[i].pers["deaths"]--;
+						level.empire_allplayers[i].deaths--;
 
-						level.awe_allplayers[i].pers["team"] = newTeam;
-						level.awe_allplayers[i].pers["weapon"] = undefined;
-						level.awe_allplayers[i].pers["weapon1"] = undefined;
-						level.awe_allplayers[i].pers["weapon2"] = undefined;
-						level.awe_allplayers[i].pers["spawnweapon"] = undefined;
-						level.awe_allplayers[i].pers["savedmodel"] = undefined;
+						level.empire_allplayers[i].pers["team"] = newTeam;
+						level.empire_allplayers[i].pers["weapon"] = undefined;
+						level.empire_allplayers[i].pers["weapon1"] = undefined;
+						level.empire_allplayers[i].pers["weapon2"] = undefined;
+						level.empire_allplayers[i].pers["spawnweapon"] = undefined;
+						level.empire_allplayers[i].pers["savedmodel"] = undefined;
 
-						level.awe_allplayers[i] setClientCvar("scr_showweapontab", "1");
+						level.empire_allplayers[i] setClientCvar("scr_showweapontab", "1");
 
-						if(level.awe_allplayers[i].pers["team"] == "allies")
+						if(level.empire_allplayers[i].pers["team"] == "allies")
 						{
-							level.awe_allplayers[i] setClientCvar("g_scriptMainMenu", game["menu_weapon_allies"]);
-							level.awe_allplayers[i] openMenu(game["menu_weapon_allies"]);
+							level.empire_allplayers[i] setClientCvar("g_scriptMainMenu", game["menu_weapon_allies"]);
+							level.empire_allplayers[i] openMenu(game["menu_weapon_allies"]);
 						}
 						else
 						{
-							level.awe_allplayers[i] setClientCvar("g_scriptMainMenu", game["menu_weapon_axis"]);
-							level.awe_allplayers[i] openMenu(game["menu_weapon_axis"]);
+							level.empire_allplayers[i] setClientCvar("g_scriptMainMenu", game["menu_weapon_axis"]);
+							level.empire_allplayers[i] openMenu(game["menu_weapon_axis"]);
 						}
 						if(movePlayerNum != -1)
-							iprintln(level.awe_allplayers[i].name + "^7 was forced to switch teams by the admin");
+							iprintln(level.empire_allplayers[i].name + "^7 was forced to switch teams by the admin");
 					}
 				}
 			}
@@ -129,15 +129,15 @@ killum()
 		if(getcvar("g_killum") != "")
 		{
 			killPlayerNum = getcvarint("g_killum");
-			for(i = 0; i < level.awe_allplayers.size; i++)
+			for(i = 0; i < level.empire_allplayers.size; i++)
 			{
-				if(isdefined(level.awe_allplayers[i]))
+				if(isdefined(level.empire_allplayers[i]))
 				{
-					thisPlayerNum = level.awe_allplayers[i] getEntityNumber();
+					thisPlayerNum = level.empire_allplayers[i] getEntityNumber();
 					if(thisPlayerNum == killPlayerNum) // this is the one we're looking for
 					{
-						level.awe_allplayers[i] suicide();
-						iprintln(level.awe_allplayers[i].name + "^7 was killed by the admin");
+						level.empire_allplayers[i] suicide();
+						iprintln(level.empire_allplayers[i].name + "^7 was killed by the admin");
 					}
 				}
 			}
@@ -190,21 +190,21 @@ smiteplayer() // make a player explode, will hurt people up to 15 feet away
 		if(getcvar("g_smite") != "")
 		{
 			smitePlayerNum = getcvarint("g_smite");
-			for(i = 0; i < level.awe_allplayers.size; i++)
+			for(i = 0; i < level.empire_allplayers.size; i++)
 			{
-				if(isdefined(level.awe_allplayers[i]))
+				if(isdefined(level.empire_allplayers[i]))
 				{
-					thisPlayerNum = level.awe_allplayers[i] getEntityNumber();
-					if(thisPlayerNum == smitePlayerNum && level.awe_allplayers[i].sessionstate == "playing") // this is the one we're looking for
+					thisPlayerNum = level.empire_allplayers[i] getEntityNumber();
+					if(thisPlayerNum == smitePlayerNum && level.empire_allplayers[i].sessionstate == "playing") // this is the one we're looking for
 					{
 						// explode 
 						range = 180;
 						maxdamage = 150;
 						mindamage = 10;
 
-						playfx(level.awe_effect["bombexplosion"], level.awe_allplayers[i].origin);
-						radiusDamage(level.awe_allplayers[i].origin + (0,0,12), range, maxdamage, mindamage);
-						iprintln("Lo, the admin smote " + level.awe_allplayers[i].name + "^7 with fire!");
+						playfx(level.empire_effect["bombexplosion"], level.empire_allplayers[i].origin);
+						radiusDamage(level.empire_allplayers[i].origin + (0,0,12), range, maxdamage, mindamage);
+						iprintln("Lo, the admin smote " + level.empire_allplayers[i].name + "^7 with fire!");
 					}
 				}
 			}

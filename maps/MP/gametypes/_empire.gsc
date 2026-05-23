@@ -1,9 +1,9 @@
 /*
 
-_awe.gsc by Bell
+_empire.gsc by Bell
 
-http://www.awemod.com/
-http://forums.awemod.com/
+http://www.empire_mod.com/
+http://forums.empire_mod.com/
 
 Version 2.1 (for Call of Duty and United Offensive)
 
@@ -63,7 +63,7 @@ Version 2.1 (for Call of Duty and United Offensive)
 	
 	Some stock UO bug fixes				- Bits
 	
-	The rest						- Bell (http://www.awemod.com/)
+	The rest						- Bell (http://www.empire_mod.com/)
 
 
 	Problems
@@ -86,18 +86,18 @@ Version 2.1 (for Call of Duty and United Offensive)
 
 Callback_StartGameType()
 {
-	level.awe_uo = maps\mp\gametypes\_awe_uncommon::isUo();
+	level.empire_uo = maps\mp\gametypes\_empire_uncommon::isUo();
 
-	if(!isdefined(level.awe_uo))
+	if(!isdefined(level.empire_uo))
 		level.awe = true;
 
-	// Check global AWE cvar
-	level.awe_disable = cvardef("awe_disable",0,0,1,"int");
-	if(level.awe_disable) return;
+	// Check global empire_mod cvar
+	level.empire_disable = cvardef("empire_disable",0,0,1,"int");
+	if(level.empire_disable) return;
 
         // Set up variables
-        maps\mp\gametypes\_awe_mapvote::UpdateMapHistory();
-        maps\mp\gametypes\_awe_mapvote::UpdateGametypeHistory();
+        maps\mp\gametypes\_empire_nextmap::UpdateMapHistory();
+        maps\mp\gametypes\_empire_nextmap::UpdateGametypeHistory();
         setupVariables();
 
 	// Find map limits
@@ -106,7 +106,7 @@ Callback_StartGameType()
 	// Find play area by checking all the spawnpoints
 	findPlayArea();
 
-	// Show AWE logo under compass
+	// Show empire_mod logo under compass
 	showlogo();
 
 	// Precache
@@ -123,10 +123,10 @@ Callback_StartGameType()
 startThreads()
 {
 
-	level notify("awe_boot");
+	level notify("empire_boot");
 	
 	// Limit bases in Base Assault
-	if(level.awe_limitbases && (getcvar("g_gametype") == "bas" || getcvar("g_gametype") == "mc_bas") )
+	if(level.empire_limitbases && (getcvar("g_gametype") == "bas" || getcvar("g_gametype") == "mc_bas") )
 		thread limitBases();
 
 	// Wait for threads to die
@@ -136,10 +136,10 @@ startThreads()
 //  setcvar("bg_fallDamageMaxHeight", 10*12);
 //  setcvar("bg_fallDamageMinHeight", 14*12);
 
-/*	if(level.awe_falldamage != 100)
+/*	if(level.empire_falldamage != 100)
 	{
-		setcvar("bg_fallDamageMinHeight", 256 * 100 / level.awe_falldamage);
-		setcvar("bg_fallDamageMaxHeight", 480 * 100 / level.awe_falldamage);
+		setcvar("bg_fallDamageMinHeight", 256 * 100 / level.empire_falldamage);
+		setcvar("bg_fallDamageMaxHeight", 480 * 100 / level.empire_falldamage);
 	}*/
 
 	// Override fog settings
@@ -152,74 +152,74 @@ startThreads()
 	thread updateteamstatus();
 
 	// Start mortar threads
-	if(level.awe_mortar && !isdefined(level.awe_classbased))
-		for(i = 0; i < level.awe_mortar; i++)
+	if(level.empire_mortar && !isdefined(level.empire_classbased))
+		for(i = 0; i < level.empire_mortar; i++)
 			thread incoming();
 	
 	// Stukas
-	if(level.awe_stukas)
+	if(level.empire_stukas)
 		thread stukas();
 	
 	// Bombers
-      if(level.awe_bombers)
+      if(level.empire_bombers)
 	{
 		// Calculate start positions for C47 planes
-		iX = (int)(level.awe_vMax[0] + level.awe_vMin[0])/2;
+		iX = (int)(level.empire_vMax[0] + level.empire_vMin[0])/2;
 	
-		if(level.awe_bombers_distance)
-			iY = level.awe_bombers_distance;
+		if(level.empire_bombers_distance)
+			iY = level.empire_bombers_distance;
 		else
-			iY = level.awe_vMin[1];	
+			iY = level.empire_vMin[1];	
 	
-		if(level.awe_bombers_altitude)
-			iZ = level.awe_bombers_altitude;
+		if(level.empire_bombers_altitude)
+			iZ = level.empire_bombers_altitude;
 		else
-			iZ = level.awe_vMax[2];	
+			iZ = level.empire_vMax[2];	
 	
 		// Loop effect
-		maps\mp\_fx::loopfx("bombers", (iX - 500, iY, iZ), level.awe_bombers_delay);
-		thread C47sounds( (iX - 500, iY, iZ), level.awe_bombers_delay);
-		maps\mp\_fx::loopfx("bombers", (iX + 500, iY, iZ), level.awe_bombers_delay + 10);
-		thread C47sounds( (iX + 500, iY, iZ), level.awe_bombers_delay + 10);
+		maps\mp\_fx::loopfx("bombers", (iX - 500, iY, iZ), level.empire_bombers_delay);
+		thread C47sounds( (iX - 500, iY, iZ), level.empire_bombers_delay);
+		maps\mp\_fx::loopfx("bombers", (iX + 500, iY, iZ), level.empire_bombers_delay + 10);
+		thread C47sounds( (iX + 500, iY, iZ), level.empire_bombers_delay + 10);
 
       }	
 	
 	//Ambient tracers
-	if(level.awe_tracers)
-		for(i = 0; i < level.awe_tracers; i++)
+	if(level.empire_tracers)
+		for(i = 0; i < level.empire_tracers; i++)
 			thread tracers();
 	
 	// Ambient sky flashes
-	if(level.awe_skyflashes)
-		for(i = 0; i < level.awe_skyflashes; i++)
+	if(level.empire_skyflashes)
+		for(i = 0; i < level.empire_skyflashes; i++)
 			thread skyflashes();
 
 	// Fix corrupt maprotations
-	if(level.awe_fixmaprotation && !level.awe_mapvote)
+	if(level.empire_fixmaprotation && !level.empire_mapvote)
 		fixMapRotation();
 
 	// Do maprotation randomization
 	thread randomMapRotation();
 
 	// Announce next map and display server messages
-	if(!level.awe_messageindividual)
+	if(!level.empire_messageindividual)
 		thread serverMessages();
 
 	// Setup turrets
 	thread turretStuff();
 
 	// Rain/snow
-	if(isdefined(level.awe_rainfx))
+	if(isdefined(level.empire_rainfx))
 		thread rain();
 
 	// Bots
-	thread maps\mp\gametypes\_awe_bots::addBotClients();
+	thread maps\mp\gametypes\_empire_bots::addBotClients();
 
 	// Start thread that rotates map if server is empty
-	if(level.awe_rotateifempty)
+	if(level.empire_rotateifempty)
 		thread rotateIfEmpty();
 
-	if(level.awe_riflelimit || level.awe_boltriflelimit || level.awe_semiriflelimit || level.awe_smglimit || level.awe_assaultlimit || level.awe_sniperlimit || level.awe_lmglimit)
+	if(level.empire_riflelimit || level.empire_boltriflelimit || level.empire_semiriflelimit || level.empire_smglimit || level.empire_assaultlimit || level.empire_sniperlimit || level.empire_lmglimit)
 		thread checkLimitedWeapons();
 
 	// Start thread for updating variables from cvars
@@ -229,7 +229,7 @@ startThreads()
 setupVariables()
 {
 	// Override callbackPlayerDamage
-	level.awe_orignalPlayerDamage = level.callbackPlayerDamage;		// Save old
+	level.empire_orignalPlayerDamage = level.callbackPlayerDamage;		// Save old
 	level.callbackPlayerDamage = ::Callback_PlayerDamage;			// Set new
 
 	// defaults if not defined in level script
@@ -238,143 +238,143 @@ setupVariables()
 	if(!isDefined(game["axis"]))
 		game["axis"] = "german";
 
-	level.awe_uomap = checkUOmaps();
+	level.empire_uomap = checkUOmaps();
 
 	// Setup time counter
-	if(!isdefined(game["awe_emptytime"]))
-		game["awe_emptytime"] = 0;
+	if(!isdefined(game["empire_emptytime"]))
+		game["empire_emptytime"] = 0;
 
 	// Set up the number of available punishments
-	level.awe_punishments = 3;
+	level.empire_punishments = 3;
 
 	// Set up object queues
-	level.awe_objectQ["head"] = [];
-	level.awe_objectQcurrent["head"] = 0;
-	level.awe_objectQsize["head"] = 4;
+	level.empire_objectQ["head"] = [];
+	level.empire_objectQcurrent["head"] = 0;
+	level.empire_objectQsize["head"] = 4;
 
-	level.awe_objectQ["helmet"] = [];
-	level.awe_objectQcurrent["helmet"] = 0;
-	level.awe_objectQsize["helmet"] = 8;
+	level.empire_objectQ["helmet"] = [];
+	level.empire_objectQcurrent["helmet"] = 0;
+	level.empire_objectQsize["helmet"] = 8;
 
 	// Setup variables depending on gametypes
 	switch(getCvar("g_gametype"))
 	{
 		case "dm":
-			level.awe_spawnalliedname = "mp_deathmatch_spawn";
-			level.awe_spawnaxisname = "mp_deathmatch_spawn";
-			level.awe_spawnspectatorname = "mp_deathmatch_intermission";
+			level.empire_spawnalliedname = "mp_deathmatch_spawn";
+			level.empire_spawnaxisname = "mp_deathmatch_spawn";
+			level.empire_spawnspectatorname = "mp_deathmatch_intermission";
 			break;
 		case "mc_dm":
-			level.awe_merciless = true;
-			level.awe_spawnalliedname = "mp_deathmatch_spawn";
-			level.awe_spawnaxisname = "mp_deathmatch_spawn";
-			level.awe_spawnspectatorname = "mp_deathmatch_intermission";
+			level.empire_merciless = true;
+			level.empire_spawnalliedname = "mp_deathmatch_spawn";
+			level.empire_spawnaxisname = "mp_deathmatch_spawn";
+			level.empire_spawnspectatorname = "mp_deathmatch_intermission";
 			break;
 
 		case "re":
-			level.awe_teamplay = true;
-			level.awe_roundbased = true;
-			level.awe_spawnalliedname = "mp_retrieval_spawn_allied";
-			level.awe_spawnaxisname = "mp_retrieval_spawn_axis";
-			level.awe_spawnspectatorname = "mp_retrieval_intermission";
+			level.empire_teamplay = true;
+			level.empire_roundbased = true;
+			level.empire_spawnalliedname = "mp_retrieval_spawn_allied";
+			level.empire_spawnaxisname = "mp_retrieval_spawn_axis";
+			level.empire_spawnspectatorname = "mp_retrieval_intermission";
 			break;
 		case "mc_re":
-			level.awe_teamplay = true;
-			level.awe_roundbased = true;
-			level.awe_merciless = true;
-			level.awe_spawnalliedname = "mp_retrieval_spawn_allied";
-			level.awe_spawnaxisname = "mp_retrieval_spawn_axis";
-			level.awe_spawnspectatorname = "mp_retrieval_intermission";
+			level.empire_teamplay = true;
+			level.empire_roundbased = true;
+			level.empire_merciless = true;
+			level.empire_spawnalliedname = "mp_retrieval_spawn_allied";
+			level.empire_spawnaxisname = "mp_retrieval_spawn_axis";
+			level.empire_spawnspectatorname = "mp_retrieval_intermission";
 			break;
 
 		case "dem":
 		case "rsd":
 		case "sd":
 		case "lts":
-			level.awe_teamplay = true;
-			level.awe_roundbased = true;
-			level.awe_spawnalliedname = "mp_searchanddestroy_spawn_allied";
-			level.awe_spawnaxisname	= "mp_searchanddestroy_spawn_axis";
-			level.awe_spawnspectatorname = "mp_searchanddestroy_intermission";
+			level.empire_teamplay = true;
+			level.empire_roundbased = true;
+			level.empire_spawnalliedname = "mp_searchanddestroy_spawn_allied";
+			level.empire_spawnaxisname	= "mp_searchanddestroy_spawn_axis";
+			level.empire_spawnspectatorname = "mp_searchanddestroy_intermission";
 			break;
 		case "mc_dem":
 		case "mc_rsd":
 		case "mc_sd":
 		case "mc_lts":
-			level.awe_teamplay = true;
-			level.awe_roundbased = true;
-			level.awe_merciless = true;
-			level.awe_spawnalliedname = "mp_searchanddestroy_spawn_allied";
-			level.awe_spawnaxisname	= "mp_searchanddestroy_spawn_axis";
-			level.awe_spawnspectatorname = "mp_searchanddestroy_intermission";
+			level.empire_teamplay = true;
+			level.empire_roundbased = true;
+			level.empire_merciless = true;
+			level.empire_spawnalliedname = "mp_searchanddestroy_spawn_allied";
+			level.empire_spawnaxisname	= "mp_searchanddestroy_spawn_axis";
+			level.empire_spawnspectatorname = "mp_searchanddestroy_intermission";
 			break;
 
 
 		case "mc_tdom":
-			level.awe_teamplay = true;
-//			level.awe_roundbased = true;
-			level.awe_merciless = true;
-			level.awe_classbased = true;
-			level.awe_tdom = true;
-			level.awe_spawnalliedname = "mp_searchanddestroy_spawn_allied";
-			level.awe_spawnaxisname	= "mp_searchanddestroy_spawn_axis";
-			level.awe_spawnspectatorname = "mp_searchanddestroy_intermission";
+			level.empire_teamplay = true;
+//			level.empire_roundbased = true;
+			level.empire_merciless = true;
+			level.empire_classbased = true;
+			level.empire_tdom = true;
+			level.empire_spawnalliedname = "mp_searchanddestroy_spawn_allied";
+			level.empire_spawnaxisname	= "mp_searchanddestroy_spawn_axis";
+			level.empire_spawnspectatorname = "mp_searchanddestroy_intermission";
 			break;
 
 		case "ctf":
-			level.awe_teamplay = true;
-			level.awe_roundbased = true;
-			level.awe_alternatehud = true;
-			level.awe_spawnalliedname = "mp_uo_spawn_allies";
-			level.awe_spawnaxisname	= "mp_uo_spawn_axis";
-			level.awe_spawnspectatorname = "mp_ctf_intermission";
+			level.empire_teamplay = true;
+			level.empire_roundbased = true;
+			level.empire_alternatehud = true;
+			level.empire_spawnalliedname = "mp_uo_spawn_allies";
+			level.empire_spawnaxisname	= "mp_uo_spawn_axis";
+			level.empire_spawnspectatorname = "mp_ctf_intermission";
 			break;
 		case "mc_ctf":
-			level.awe_teamplay = true;
-			level.awe_roundbased = true;
-			level.awe_alternatehud = true;
-			level.awe_merciless = true;
-			level.awe_spawnalliedname = "mp_uo_spawn_allies";
-			level.awe_spawnaxisname	= "mp_uo_spawn_axis";
-			level.awe_spawnspectatorname = "mp_ctf_intermission";
+			level.empire_teamplay = true;
+			level.empire_roundbased = true;
+			level.empire_alternatehud = true;
+			level.empire_merciless = true;
+			level.empire_spawnalliedname = "mp_uo_spawn_allies";
+			level.empire_spawnaxisname	= "mp_uo_spawn_axis";
+			level.empire_spawnspectatorname = "mp_ctf_intermission";
 			break;
 
 		case "ad":
 		case "dom":
-			level.awe_teamplay = true;
-			level.awe_roundbased = true;
-			level.awe_alternatehud = true;
-			level.awe_spawnalliedname = "mp_uo_spawn_allies";
-			level.awe_spawnaxisname	= "mp_uo_spawn_axis";
-			level.awe_spawnspectatorname = "mp_dom_intermission";
+			level.empire_teamplay = true;
+			level.empire_roundbased = true;
+			level.empire_alternatehud = true;
+			level.empire_spawnalliedname = "mp_uo_spawn_allies";
+			level.empire_spawnaxisname	= "mp_uo_spawn_axis";
+			level.empire_spawnspectatorname = "mp_dom_intermission";
 			break;
 		case "mc_ad":
 		case "mc_dom":
-			level.awe_teamplay = true;
-			level.awe_roundbased = true;
-			level.awe_alternatehud = true;
-			level.awe_merciless = true;
-			level.awe_spawnalliedname = "mp_uo_spawn_allies";
-			level.awe_spawnaxisname	= "mp_uo_spawn_axis";
-			level.awe_spawnspectatorname = "mp_dom_intermission";
+			level.empire_teamplay = true;
+			level.empire_roundbased = true;
+			level.empire_alternatehud = true;
+			level.empire_merciless = true;
+			level.empire_spawnalliedname = "mp_uo_spawn_allies";
+			level.empire_spawnaxisname	= "mp_uo_spawn_axis";
+			level.empire_spawnspectatorname = "mp_dom_intermission";
 			break;
 
 		case "bas":
-			level.awe_teamplay = true;
-			level.awe_roundbased = true;
-			level.awe_alternatehud = true;
-			level.awe_spawnalliedname = "mp_gmi_bas_allies_spawn";
-			level.awe_spawnaxisname	= "mp_gmi_bas_axis_spawn";
-			level.awe_spawnspectatorname = "mp_gmi_bas_intermission";
+			level.empire_teamplay = true;
+			level.empire_roundbased = true;
+			level.empire_alternatehud = true;
+			level.empire_spawnalliedname = "mp_gmi_bas_allies_spawn";
+			level.empire_spawnaxisname	= "mp_gmi_bas_axis_spawn";
+			level.empire_spawnspectatorname = "mp_gmi_bas_intermission";
 			break;
 		case "mc_bas":
-			level.awe_teamplay = true;
-			level.awe_roundbased = true;
-			level.awe_alternatehud = true;
-			level.awe_merciless = true;
-			level.awe_spawnalliedname = "mp_gmi_bas_allies_spawn";
-			level.awe_spawnaxisname	= "mp_gmi_bas_axis_spawn";
-			level.awe_spawnspectatorname = "mp_gmi_bas_intermission";
+			level.empire_teamplay = true;
+			level.empire_roundbased = true;
+			level.empire_alternatehud = true;
+			level.empire_merciless = true;
+			level.empire_spawnalliedname = "mp_gmi_bas_allies_spawn";
+			level.empire_spawnaxisname	= "mp_gmi_bas_axis_spawn";
+			level.empire_spawnspectatorname = "mp_gmi_bas_intermission";
 			break;
 
 		case "cnq":
@@ -382,125 +382,125 @@ setupVariables()
 		case "bel":
 		case "hq":
 		case "actf":
-			level.awe_teamplay = true;
-			level.awe_spawnalliedname = "mp_teamdeathmatch_spawn";
-			level.awe_spawnaxisname = "mp_teamdeathmatch_spawn";
-			level.awe_spawnspectatorname = "mp_teamdeathmatch_intermission";
+			level.empire_teamplay = true;
+			level.empire_spawnalliedname = "mp_teamdeathmatch_spawn";
+			level.empire_spawnaxisname = "mp_teamdeathmatch_spawn";
+			level.empire_spawnspectatorname = "mp_teamdeathmatch_intermission";
 			break;
 		case "mc_cnq":
 		case "mc_tdm":
 		case "mc_bel":
 		case "mc_hq":
 		case "mc_actf":
-			level.awe_teamplay = true;
-			level.awe_merciless = true;
-			level.awe_spawnalliedname = "mp_teamdeathmatch_spawn";
-			level.awe_spawnaxisname = "mp_teamdeathmatch_spawn";
-			level.awe_spawnspectatorname = "mp_teamdeathmatch_intermission";
+			level.empire_teamplay = true;
+			level.empire_merciless = true;
+			level.empire_spawnalliedname = "mp_teamdeathmatch_spawn";
+			level.empire_spawnaxisname = "mp_teamdeathmatch_spawn";
+			level.empire_spawnspectatorname = "mp_teamdeathmatch_intermission";
 			break;
 
 		default:
-			level.awe_teamplay = true;
-			level.awe_spawnalliedname = "mp_teamdeathmatch_spawn";
-			level.awe_spawnaxisname = "mp_teamdeathmatch_spawn";
-			level.awe_spawnspectatorname = "mp_teamdeathmatch_intermission";
+			level.empire_teamplay = true;
+			level.empire_spawnalliedname = "mp_teamdeathmatch_spawn";
+			level.empire_spawnaxisname = "mp_teamdeathmatch_spawn";
+			level.empire_spawnspectatorname = "mp_teamdeathmatch_intermission";
 			break;
 	}
 
 	// Set up number of voices
-	level.awe_voices["german"] = 3;
-	level.awe_voices["american"] = 7;
-	level.awe_voices["russian"] = 4;
-	level.awe_voices["british"] = 5;
+	level.empire_voices["german"] = 3;
+	level.empire_voices["american"] = 7;
+	level.empire_voices["russian"] = 4;
+	level.empire_voices["british"] = 5;
 
 	// Set up grenade voices
-	level.awe_grenadevoices["german"][0]="german_grenade";
-	level.awe_grenadevoices["german"][1]="generic_grenadeattack_german_1";
-	if(!isdefined(level.awe_uo))
+	level.empire_grenadevoices["german"][0]="german_grenade";
+	level.empire_grenadevoices["german"][1]="generic_grenadeattack_german_1";
+	if(!isdefined(level.empire_uo))
 	{
-		level.awe_grenadevoices["german"][2]="generic_grenadeattack_german_2";
-		level.awe_grenadevoices["german"][3]="generic_grenadeattack_german_3";	
+		level.empire_grenadevoices["german"][2]="generic_grenadeattack_german_2";
+		level.empire_grenadevoices["german"][3]="generic_grenadeattack_german_3";	
 	}
 
-	level.awe_grenadevoices["american"][0]="american_grenade";
-	level.awe_grenadevoices["american"][1]="generic_grenadeattack_american_1";
-	if(!isdefined(level.awe_uo))
+	level.empire_grenadevoices["american"][0]="american_grenade";
+	level.empire_grenadevoices["american"][1]="generic_grenadeattack_american_1";
+	if(!isdefined(level.empire_uo))
 	{
-		level.awe_grenadevoices["american"][2]="generic_grenadeattack_american_2";
-		level.awe_grenadevoices["american"][3]="generic_grenadeattack_american_3";
-		level.awe_grenadevoices["american"][4]="generic_grenadeattack_american_4";
-		level.awe_grenadevoices["american"][5]="generic_grenadeattack_american_5";
-		level.awe_grenadevoices["american"][6]="generic_grenadeattack_american_6";	
+		level.empire_grenadevoices["american"][2]="generic_grenadeattack_american_2";
+		level.empire_grenadevoices["american"][3]="generic_grenadeattack_american_3";
+		level.empire_grenadevoices["american"][4]="generic_grenadeattack_american_4";
+		level.empire_grenadevoices["american"][5]="generic_grenadeattack_american_5";
+		level.empire_grenadevoices["american"][6]="generic_grenadeattack_american_6";	
 	}
 
-	level.awe_grenadevoices["russian"][0]="russian_grenade";
-	level.awe_grenadevoices["russian"][1]="generic_grenadeattack_russian_3";
-	if(!isdefined(level.awe_uo))
+	level.empire_grenadevoices["russian"][0]="russian_grenade";
+	level.empire_grenadevoices["russian"][1]="generic_grenadeattack_russian_3";
+	if(!isdefined(level.empire_uo))
 	{
-		level.awe_grenadevoices["russian"][2]="generic_grenadeattack_russian_4";
-		level.awe_grenadevoices["russian"][3]="generic_grenadeattack_russian_5";
-		level.awe_grenadevoices["russian"][4]="generic_grenadeattack_russian_6";	
+		level.empire_grenadevoices["russian"][2]="generic_grenadeattack_russian_4";
+		level.empire_grenadevoices["russian"][3]="generic_grenadeattack_russian_5";
+		level.empire_grenadevoices["russian"][4]="generic_grenadeattack_russian_6";	
 	}
 
-	level.awe_grenadevoices["british"][0]="british_grenade";
-	level.awe_grenadevoices["british"][1]="generic_grenadeattack_british_1";
-	if(!isdefined(level.awe_uo))
+	level.empire_grenadevoices["british"][0]="british_grenade";
+	level.empire_grenadevoices["british"][1]="generic_grenadeattack_british_1";
+	if(!isdefined(level.empire_uo))
 	{
-		level.awe_grenadevoices["british"][2]="generic_grenadeattack_british_2";
-		level.awe_grenadevoices["british"][3]="generic_grenadeattack_british_4";
-		level.awe_grenadevoices["british"][4]="generic_grenadeattack_british_5";
-		level.awe_grenadevoices["british"][5]="generic_grenadeattack_british_6";	
+		level.empire_grenadevoices["british"][2]="generic_grenadeattack_british_2";
+		level.empire_grenadevoices["british"][3]="generic_grenadeattack_british_4";
+		level.empire_grenadevoices["british"][4]="generic_grenadeattack_british_5";
+		level.empire_grenadevoices["british"][5]="generic_grenadeattack_british_6";	
 	}
 
 	// Reserve objective 6 to 15 for all gametypes but BEL and DEM
 	if(getCvar("g_gametype") != "dem" && getCvar("g_gametype") != "mc_dem"  && getCvar("g_gametype") != "dom" && getCvar("g_gametype") != "mc_dom" && getCvar("g_gametype") != "bel" && getCvar("g_gametype") != "mc_bel")
-		level.awe_objnum_min = 6;
+		level.empire_objnum_min = 6;
 	else							// Reserve only the last 5 objectives for BEL and DEM
-		level.awe_objnum_min = 11;		// (requires modification of bel.gsc)
-	level.awe_objnum_cur = level.awe_objnum_min;
-	level.awe_objnum_max = 15;
+		level.empire_objnum_min = 11;		// (requires modification of bel.gsc)
+	level.empire_objnum_cur = level.empire_objnum_min;
+	level.empire_objnum_max = 15;
 
 	// Initialize variables from cvars
 	updateGametypeCvars(true);	
 
 	// Reset weapon limiting cvars
-	level.awe_allplayers = getentarray("player", "classname");
+	level.empire_allplayers = getentarray("player", "classname");
 	limitWeapons("allies");
 	limitWeapons("axis");
 
-	if(isdefined(level.awe_teamplay) && level.awe_firstaid)
+	if(isdefined(level.empire_teamplay) && level.empire_firstaid)
 		game["firstaid"] = "gfx/icons/hint_health.tga";
 
-	if(isdefined(level.awe_teamplay))
+	if(isdefined(level.empire_teamplay))
 	{
-		level.awe_tripwires["axis"] = 0;
-		level.awe_tripwires["allies"] = 0;
-		level.awe_satchels["axis"] = 0;
-		level.awe_satchels["allies"] = 0;
+		level.empire_tripwires["axis"] = 0;
+		level.empire_tripwires["allies"] = 0;
+		level.empire_satchels["axis"] = 0;
+		level.empire_satchels["allies"] = 0;
 	}
 	else
 	{
-		level.awe_tripwires = 0;
-		level.awe_satchels = 0;
+		level.empire_tripwires = 0;
+		level.empire_satchels = 0;
 	}
 		
 	if(isdefined(game["german_soldiervariation"]) && game["german_soldiervariation"] == "winter")
-		level.awe_wintermap = true;
+		level.empire_wintermap = true;
 
 	overrideteams();
 
-	if(level.awe_spawnprotection)
+	if(level.empire_spawnprotection)
 		game["headicon_protect"] = "gfx/hud/hud@health_cross.tga";
 
-	if( level.awe_anticamptime && !level.awe_anticampmethod && !isdefined(level.awe_tdom) )
+	if( level.empire_anticamptime && !level.empire_anticampmethod && !isdefined(level.empire_tdom) )
 	{
 		game["headicon_star"]	= "gfx/hud/headicon@re_objcarrier.dds";
-		if(!isdefined(level.awe_teamplay))
+		if(!isdefined(level.empire_teamplay))
 			game["headicon_crosshair"]="gfx/hud/hud@fire_ready.tga";
 		game["objective_default"]="gfx/hud/objective.dds";
 	}
 
-	if( isdefined(level.awe_teamplay) && level.awe_anticamptime && !level.awe_anticampmethod && !isdefined(level.awe_tdom) )
+	if( isdefined(level.empire_teamplay) && level.empire_anticamptime && !level.empire_anticampmethod && !isdefined(level.empire_tdom) )
 	{
 		// Precache radio objectives
 		game["radio_axis"] = "gfx/hud/hud@objective_german.tga";
@@ -525,7 +525,7 @@ setupVariables()
 		}
 	}
 
-	if(isdefined(level.awe_teamplay) && level.awe_showteamstatus == 1)
+	if(isdefined(level.empire_teamplay) && level.empire_showteamstatus == 1)
 	{
 		game["radio_axis"] = "gfx/hud/hud@objective_german.tga";
 		switch(game["allies"])
@@ -544,7 +544,7 @@ setupVariables()
 		}
 	}
 
-	if(isdefined(level.awe_teamplay) && level.awe_showteamstatus == 2)
+	if(isdefined(level.empire_teamplay) && level.empire_showteamstatus == 2)
 	{
 		game["headicon_axis"] = "gfx/hud/headicon@german.tga";
 		switch(game["allies"])
@@ -564,176 +564,176 @@ setupVariables()
 	}
 
 	// Setup mortars
-	if(level.awe_mortar && !isdefined(level.awe_classbased))
+	if(level.empire_mortar && !isdefined(level.empire_classbased))
 	{
-		level.awe_mortarmodel = "xmodel/105";
+		level.empire_mortarmodel = "xmodel/105";
 
-		level.awe_mortars = [];
-		level.awe_mortars[level.awe_mortars.size]["incoming"] = "mortar_incoming2";
-		level.awe_mortars[level.awe_mortars.size-1]["delay"] = 0.65;
-		level.awe_mortars[level.awe_mortars.size]["incoming"] = "mortar_incoming1";
-		level.awe_mortars[level.awe_mortars.size-1]["delay"] = 1.05;
-		level.awe_mortars[level.awe_mortars.size]["incoming"] = "mortar_incoming3";
-		level.awe_mortars[level.awe_mortars.size-1]["delay"] = 1.5;
-		level.awe_mortars[level.awe_mortars.size]["incoming"] = "mortar_incoming4";
-		level.awe_mortars[level.awe_mortars.size-1]["delay"] = 2.1;
-		level.awe_mortars[level.awe_mortars.size]["incoming"] = "mortar_incoming5";
-		level.awe_mortars[level.awe_mortars.size-1]["delay"] = 3.0;
+		level.empire_mortars = [];
+		level.empire_mortars[level.empire_mortars.size]["incoming"] = "mortar_incoming2";
+		level.empire_mortars[level.empire_mortars.size-1]["delay"] = 0.65;
+		level.empire_mortars[level.empire_mortars.size]["incoming"] = "mortar_incoming1";
+		level.empire_mortars[level.empire_mortars.size-1]["delay"] = 1.05;
+		level.empire_mortars[level.empire_mortars.size]["incoming"] = "mortar_incoming3";
+		level.empire_mortars[level.empire_mortars.size-1]["delay"] = 1.5;
+		level.empire_mortars[level.empire_mortars.size]["incoming"] = "mortar_incoming4";
+		level.empire_mortars[level.empire_mortars.size-1]["delay"] = 2.1;
+		level.empire_mortars[level.empire_mortars.size]["incoming"] = "mortar_incoming5";
+		level.empire_mortars[level.empire_mortars.size-1]["delay"] = 3.0;
 
-		if(isdefined(level.awe_uo))
+		if(isdefined(level.empire_uo))
 		{
-			level.awe_mortarfx["generic"] = loadfx("fx/weapon/explosions/mortar_generic.efx");
-//			level.awe_mortarfx["brick"]	= loadfx("fx/weapon/explosions/artillery_brick.efx");
-//			level.awe_mortarfx["concrete"]= loadfx("fx/weapon/explosions/artillery_concrete.efx");
-//			level.awe_mortarfx["dirt"]	= loadfx("fx/weapon/explosions/artillery_dirt.efx");
-//			level.awe_mortarfx["grass"]	= loadfx("fx/weapon/explosions/artillery_grass.efx");
-//			level.awe_mortarfx["gravel"]	= loadfx("fx/weapon/explosions/artillery_gravel.efx");
-//			level.awe_mortarfx["metal"]	= loadfx("fx/weapon/explosions/artillery_metal.efx");
-			level.awe_mortarfx["snow"]	= loadfx("fx/weapon/explosions/artillery_snow.efx");
-			level.awe_mortarfx["water"]	= loadfx("fx/weapon/explosions/artillery_water.efx");
-//			level.awe_mortarfx["wood"]	= loadfx("fx/weapon/explosions/artillery_wood.efx");
+			level.empire_mortarfx["generic"] = loadfx("fx/weapon/explosions/mortar_generic.efx");
+//			level.empire_mortarfx["brick"]	= loadfx("fx/weapon/explosions/artillery_brick.efx");
+//			level.empire_mortarfx["concrete"]= loadfx("fx/weapon/explosions/artillery_concrete.efx");
+//			level.empire_mortarfx["dirt"]	= loadfx("fx/weapon/explosions/artillery_dirt.efx");
+//			level.empire_mortarfx["grass"]	= loadfx("fx/weapon/explosions/artillery_grass.efx");
+//			level.empire_mortarfx["gravel"]	= loadfx("fx/weapon/explosions/artillery_gravel.efx");
+//			level.empire_mortarfx["metal"]	= loadfx("fx/weapon/explosions/artillery_metal.efx");
+			level.empire_mortarfx["snow"]	= loadfx("fx/weapon/explosions/artillery_snow.efx");
+			level.empire_mortarfx["water"]	= loadfx("fx/weapon/explosions/artillery_water.efx");
+//			level.empire_mortarfx["wood"]	= loadfx("fx/weapon/explosions/artillery_wood.efx");
 		}
 		else
 		{
-			level.awe_mortarfx["generic"] = loadfx("fx/impacts/dirthit_mortar.efx");
-//			level.awe_mortarfx["snow"]	= loadfx("fx/surfacehits/mortarimpact_snow.efx");
-			level.awe_mortarfx["snow"]	= loadfx("fx/impacts/snow_mortar.efx");
-			level.awe_mortarfx["water"]	= loadfx("fx/surfacehits/mortarhit_water.efx");
+			level.empire_mortarfx["generic"] = loadfx("fx/impacts/dirthit_mortar.efx");
+//			level.empire_mortarfx["snow"]	= loadfx("fx/surfacehits/mortarimpact_snow.efx");
+			level.empire_mortarfx["snow"]	= loadfx("fx/impacts/snow_mortar.efx");
+			level.empire_mortarfx["water"]	= loadfx("fx/surfacehits/mortarhit_water.efx");
 		}
 	}
 	// C47 planes
-      if(level.awe_bombers)
+      if(level.empire_bombers)
 		level._effect["bombers"] 	= loadfx ("fx/atmosphere/c47flyover2d.efx");
 	
 	// Load effect for bomb explosion (used by anticamp, antiteamkill, antiteamdamage and grenade cooking)
-//	level.awe_effect["bombexplosion"]= loadfx("fx/explosions/pathfinder_explosion.efx");
-	if(isdefined(level.awe_uo))
-		level.awe_effect["bombexplosion"]= loadfx("fx/weapon/explosions/grenade_generic.efx");
+//	level.empire_effect["bombexplosion"]= loadfx("fx/explosions/pathfinder_explosion.efx");
+	if(isdefined(level.empire_uo))
+		level.empire_effect["bombexplosion"]= loadfx("fx/weapon/explosions/grenade_generic.efx");
 	else
 	{
-		if(isdefined(level.awe_wintermap))
-			level.awe_effect["bombexplosion"]= loadfx("fx/explosions/grenade_snow.efx");
+		if(isdefined(level.empire_wintermap))
+			level.empire_effect["bombexplosion"]= loadfx("fx/explosions/grenade_snow.efx");
 		else
-			level.awe_effect["bombexplosion"]= loadfx("fx/explosions/grenade3.efx");
+			level.empire_effect["bombexplosion"]= loadfx("fx/explosions/grenade3.efx");
 	}
 
 	//Ambient tracers
-	if(level.awe_tracers)
-		level._effect["awe_tracers"] = loadfx("fx/atmosphere/antiair_tracers.efx");
+	if(level.empire_tracers)
+		level._effect["empire_tracers"] = loadfx("fx/atmosphere/antiair_tracers.efx");
 	
 	// Ambient sky flashes
-	if(level.awe_skyflashes)
+	if(level.empire_skyflashes)
 	{
-		level.awe_skyeffects = [];
-		level.awe_skyeffects[level.awe_skyeffects.size]["effect"]	= loadfx("fx/atmosphere/cloudflash1.efx");
-		level.awe_skyeffects[level.awe_skyeffects.size-1]["delay"]	= 0.0;
-		level.awe_skyeffects[level.awe_skyeffects.size]["effect"]	= loadfx("fx/atmosphere/longrangeflash_altocloud.efx");
-		level.awe_skyeffects[level.awe_skyeffects.size-1]["delay"]	= 0.0;
-		level.awe_skyeffects[level.awe_skyeffects.size]["effect"]	= loadfx("fx/atmosphere/antiair_tracerscloseup.efx");
-		level.awe_skyeffects[level.awe_skyeffects.size-1]["delay"]	= 6.5;
-		level.awe_skyeffects[level.awe_skyeffects.size]["effect"]	= loadfx("fx/atmosphere/thunderhead.efx");
-		level.awe_skyeffects[level.awe_skyeffects.size-1]["delay"]	= 0;
-		level.awe_skyeffects[level.awe_skyeffects.size]["effect"]	= loadfx("fx/atmosphere/lowlevelburst.efx");
-		level.awe_skyeffects[level.awe_skyeffects.size-1]["delay"]	= 0;
+		level.empire_skyeffects = [];
+		level.empire_skyeffects[level.empire_skyeffects.size]["effect"]	= loadfx("fx/atmosphere/cloudflash1.efx");
+		level.empire_skyeffects[level.empire_skyeffects.size-1]["delay"]	= 0.0;
+		level.empire_skyeffects[level.empire_skyeffects.size]["effect"]	= loadfx("fx/atmosphere/longrangeflash_altocloud.efx");
+		level.empire_skyeffects[level.empire_skyeffects.size-1]["delay"]	= 0.0;
+		level.empire_skyeffects[level.empire_skyeffects.size]["effect"]	= loadfx("fx/atmosphere/antiair_tracerscloseup.efx");
+		level.empire_skyeffects[level.empire_skyeffects.size-1]["delay"]	= 6.5;
+		level.empire_skyeffects[level.empire_skyeffects.size]["effect"]	= loadfx("fx/atmosphere/thunderhead.efx");
+		level.empire_skyeffects[level.empire_skyeffects.size-1]["delay"]	= 0;
+		level.empire_skyeffects[level.empire_skyeffects.size]["effect"]	= loadfx("fx/atmosphere/lowlevelburst.efx");
+		level.empire_skyeffects[level.empire_skyeffects.size-1]["delay"]	= 0;
 	}
 
 	// Effect for burning & no bodies
-	if(isdefined(level.awe_uo) && (level.awe_burningbodies || level.awe_nobodies == 2))
+	if(isdefined(level.empire_uo) && (level.empire_burningbodies || level.empire_nobodies == 2))
 	{
-		level.awe_burningbodies_smokefx = loadfx("fx/smoke/smoke_flamethrower.efx");
+		level.empire_burningbodies_smokefx = loadfx("fx/smoke/smoke_flamethrower.efx");
 	}
 
 	// Effect for no bodies
-	if(!isdefined(level.awe_uo) && level.awe_nobodies == 2)
+	if(!isdefined(level.empire_uo) && level.empire_nobodies == 2)
 	{
-		level.awe_burningbodies_smokefx = loadfx("fx/impacts/newimps/v_blast1.efx");
+		level.empire_burningbodies_smokefx = loadfx("fx/impacts/newimps/v_blast1.efx");
 	}
 
 	// Effect for burning bodies
-	if(isdefined(level.awe_uo) && level.awe_burningbodies)
+	if(isdefined(level.empire_uo) && level.empire_burningbodies)
 	{
-		level.awe_burningbodies_burnfx = loadfx("fx/fire/barreloil_fire.efx");
+		level.empire_burningbodies_burnfx = loadfx("fx/fire/barreloil_fire.efx");
 	}
 
 	// Flesh hit effect used by bouncing heads
-	if(level.awe_pophead && !isdefined(level.awe_merciless))
-		level.awe_popheadfx = loadfx("fx/impacts/flesh_hit.efx");
+	if(level.empire_pophead && !isdefined(level.empire_merciless))
+		level.empire_popheadfx = loadfx("fx/impacts/flesh_hit.efx");
 
-	if(level.awe_bleeding && !isdefined(level.awe_merciless))
-		level.awe_bleedingfx = loadfx("fx/atmosphere/drop1.efx");
+	if(level.empire_bleeding && !isdefined(level.empire_merciless))
+		level.empire_bleedingfx = loadfx("fx/atmosphere/drop1.efx");
 
-	if(isdefined(level.awe_wintermap) && randomInt(100)<level.awe_snow )
-		level.awe_rainfx = loadfx("fx/atmosphere/rainstorm.efx");
+	if(isdefined(level.empire_wintermap) && randomInt(100)<level.empire_snow )
+		level.empire_rainfx = loadfx("fx/atmosphere/rainstorm.efx");
 
-	if(!isdefined(level.awe_wintermap) && randomInt(100)<level.awe_rain)
-		level.awe_rainfx = loadfx("fx/atmosphere/chateau_rain.efx");
+	if(!isdefined(level.empire_wintermap) && randomInt(100)<level.empire_rain)
+		level.empire_rainfx = loadfx("fx/atmosphere/chateau_rain.efx");
 
-	if(level.awe_turretmobile)
+	if(level.empire_turretmobile)
 	{
-		level.awe_turretpickupmessage	= &"^7Hold MELEE [{+melee}] to pick up";
-		level.awe_turretplacemessage	= &"^7Hold MELEE [{+melee}] to place";
-		if(level.awe_turretpicktime)
-			level.awe_turretpickingmessage= &"^7Picking up...";
-		if(level.awe_turretplanttime)
-			level.awe_turretplacingmessage= &"^7Placing...";
+		level.empire_turretpickupmessage	= &"^7Hold MELEE [{+melee}] to pick up";
+		level.empire_turretplacemessage	= &"^7Hold MELEE [{+melee}] to place";
+		if(level.empire_turretpicktime)
+			level.empire_turretpickingmessage= &"^7Picking up...";
+		if(level.empire_turretplanttime)
+			level.empire_turretplacingmessage= &"^7Placing...";
 	}
 
-	if(level.awe_tripwire)
+	if(level.empire_tripwire)
 	{
-//		level.awe_tripwireplacemessage = &"^7Hold MELEE [{+melee}] to place tripwire";
-//		level.awe_tripwirepickupmessage= &"^7Hold MELEE [{+melee}] to defuse tripwire";
-		level.awe_tripwirepickupmessage	= &"^7Hold MELEE [{+melee}] to pick up";
-		level.awe_tripwireplacemessage	= &"^7Hold MELEE [{+melee}] to place";
-		if(level.awe_tripwirepicktime)
-			level.awe_turretpickingmessage= &"^7Picking up...";
-		if(level.awe_tripwireplanttime)
-			level.awe_turretplacingmessage= &"^7Placing...";
+//		level.empire_tripwireplacemessage = &"^7Hold MELEE [{+melee}] to place tripwire";
+//		level.empire_tripwirepickupmessage= &"^7Hold MELEE [{+melee}] to defuse tripwire";
+		level.empire_tripwirepickupmessage	= &"^7Hold MELEE [{+melee}] to pick up";
+		level.empire_tripwireplacemessage	= &"^7Hold MELEE [{+melee}] to place";
+		if(level.empire_tripwirepicktime)
+			level.empire_turretpickingmessage= &"^7Picking up...";
+		if(level.empire_tripwireplanttime)
+			level.empire_turretplacingmessage= &"^7Placing...";
 	}
 
-	if(level.awe_satchel)
+	if(level.empire_satchel)
 	{
-//		level.awe_satchelplacemessage = &"^7Hold MELEE [{+melee}] to place satchel";
-//		level.awe_satchelpickupmessage= &"^7Hold MELEE [{+melee}] to defuse satchel";
-		level.awe_satchelpickupmessage= &"^7Hold MELEE [{+melee}] to pick up";
-		level.awe_satchelplacemessage	= &"^7Hold MELEE [{+melee}] to place";
-		if(level.awe_satchelpicktime)
-			level.awe_turretpickingmessage= &"^7Picking up...";
-		if(level.awe_satchelplanttime)
-			level.awe_turretplacingmessage= &"^7Placing...";
+//		level.empire_satchelplacemessage = &"^7Hold MELEE [{+melee}] to place satchel";
+//		level.empire_satchelpickupmessage= &"^7Hold MELEE [{+melee}] to defuse satchel";
+		level.empire_satchelpickupmessage= &"^7Hold MELEE [{+melee}] to pick up";
+		level.empire_satchelplacemessage	= &"^7Hold MELEE [{+melee}] to place";
+		if(level.empire_satchelpicktime)
+			level.empire_turretpickingmessage= &"^7Picking up...";
+		if(level.empire_satchelplanttime)
+			level.empire_turretplacingmessage= &"^7Placing...";
 	}
 
-	if(level.awe_searchablebodies)
+	if(level.empire_searchablebodies)
 	{
-		level.awe_bodysearchmessage = &"^7Hold MELEE [{+melee}] to search body";
-		level.awe_bodysearchingmessage= &"^7Searching...";
+		level.empire_bodysearchmessage = &"^7Hold MELEE [{+melee}] to search body";
+		level.empire_bodysearchingmessage= &"^7Searching...";
 	}
 
 	if(
-		level.awe_secondaryweapon["default"] == "select"	|| level.awe_secondaryweapon["default"] == "selectother"	||
-		level.awe_secondaryweapon["american"] == "select"	|| level.awe_secondaryweapon["american"] == "selectother"	||
-		level.awe_secondaryweapon["british"] == "select"	|| level.awe_secondaryweapon["british"] == "selectother"	||
-		level.awe_secondaryweapon["german"] == "select"		|| level.awe_secondaryweapon["german"] == "selectother"	||
-		level.awe_secondaryweapon["russian"] == "select"	|| level.awe_secondaryweapon["russian"] == "selectother"
+		level.empire_secondaryweapon["default"] == "select"	|| level.empire_secondaryweapon["default"] == "selectother"	||
+		level.empire_secondaryweapon["american"] == "select"	|| level.empire_secondaryweapon["american"] == "selectother"	||
+		level.empire_secondaryweapon["british"] == "select"	|| level.empire_secondaryweapon["british"] == "selectother"	||
+		level.empire_secondaryweapon["german"] == "select"		|| level.empire_secondaryweapon["german"] == "selectother"	||
+		level.empire_secondaryweapon["russian"] == "select"	|| level.empire_secondaryweapon["russian"] == "selectother"
 	  )
 	{
-		level.awe_secondaryweapontext = &"Select your secondary weapon";
+		level.empire_secondaryweapontext = &"Select your secondary weapon";
 	}
 
-	if(level.awe_mapvote)
+	if(level.empire_mapvote)
 	{
 		level.mapvotetext["MapVote"]	= &"Press ^2FIRE^7 to vote                           Votes";
 //		level.mapvotetext["Votes"]	= &"Votes";
 		level.mapvotetext["TimeLeft"] = &"Time Left: ";
-		level.mapvotetext["MapVoteHeader"] = &"Next Map Vote";
+		level.mapvotetext["MapVoteHeader"] = &"Next Map Selection";
 //		game["objective_default"]="gfx/hud/objective.dds";
 	}
 
 	// Load breath fx
-	if(isdefined(level.awe_uo) && isdefined(level.awe_wintermap) && level.awe_coldbreath)
-		level.awe_breathfx = loadfx ("fx/atmosphere/cold_breath.efx");
+	if(isdefined(level.empire_uo) && isdefined(level.empire_wintermap) && level.empire_coldbreath)
+		level.empire_breathfx = loadfx ("fx/atmosphere/cold_breath.efx");
 
 	// Disable minefields?
-	if(level.awe_disableminefields)
+	if(level.empire_disableminefields)
 	{
 		minefields = getentarray( "minefield", "targetname" );
 		if(minefields.size)
@@ -742,66 +742,66 @@ setupVariables()
 					minefields[i] delete();
 	}
 
-	if(isdefined(level.awe_merciless))
+	if(isdefined(level.empire_merciless))
 	{
-		level.awe_logotext = &"^1Merciless ^5/ ^6AWE ^52.1";
+		level.empire_logotext = &"^1Merciless ^5/ ^6empire_mod ^52.1";
 	}
 	else
 	{
-		level.awe_logotext = &"^6AWE ^52.1";
+		level.empire_logotext = &"^6empire_mod ^52.1";
 	}
 
-	if(level.awe_showserverlogo)
-		server_logo\_awe_server_logo::logo();
+	if(level.empire_showserverlogo)
+		server_logo\_empire_server_logo::logo();
 }
 
 awePrecacheShader(shader)
 {
-	if(!isdefined(level.awe_precachedshaders))
-		level.awe_precachedshaders = [];
+	if(!isdefined(level.empire_precachedshaders))
+		level.empire_precachedshaders = [];
 
-	if(isInArray(level.awe_precachedshaders, shader)) return;
-	level.awe_precachedshaders[level.awe_precachedshaders.size] = shader;
+	if(isInArray(level.empire_precachedshaders, shader)) return;
+	level.empire_precachedshaders[level.empire_precachedshaders.size] = shader;
 	precacheShader(shader);
 }
 
 awePrecacheHeadIcon(icon)
 {
-	if(!isdefined(level.awe_precachedheadicons))
-		level.awe_precachedheadicons = [];
+	if(!isdefined(level.empire_precachedheadicons))
+		level.empire_precachedheadicons = [];
 
-	if(isInArray(level.awe_precachedheadicons, icon)) return;
-	level.awe_precachedheadicons[level.awe_precachedheadicons.size] = icon;
+	if(isInArray(level.empire_precachedheadicons, icon)) return;
+	level.empire_precachedheadicons[level.empire_precachedheadicons.size] = icon;
 	precacheHeadIcon(icon);
 }
 
 awePrecacheModel(model)
 {
-	if(!isdefined(level.awe_precachedmodels))
-		level.awe_precachedmodels = [];
+	if(!isdefined(level.empire_precachedmodels))
+		level.empire_precachedmodels = [];
 
-	if(isInArray(level.awe_precachedmodels, model)) return;
-	level.awe_precachedmodels[level.awe_precachedmodels.size] = model;
+	if(isInArray(level.empire_precachedmodels, model)) return;
+	level.empire_precachedmodels[level.empire_precachedmodels.size] = model;
 	precacheModel(model);
 }
 
 awePrecacheItem(item)
 {
-	if(!isdefined(level.awe_precacheditems))
-		level.awe_precacheditems = [];
+	if(!isdefined(level.empire_precacheditems))
+		level.empire_precacheditems = [];
 
-	if(isInArray(level.awe_precacheditems, item)) return;
-	level.awe_precacheditems[level.awe_precacheditems.size] = item;
+	if(isInArray(level.empire_precacheditems, item)) return;
+	level.empire_precacheditems[level.empire_precacheditems.size] = item;
 	precacheItem(item);
 }
 
 awePrecacheString(element)
 {
-	if(!isdefined(level.awe_precachedstrings))
-		level.awe_precachedstrings = [];
+	if(!isdefined(level.empire_precachedstrings))
+		level.empire_precachedstrings = [];
 
-	if(isInArray(level.awe_precachedstrings, element)) return;
-	level.awe_precachedstrings[level.awe_precachedstrings.size] = element;
+	if(isInArray(level.empire_precachedstrings, element)) return;
+	level.empire_precachedstrings[level.empire_precachedstrings.size] = element;
 	precacheString(element);
 }
 
@@ -821,67 +821,67 @@ isInArray(array, element)
 
 doPrecaching()
 {
-	if(level.awe_debug)
+	if(level.empire_debug)
 	{
 		awePrecacheModel("xmodel/vehicle_plane_stuka");
 		awePrecacheModel("xmodel/cow_standing");
 	}
 
-	if(isdefined(level.awe_teamplay) && level.awe_firstaid)
+	if(isdefined(level.empire_teamplay) && level.empire_firstaid)
 		precacheShader(game["firstaid"]);
 
-	if(level.awe_sprint && level.awe_sprinthud == 1)
+	if(level.empire_sprint && level.empire_sprinthud == 1)
 	{
 		awePrecacheShader("gfx/hud/hud@health_back.dds");
 		awePrecacheShader("gfx/hud/hud@health_bar.dds");
 	}
 
-	if(level.awe_sprint && level.awe_sprinthud == 2)
+	if(level.empire_sprint && level.empire_sprinthud == 2)
 	{
 		awePrecacheShader("white");
 	}
 
-	if(level.awe_sprint && level.awe_sprinthudhint)
+	if(level.empire_sprint && level.empire_sprinthudhint)
 	{
 		awePrecacheString(&"^7Hold USE [{+activate}] to sprint");
 	}
 
-	if(!isdefined(level.awe_uo))
+	if(!isdefined(level.empire_uo))
 		precacheShellshock("default");
 
-	if(level.awe_deathshock)
+	if(level.empire_deathshock)
 		precacheShellshock("death");
 
-	if(level.awe_laserdot)
+	if(level.empire_laserdot)
 		awePrecacheShader("white");
 
 	// Precache stukas
-	if(level.awe_stukas)
+	if(level.empire_stukas)
 		awePrecacheModel("xmodel/vehicle_plane_stuka");
-	if(level.awe_stukascrash)
+	if(level.empire_stukascrash)
 		awePrecacheModel("xmodel/vehicle_plane_stuka_d");
 
-	if(level.awe_mortar && !isdefined(level.awe_classbased) )
-		awePrecacheModel(level.awe_mortarmodel);
+	if(level.empire_mortar && !isdefined(level.empire_classbased) )
+		awePrecacheModel(level.empire_mortarmodel);
 
-	if(level.awe_turretmobile)
+	if(level.empire_turretmobile)
 	{
-		awePrecacheString( level.awe_turretpickupmessage );
-		awePrecacheString( level.awe_turretplacemessage );
-		if(level.awe_turretpicktime)
-			awePrecacheString( level.awe_turretpickingmessage );
-		if(level.awe_turretplanttime)
-			awePrecacheString( level.awe_turretplacingmessage );
+		awePrecacheString( level.empire_turretpickupmessage );
+		awePrecacheString( level.empire_turretplacemessage );
+		if(level.empire_turretpicktime)
+			awePrecacheString( level.empire_turretpickingmessage );
+		if(level.empire_turretplanttime)
+			awePrecacheString( level.empire_turretplacingmessage );
 	}
 
-	if(!isdefined(level.awe_uo) && level.awe_showcooking)
+	if(!isdefined(level.empire_uo) && level.empire_showcooking)
 	{
 		// Precache shaders for progressbar
 		awePrecacheString(&"Cooking grenade");
 		awePrecacheShader("white");
 	}	
 
-	if(level.awe_mapvote)
+	if(level.empire_mapvote)
 	{
 		//shader used as icon for selection
 //		awePrecacheShader(game["objective_default"]);	
@@ -892,14 +892,14 @@ doPrecaching()
 		awePrecacheShader("white");
 	}
 
-	if(level.awe_tripwire)
+	if(level.empire_tripwire)
 	{
-		awePrecacheString( level.awe_tripwirepickupmessage );
-		awePrecacheString( level.awe_tripwireplacemessage );
-		if(level.awe_tripwirepicktime)
-			awePrecacheString( level.awe_turretpickingmessage );
-		if(level.awe_tripwireplanttime)
-			awePrecacheString( level.awe_turretplacingmessage );
+		awePrecacheString( level.empire_tripwirepickupmessage );
+		awePrecacheString( level.empire_tripwireplacemessage );
+		if(level.empire_tripwirepicktime)
+			awePrecacheString( level.empire_turretpickingmessage );
+		if(level.empire_tripwireplanttime)
+			awePrecacheString( level.empire_turretplacingmessage );
 
 		switch(game["allies"])
 		{
@@ -918,43 +918,43 @@ doPrecaching()
 		awePrecacheShader("gfx/hud/hud@death_steilhandgrenate.tga");
 	}
 
-	if(level.awe_satchel)
+	if(level.empire_satchel)
 	{
-		awePrecacheString( level.awe_satchelpickupmessage );
-		awePrecacheString( level.awe_satchelplacemessage );
-		if(level.awe_satchelpicktime)
-			awePrecacheString( level.awe_turretpickingmessage );
-		if(level.awe_satchelplanttime)
-			awePrecacheString( level.awe_turretplacingmessage );
+		awePrecacheString( level.empire_satchelpickupmessage );
+		awePrecacheString( level.empire_satchelplacemessage );
+		if(level.empire_satchelpicktime)
+			awePrecacheString( level.empire_turretpickingmessage );
+		if(level.empire_satchelplanttime)
+			awePrecacheString( level.empire_turretplacingmessage );
 		awePrecacheShader("gfx/icons/hud@satchel.dds");
 	}
 
-	if(level.awe_searchablebodies)
+	if(level.empire_searchablebodies)
 	{
-		awePrecacheString(level.awe_bodysearchmessage);
-		awePrecacheString(level.awe_bodysearchingmessage);
+		awePrecacheString(level.empire_bodysearchmessage);
+		awePrecacheString(level.empire_bodysearchingmessage);
 		awePrecacheShader("white");
 	}
 
-	if(level.awe_turretmobile && (level.awe_turretplanttime || level.awe_turretpicktime))
+	if(level.empire_turretmobile && (level.empire_turretplanttime || level.empire_turretpicktime))
 		awePrecacheShader("white");
 
-	if(level.awe_tripwire && (level.awe_tripwireplanttime || level.awe_tripwirepicktime))
+	if(level.empire_tripwire && (level.empire_tripwireplanttime || level.empire_tripwirepicktime))
 		awePrecacheShader("white");
 
-	if(level.awe_satchel && (level.awe_satchelplanttime || level.awe_satchelpicktime))
+	if(level.empire_satchel && (level.empire_satchelplanttime || level.empire_satchelpicktime))
 		awePrecacheShader("white");
 
 	// Precache MG42
-	if(level.awe_mg42spawnextra)
+	if(level.empire_mg42spawnextra)
 		awePrecacheModel("xmodel/mg42_bipod");
 
 	// Precache PTRS41
-	if(level.awe_ptrs41spawnextra) 
+	if(level.empire_ptrs41spawnextra) 
 		awePrecacheModel("xmodel/weapon_antitankrifle");
 	
 	// Precache turrets
-	if(level.awe_turretmobile || cvardef("awe_turret_w0", "", "", "", "string") != "")
+	if(level.empire_turretmobile || cvardef("empire_turret_w0", "", "", "", "string") != "")
 	{
 		// MG42
 		awePrecacheModel("xmodel/mg42_bipod");
@@ -971,7 +971,7 @@ doPrecaching()
 		precacheTurret("PTRS41_Antitank_Rifle_mp");
 
 		// Preache shaders used by turret code
-		if(isdefined(level.awe_uo))
+		if(isdefined(level.empire_uo))
 		{
 			awePrecacheShader("gfx/hud/hud@health_bar.dds");
 			awePrecacheShader("gfx/hud/hud@vehiclehealth.dds");
@@ -979,14 +979,14 @@ doPrecaching()
 
 	}
 
-	if(level.awe_turretmobile)
+	if(level.empire_turretmobile)
 	{
 		awePrecacheShader("gfx/hud/hud@death_mg42.tga");
 		awePrecacheShader("gfx/hud/hud@death_antitank.tga");
 	}
 
 	// Bloodscreen
-	if(level.awe_bloodyscreen && !isdefined(level.awe_merciless))
+	if(level.empire_bloodyscreen && !isdefined(level.empire_merciless))
 	{
 		awePrecacheShader("gfx/impact/flesh_hit1.tga");
 		awePrecacheShader("gfx/impact/flesh_hit2.tga");
@@ -994,83 +994,83 @@ doPrecaching()
 	}
 	
 	// Precache parachute
-	if(level.awe_parachutes)
+	if(level.empire_parachutes)
 		awePrecacheModel("xmodel/parachute_animrig");
 
 	// Precache bullethole
-	if(level.awe_bulletholes)
+	if(level.empire_bulletholes)
 	{
 		awePrecacheShader("gfx/impact/bullethit_glass.tga");
 		awePrecacheShader("gfx/impact/bullethit_glass2.tga");
 	}
 	
 	// Precache hit blip
-	if(level.awe_showhit)
+	if(level.empire_showhit)
 		awePrecacheShader("gfx/hud/hud@fire_ready.tga");
 
 	// Precache weapons
-	if(!isdefined(level.awe_classbased))
+	if(!isdefined(level.empire_classbased))
 	{
-		precacheForcedWeapon(level.awe_primaryweapon["default"]);
-		precacheForcedWeapon(level.awe_primaryweapon["american"]);
-		precacheForcedWeapon(level.awe_primaryweapon["british"]);
-		precacheForcedWeapon(level.awe_primaryweapon["german"]);
-		precacheForcedWeapon(level.awe_primaryweapon["russian"]);
+		precacheForcedWeapon(level.empire_primaryweapon["default"]);
+		precacheForcedWeapon(level.empire_primaryweapon["american"]);
+		precacheForcedWeapon(level.empire_primaryweapon["british"]);
+		precacheForcedWeapon(level.empire_primaryweapon["german"]);
+		precacheForcedWeapon(level.empire_primaryweapon["russian"]);
 
-		precacheForcedWeapon(level.awe_secondaryweapon["default"]);
-		precacheForcedWeapon(level.awe_secondaryweapon["american"]);
-		precacheForcedWeapon(level.awe_secondaryweapon["british"]);
-		precacheForcedWeapon(level.awe_secondaryweapon["german"]);
-		precacheForcedWeapon(level.awe_secondaryweapon["russian"]);	
+		precacheForcedWeapon(level.empire_secondaryweapon["default"]);
+		precacheForcedWeapon(level.empire_secondaryweapon["american"]);
+		precacheForcedWeapon(level.empire_secondaryweapon["british"]);
+		precacheForcedWeapon(level.empire_secondaryweapon["german"]);
+		precacheForcedWeapon(level.empire_secondaryweapon["russian"]);	
 	
-		precacheForcedWeapon(level.awe_pistoltype["default"]);
-		precacheForcedWeapon(level.awe_pistoltype["american"]);
-		precacheForcedWeapon(level.awe_pistoltype["british"]);
-		precacheForcedWeapon(level.awe_pistoltype["german"]);
-		precacheForcedWeapon(level.awe_pistoltype["russian"]);
+		precacheForcedWeapon(level.empire_pistoltype["default"]);
+		precacheForcedWeapon(level.empire_pistoltype["american"]);
+		precacheForcedWeapon(level.empire_pistoltype["british"]);
+		precacheForcedWeapon(level.empire_pistoltype["german"]);
+		precacheForcedWeapon(level.empire_pistoltype["russian"]);
 
-		precacheForcedWeapon(level.awe_grenadetype["default"]);
-		precacheForcedWeapon(level.awe_grenadetype["american"]);
-		precacheForcedWeapon(level.awe_grenadetype["british"]);
-		precacheForcedWeapon(level.awe_grenadetype["german"]);
-		precacheForcedWeapon(level.awe_grenadetype["russian"]);
+		precacheForcedWeapon(level.empire_grenadetype["default"]);
+		precacheForcedWeapon(level.empire_grenadetype["american"]);
+		precacheForcedWeapon(level.empire_grenadetype["british"]);
+		precacheForcedWeapon(level.empire_grenadetype["german"]);
+		precacheForcedWeapon(level.empire_grenadetype["russian"]);
 
-		precacheForcedWeapon(level.awe_smokegrenadetype["default"]);
-		precacheForcedWeapon(level.awe_smokegrenadetype["american"]);
-		precacheForcedWeapon(level.awe_smokegrenadetype["british"]);
-		precacheForcedWeapon(level.awe_smokegrenadetype["german"]);
-		precacheForcedWeapon(level.awe_smokegrenadetype["russian"]);
+		precacheForcedWeapon(level.empire_smokegrenadetype["default"]);
+		precacheForcedWeapon(level.empire_smokegrenadetype["american"]);
+		precacheForcedWeapon(level.empire_smokegrenadetype["british"]);
+		precacheForcedWeapon(level.empire_smokegrenadetype["german"]);
+		precacheForcedWeapon(level.empire_smokegrenadetype["russian"]);
 	}
 
-	if(level.awe_spawnprotection)
+	if(level.empire_spawnprotection)
 	{
 		awePrecacheHeadIcon(game["headicon_protect"]);
 		awePrecacheShader(game["headicon_protect"]);
 	}
 
 	// Precache suicide icon for teamstatus usage
-	if((isdefined(level.awe_teamplay) && level.awe_showteamstatus) || level.awe_searchablebodies)
+	if((isdefined(level.empire_teamplay) && level.empire_showteamstatus) || level.empire_searchablebodies)
 		awePrecacheShader("gfx/hud/death_suicide.dds");
 
-	if(level.awe_painscreen && !isdefined(level.awe_merciless) )
+	if(level.empire_painscreen && !isdefined(level.empire_merciless) )
 		awePrecacheShader("white");
 
 	if(
-		level.awe_secondaryweapon["default"] == "select"	|| level.awe_secondaryweapon["default"] == "selectother"	||
-		level.awe_secondaryweapon["american"] == "select"	|| level.awe_secondaryweapon["american"] == "selectother"	||
-		level.awe_secondaryweapon["british"] == "select"	|| level.awe_secondaryweapon["british"] == "selectother"	||
-		level.awe_secondaryweapon["german"] == "select"		|| level.awe_secondaryweapon["german"] == "selectother"	||
-		level.awe_secondaryweapon["russian"] == "select"	|| level.awe_secondaryweapon["russian"] == "selectother"
+		level.empire_secondaryweapon["default"] == "select"	|| level.empire_secondaryweapon["default"] == "selectother"	||
+		level.empire_secondaryweapon["american"] == "select"	|| level.empire_secondaryweapon["american"] == "selectother"	||
+		level.empire_secondaryweapon["british"] == "select"	|| level.empire_secondaryweapon["british"] == "selectother"	||
+		level.empire_secondaryweapon["german"] == "select"		|| level.empire_secondaryweapon["german"] == "selectother"	||
+		level.empire_secondaryweapon["russian"] == "select"	|| level.empire_secondaryweapon["russian"] == "selectother"
 	  )
 	{
-		awePrecacheString(level.awe_secondaryweapontext);
+		awePrecacheString(level.empire_secondaryweapontext);
 	}
 
-	if( level.awe_anticamptime && !level.awe_anticampmethod && !isdefined(level.awe_tdom) )
+	if( level.empire_anticamptime && !level.empire_anticampmethod && !isdefined(level.empire_tdom) )
 	{
 		// Precache headicons and shaders
 		awePrecacheHeadIcon(game["headicon_star"]);
-		if(!isdefined(level.awe_teamplay))
+		if(!isdefined(level.empire_teamplay))
 			awePrecacheHeadIcon(game["headicon_crosshair"]);
 		// Precache compass shaders
 		awePrecacheShader("gfx/hud/objective.dds");
@@ -1078,7 +1078,7 @@ doPrecaching()
 		awePrecacheShader("gfx/hud/objective_up.dds");	
 	}
 
-	if(isdefined(level.awe_teamplay) && level.awe_anticamptime && !level.awe_anticampmethod && !isdefined(level.awe_tdom) )
+	if(isdefined(level.empire_teamplay) && level.empire_anticamptime && !level.empire_anticampmethod && !isdefined(level.empire_tdom) )
 	{
 		awePrecacheShader(game["radio_allies"]);
 		awePrecacheShader(game["radio_axis"]);
@@ -1103,12 +1103,12 @@ doPrecaching()
 		}
 	}
 
-	if(isdefined(level.awe_teamplay) && level.awe_showteamstatus == 1)
+	if(isdefined(level.empire_teamplay) && level.empire_showteamstatus == 1)
 	{
 		awePrecacheShader(game["radio_allies"]);
 		awePrecacheShader(game["radio_axis"]);
 	}
-	if(isdefined(level.awe_teamplay) && level.awe_showteamstatus == 2)
+	if(isdefined(level.empire_teamplay) && level.empire_showteamstatus == 2)
 	{
 		awePrecacheShader(game["headicon_allies"]);
 		awePrecacheShader(game["headicon_axis"]);
@@ -1165,20 +1165,20 @@ fixMapRotation()
 	// Set the new rotationcurrent
 	setCvar("sv_maprotationcurrent", newmaprotationcurrent);
 
-	// Set awe_fix_maprotation to "0" to indicate that initial fixing has been done
-	setCvar("awe_fix_maprotation", "0");
+	// Set empire_fix_maprotation to "0" to indicate that initial fixing has been done
+	setCvar("empire_fix_maprotation", "0");
 }
 	
 randomMapRotation()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
 	// Do random maprotation?
-	if(!level.awe_randommaprotation || level.awe_mapvote)
+	if(!level.empire_randommaprotation || level.empire_mapvote)
 		return;
 
 	// Randomize maps of maprotationcurrent is empty or on a fresh start
-	if( strip(getcvar("sv_maprotationcurrent")) == "" || level.awe_randommaprotation == 1)
+	if( strip(getcvar("sv_maprotationcurrent")) == "" || level.empire_randommaprotation == 1)
 	{
 		x = GetRandomMapRotation();
 		if(isdefined(x))
@@ -1238,8 +1238,8 @@ randomMapRotation()
 		// Set the new rotation
 		setCvar("sv_maprotationcurrent", newmaprotation);
 
-		// Set awe_random_maprotation to "2" to indicate that initial randomizing is done
-		setCvar("awe_random_maprotation", "2");
+		// Set empire_random_maprotation to "2" to indicate that initial randomizing is done
+		setCvar("empire_random_maprotation", "2");
 	}
 }
 
@@ -1264,36 +1264,36 @@ randomizeArray(arr)
 
 showWelcomeMessages()
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
-	if(isdefined(self.pers["awe_welcomed"])) return;
-	self.pers["awe_welcomed"] = true;
+	if(isdefined(self.pers["empire_welcomed"])) return;
+	self.pers["empire_welcomed"] = true;
 
 	wait 2;
 
 	count = 0;
-	message = cvardef("awe_welcome" + count, "", "", "", "string");
+	message = cvardef("empire_welcome" + count, "", "", "", "string");
 	while(message != "")
 	{
 		self iprintlnbold(message);
 		count++;
-		message = cvardef("awe_welcome" + count, "", "", "", "string");
-		wait level.awe_welcomedelay;
+		message = cvardef("empire_welcome" + count, "", "", "", "string");
+		wait level.empire_welcomedelay;
 	}
 }
 
 serverMessages()
 {
-	level endon("awe_boot");
-	if(level.awe_messageindividual)
+	level endon("empire_boot");
+	if(level.empire_messageindividual)
 	{
 		// Check if thread has allready been called.
-		if(isdefined(self.pers["awe_serverMessages"]))
+		if(isdefined(self.pers["empire_serverMessages"]))
 			return;
 
-		self endon("awe_spawned");
-		self endon("awe_died");
+		self endon("empire_spawned");
+		self endon("empire_died");
 	}
 	else
 	{
@@ -1302,11 +1302,11 @@ serverMessages()
 			return;
 	}
 
-	wait level.awe_messagedelay;
+	wait level.empire_messagedelay;
 
 	for(;;)
 	{
-		if( !level.awe_mapvote && level.awe_messagenextmap && !(level.awe_messageindividual && isdefined(self.pers["awe_messagecount"])) )
+		if( !level.empire_mapvote && level.empire_messagenextmap && !(level.empire_messageindividual && isdefined(self.pers["empire_messagecount"])) )
 		{
 			x = GetCurrentMapRotation(1);
 			if(isdefined(x))
@@ -1326,18 +1326,18 @@ serverMessages()
 
 				nextmap=maps[0]["map"];
 
-				if(level.awe_messagenextmap == 4)
+				if(level.empire_messagenextmap == 4)
 				{
-					if(level.awe_randommaprotation)
+					if(level.empire_randommaprotation)
 					{
-						if(level.awe_messageindividual)
+						if(level.empire_messageindividual)
 							self iprintln("^3This server uses ^5random ^3maprotation.");
 						else
 							iprintln("^3This server uses ^5random ^3maprotation.");
 					}
 					else
 					{
-						if(level.awe_messageindividual)
+						if(level.empire_messageindividual)
 							self iprintln("^3This server uses ^5normal ^3maprotation.");
 						else
 							iprintln("^3This server uses ^5normal ^3maprotation.");
@@ -1346,26 +1346,26 @@ serverMessages()
 					wait 1;
 				}
 
-				if(level.awe_messagenextmap > 2)
+				if(level.empire_messagenextmap > 2)
 				{
-					if(level.awe_messageindividual)
+					if(level.empire_messageindividual)
 						self iprintln("^3Next gametype: ^5" + getGametypeName(nextgt) );
 					else
 						iprintln("^3Next gametype: ^5" + getGametypeName(nextgt) );
 					wait 1;
 				}
 
-				if(level.awe_messagenextmap > 2 || level.awe_messagenextmap == 1)
+				if(level.empire_messagenextmap > 2 || level.empire_messagenextmap == 1)
 				{
-					if(level.awe_messageindividual)
+					if(level.empire_messageindividual)
 						self iprintln("^3Next map: ^5" + getMapName(nextmap) );
 					else
 						iprintln("^3Next map: ^5" + getMapName(nextmap) );
 				}
 
-				if(level.awe_messagenextmap == 2)
+				if(level.empire_messagenextmap == 2)
 				{
-					if(level.awe_messageindividual)
+					if(level.empire_messageindividual)
 						self iprintln("^1~^3empire ^2| ^3Next: ^1" + getMapName(nextmap) + "^3/^1" + getGametypeName(nextgt) );
 					else
 						iprintln("^1~^3empire ^2| ^3Next: ^1" + getMapName(nextmap) + "^3/^1" + getGametypeName(nextgt) );
@@ -1373,52 +1373,52 @@ serverMessages()
 				}
 
 				// Set next message
-				if(level.awe_messageindividual)
-					self.pers["awe_messagecount"] = 0;
+				if(level.empire_messageindividual)
+					self.pers["empire_messagecount"] = 0;
 
-				wait level.awe_messagedelay;
+				wait level.empire_messagedelay;
 			}
 		}
 	
 		// Get first message
-		if(level.awe_messageindividual && isdefined(self.pers["awe_messagecount"]))
-			count = self.pers["awe_messagecount"];
+		if(level.empire_messageindividual && isdefined(self.pers["empire_messagecount"]))
+			count = self.pers["empire_messagecount"];
 		else
 			count = 0;
 
-		message = cvardef("awe_message" + count, "", "", "", "string");
+		message = cvardef("empire_message" + count, "", "", "", "string");
 
 		// Avoid infinite loop
 		if(message == "" && !(isdefined(maps) && maps.size))
-			wait level.awe_messagedelay;
+			wait level.empire_messagedelay;
 
 		// Announce messages
 		while(message != "")
 		{
-			if(level.awe_messageindividual)
+			if(level.empire_messageindividual)
 				self iprintln(message);
 			else
 				iprintln(message);
 			count++;
 			// Set next message
-			if(level.awe_messageindividual)
-				self.pers["awe_messagecount"] = count;
+			if(level.empire_messageindividual)
+				self.pers["empire_messagecount"] = count;
 
-			wait level.awe_messagedelay;
+			wait level.empire_messagedelay;
 
-			message = cvardef("awe_message" + count, "", "", "", "string");
+			message = cvardef("empire_message" + count, "", "", "", "string");
 		}
 
-		if(level.awe_messageindividual)
-			self.pers["awe_messagecount"] = undefined;
+		if(level.empire_messageindividual)
+			self.pers["empire_messagecount"] = undefined;
 
 		// Loop?
-		if(!level.awe_messageloop)
+		if(!level.empire_messageloop)
 			break;
 	}
 	// Set flag to indicate that this thread has been called and run all through once
-	if(level.awe_messageindividual)
-		self.pers["awe_serverMessages"] = true;
+	if(level.empire_messageindividual)
+		self.pers["empire_serverMessages"] = true;
 	else
 		game["serverMessages"] = true;
 }
@@ -1489,7 +1489,7 @@ getGametypeName(gt)
 
 		case "actf":
 		case "mc_actf":
-			gtname = "AWE Capture The Flag";
+			gtname = "empire_mod Capture The Flag";
 			break;
 
 		case "htf":
@@ -1933,299 +1933,300 @@ strip(s)
 
 updateGametypeCvars(init)
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
 	// Debug
-	level.awe_debug = cvardef("awe_debug", 0, 0, 1, "int");
-	level.awe_debugentities = cvardef("awe_debug_entities", 0, 0, 1, "int");
+	level.empire_debug = cvardef("empire_debug", 0, 0, 1, "int");
+	level.empire_debugentities = cvardef("empire_debug_entities", 0, 0, 1, "int");
 
 	// Limit bases
-	level.awe_limitbases = cvardef("awe_limit_bases", 0, 0, 2, "int");
+	level.empire_limitbases = cvardef("empire_limit_bases", 0, 0, 2, "int");
 
 	// Disable minefields
-	level.awe_disableminefields = cvardef("awe_disable_minefields", 0, 0, 1, "int");
+	level.empire_disableminefields = cvardef("empire_disable_minefields", 0, 0, 1, "int");
 
 	// Rain/Snow 0-100%
-	level.awe_rain	= cvardef("awe_rain", 0, 0, 100, "int");
-	level.awe_snow	= cvardef("awe_snow", 0, 0, 100, "int");
+	level.empire_rain	= cvardef("empire_rain", 0, 0, 100, "int");
+	level.empire_snow	= cvardef("empire_snow", 0, 0, 100, "int");
 
 	// Laserdot
-	level.awe_laserdot	= cvardef("awe_laserdot", 0, 0, 1, "float");		// 0 = don't show, 1 = solid
-	level.awe_laserdotsize	= cvardef("awe_laserdot_size", 2, 0.5, 5, "float");	// size
-	level.awe_laserdotred	= cvardef("awe_laserdot_red", 1, 0, 1, "float");		// amount of red in dot
-	level.awe_laserdotgreen	= cvardef("awe_laserdot_green", 0, 0, 1, "float");	// amount of green in dot
-	level.awe_laserdotblue	= cvardef("awe_laserdot_blue", 0, 0, 1, "float");		// amount of blue in dot
+	level.empire_laserdot	= cvardef("empire_laserdot", 0, 0, 1, "float");		// 0 = don't show, 1 = solid
+	level.empire_laserdotsize	= cvardef("empire_laserdot_size", 2, 0.5, 5, "float");	// size
+	level.empire_laserdotred	= cvardef("empire_laserdot_red", 1, 0, 1, "float");		// amount of red in dot
+	level.empire_laserdotgreen	= cvardef("empire_laserdot_green", 0, 0, 1, "float");	// amount of green in dot
+	level.empire_laserdotblue	= cvardef("empire_laserdot_blue", 0, 0, 1, "float");		// amount of blue in dot
 
 	// Show team status on hud
-	level.awe_showteamstatus = cvardef("awe_show_team_status", 0, 0, 2, "int");
+	level.empire_showteamstatus = cvardef("empire_show_team_status", 0, 0, 2, "int");
 
 	// Show hit blip
-	level.awe_showhit = cvardef("awe_showhit", 0, 0, 1, "int");
+	level.empire_showhit = cvardef("empire_showhit", 0, 0, 1, "int");
 
 	// Painscreen
-	level.awe_painscreen = cvardef("awe_painscreen", 0, 0, 100, "int");
+	level.empire_painscreen = cvardef("empire_painscreen", 0, 0, 100, "int");
 
 	// Bloodyscreen
-	level.awe_bloodyscreen = cvardef("awe_bloodyscreen", 0, 0, 1, "int");
+	level.empire_bloodyscreen = cvardef("empire_bloodyscreen", 0, 0, 1, "int");
 
 	// Bulletholes
-	level.awe_bulletholes = cvardef("awe_bulletholes", 0, 0, 2, "int");
+	level.empire_bulletholes = cvardef("empire_bulletholes", 0, 0, 2, "int");
 	
 	// shell & death shock
-	level.awe_shellshock = cvardef("scr_shellshock", 0, 0, 1, "int");
-	level.awe_deathshock = cvardef("awe_deathshock", 0, 0, 1, "int");
+	level.empire_shellshock = cvardef("scr_shellshock", 0, 0, 1, "int");
+	level.empire_deathshock = cvardef("empire_deathshock", 0, 0, 1, "int");
 
 	// Weapon options
-	level.awe_primaryweapon["default"]  = cvardef("awe_primary_weapon", "", "", "", "string");
-	level.awe_primaryweapon["american"]  = cvardef("awe_primary_weapon_american", "", "", "", "string");
-	level.awe_primaryweapon["british"]  = cvardef("awe_primary_weapon_british", "", "", "", "string");
-	level.awe_primaryweapon["german"]  = cvardef("awe_primary_weapon_german", "", "", "", "string");
-	level.awe_primaryweapon["russian"]  = cvardef("awe_primary_weapon_russian", "", "", "", "string");
+	level.empire_primaryweapon["default"]  = cvardef("empire_primary_weapon", "", "", "", "string");
+	level.empire_primaryweapon["american"]  = cvardef("empire_primary_weapon_american", "", "", "", "string");
+	level.empire_primaryweapon["british"]  = cvardef("empire_primary_weapon_british", "", "", "", "string");
+	level.empire_primaryweapon["german"]  = cvardef("empire_primary_weapon_german", "", "", "", "string");
+	level.empire_primaryweapon["russian"]  = cvardef("empire_primary_weapon_russian", "", "", "", "string");
 
-	level.awe_secondaryweaponkeepold	= cvardef("awe_secondary_weapon_keepold", 1, 0, 1, "int");
-	level.awe_secondaryweapon["default"]= cvardef("awe_secondary_weapon", "", "", "", "string");
-	level.awe_secondaryweapon["american"]=cvardef("awe_secondary_weapon_american", "", "", "", "string");
-	level.awe_secondaryweapon["british"]= cvardef("awe_secondary_weapon_british", "", "", "", "string");
-	level.awe_secondaryweapon["german"]	= cvardef("awe_secondary_weapon_german", "", "", "", "string");
-	level.awe_secondaryweapon["russian"]= cvardef("awe_secondary_weapon_russian", "", "", "", "string");
+	level.empire_secondaryweaponkeepold	= cvardef("empire_secondary_weapon_keepold", 1, 0, 1, "int");
+	level.empire_secondaryweapon["default"]= cvardef("empire_secondary_weapon", "", "", "", "string");
+	level.empire_secondaryweapon["american"]=cvardef("empire_secondary_weapon_american", "", "", "", "string");
+	level.empire_secondaryweapon["british"]= cvardef("empire_secondary_weapon_british", "", "", "", "string");
+	level.empire_secondaryweapon["german"]	= cvardef("empire_secondary_weapon_german", "", "", "", "string");
+	level.empire_secondaryweapon["russian"]= cvardef("empire_secondary_weapon_russian", "", "", "", "string");
 
-	level.awe_pistoltype["default"]  = cvardef("awe_pistol_type", "", "", "", "string");
-	level.awe_pistoltype["american"]  = cvardef("awe_pistol_type_american", "", "", "", "string");
-	level.awe_pistoltype["british"]  = cvardef("awe_pistol_type_british", "", "", "", "string");
-	level.awe_pistoltype["german"]  = cvardef("awe_pistol_type_german", "", "", "", "string");
-	level.awe_pistoltype["russian"]  = cvardef("awe_pistol_type_russian", "", "", "", "string");
+	level.empire_pistoltype["default"]  = cvardef("empire_pistol_type", "", "", "", "string");
+	level.empire_pistoltype["american"]  = cvardef("empire_pistol_type_american", "", "", "", "string");
+	level.empire_pistoltype["british"]  = cvardef("empire_pistol_type_british", "", "", "", "string");
+	level.empire_pistoltype["german"]  = cvardef("empire_pistol_type_german", "", "", "", "string");
+	level.empire_pistoltype["russian"]  = cvardef("empire_pistol_type_russian", "", "", "", "string");
 
-	level.awe_grenadetype["default"]  = cvardef("awe_grenade_type", "", "", "", "string");
-	level.awe_grenadetype["american"]  = cvardef("awe_grenade_type_american", "", "", "", "string");
-	level.awe_grenadetype["british"]  = cvardef("awe_grenade_type_british", "", "", "", "string");
-	level.awe_grenadetype["german"]  = cvardef("awe_grenade_type_german", "", "", "", "string");
-	level.awe_grenadetype["russian"]  = cvardef("awe_grenade_type_russian", "", "", "", "string");
+	level.empire_grenadetype["default"]  = cvardef("empire_grenade_type", "", "", "", "string");
+	level.empire_grenadetype["american"]  = cvardef("empire_grenade_type_american", "", "", "", "string");
+	level.empire_grenadetype["british"]  = cvardef("empire_grenade_type_british", "", "", "", "string");
+	level.empire_grenadetype["german"]  = cvardef("empire_grenade_type_german", "", "", "", "string");
+	level.empire_grenadetype["russian"]  = cvardef("empire_grenade_type_russian", "", "", "", "string");
 
-	level.awe_smokegrenadetype["default"]  = cvardef("awe_smokegrenade_type", "", "", "", "string");
-	level.awe_smokegrenadetype["american"]  = cvardef("awe_smokegrenade_type_american", "", "", "", "string");
-	level.awe_smokegrenadetype["british"]  = cvardef("awe_smokegrenade_type_british", "", "", "", "string");
-	level.awe_smokegrenadetype["german"]  = cvardef("awe_smokegrenade_type_german", "", "", "", "string");
-	level.awe_smokegrenadetype["russian"]  = cvardef("awe_smokegrenade_type_russian", "", "", "", "string");
+	level.empire_smokegrenadetype["default"]  = cvardef("empire_smokegrenade_type", "", "", "", "string");
+	level.empire_smokegrenadetype["american"]  = cvardef("empire_smokegrenade_type_american", "", "", "", "string");
+	level.empire_smokegrenadetype["british"]  = cvardef("empire_smokegrenade_type_british", "", "", "", "string");
+	level.empire_smokegrenadetype["german"]  = cvardef("empire_smokegrenade_type_german", "", "", "", "string");
+	level.empire_smokegrenadetype["russian"]  = cvardef("empire_smokegrenade_type_russian", "", "", "", "string");
 
 	// Parachuting
-	level.awe_parachutes = cvardef("awe_parachutes", 0, 0, 2, "int");
-	level.awe_parachutesonlyattackers = cvardef("awe_parachutes_only_attackers", 1, 0, 1, "int");
-	level.awe_parachutesprotection = cvardef("awe_parachutes_protection", 1, 0, 1, "int");
-	level.awe_parachuteslimitaltitude = cvardef("awe_parachutes_limit_altitude", 1700, 0, 50000, "int");
+	level.empire_parachutes = cvardef("empire_parachutes", 0, 0, 2, "int");
+	level.empire_parachutesonlyattackers = cvardef("empire_parachutes_only_attackers", 1, 0, 1, "int");
+	level.empire_parachutesprotection = cvardef("empire_parachutes_protection", 1, 0, 1, "int");
+	level.empire_parachuteslimitaltitude = cvardef("empire_parachutes_limit_altitude", 1700, 0, 50000, "int");
 
 	// Turret options
-	level.awe_turretmobile		= cvardef("awe_turret_mobile", 0, 0, 2, "int");
-	level.awe_turretplanttime	= cvardef("awe_turret_plant_time", 2, 0, 30, "float");
-	level.awe_turretpicktime	= cvardef("awe_turret_pick_time", 1, 0, 30, "float");
-	level.awe_mg42spawnextra	= cvardef("awe_mg42_spawn_extra", 0, 0, 20, "int");
-	level.awe_ptrs41spawnextra	= cvardef("awe_ptrs41_spawn_extra", 0, 0, 20, "int");
+	level.empire_turretmobile		= cvardef("empire_turret_mobile", 0, 0, 2, "int");
+	level.empire_turretplanttime	= cvardef("empire_turret_plant_time", 2, 0, 30, "float");
+	level.empire_turretpicktime	= cvardef("empire_turret_pick_time", 1, 0, 30, "float");
+	level.empire_mg42spawnextra	= cvardef("empire_mg42_spawn_extra", 0, 0, 20, "int");
+	level.empire_ptrs41spawnextra	= cvardef("empire_ptrs41_spawn_extra", 0, 0, 20, "int");
 
 	// Tripwire options
-	level.awe_tripwire		= cvardef("awe_tripwire", 0, 0, 3, "int");
-	level.awe_tripwirelimit		= cvardef("awe_tripwire_limit", 5, 1, 20, "int");
-	level.awe_tripwirewarning	= cvardef("awe_tripwire_warning", 1, 0, 1, "int");
-	level.awe_tripwireplanttime	= cvardef("awe_tripwire_plant_time", 3, 0, 30, "float");
-	level.awe_tripwirepicktime	= cvardef("awe_tripwire_pick_time", 5, 0, 30, "float");
+	level.empire_tripwire		= cvardef("empire_tripwire", 0, 0, 3, "int");
+	level.empire_tripwirelimit		= cvardef("empire_tripwire_limit", 5, 1, 20, "int");
+	level.empire_tripwirewarning	= cvardef("empire_tripwire_warning", 1, 0, 1, "int");
+	level.empire_tripwireplanttime	= cvardef("empire_tripwire_plant_time", 3, 0, 30, "float");
+	level.empire_tripwirepicktime	= cvardef("empire_tripwire_pick_time", 5, 0, 30, "float");
 
 	// Remote detonable satchel options
-	level.awe_satchel			= cvardef("awe_satchel", 0, 0, 1, "int");
-	level.awe_satchellimit		= cvardef("awe_satchel_limit", 5, 1, 20, "int");
-	level.awe_satchelplanttime	= cvardef("awe_satchel_plant_time", 3, 0, 30, "float");
-	level.awe_satchelpicktime	= cvardef("awe_satchel_pick_time", 5, 0, 30, "float");
+	level.empire_satchel			= cvardef("empire_satchel", 0, 0, 1, "int");
+	level.empire_satchellimit		= cvardef("empire_satchel_limit", 5, 1, 20, "int");
+	level.empire_satchelplanttime	= cvardef("empire_satchel_plant_time", 3, 0, 30, "float");
+	level.empire_satchelpicktime	= cvardef("empire_satchel_pick_time", 5, 0, 30, "float");
 
 	// Stick nades options
-	level.awe_stickynades		= cvardef("awe_sticky_nades", 0, 0, 2, "int");
+	level.empire_stickynades		= cvardef("empire_sticky_nades", 0, 0, 2, "int");
 
 	// Spawn protection
-	level.awe_spawnprotection	= cvardef("awe_spawn_protection", 0, 0, 99, "int");
+	level.empire_spawnprotection	= cvardef("empire_spawn_protection", 0, 0, 99, "int");
 
 	// Stukas
-	level.awe_stukas			= cvardef("awe_stukas", 0, 0, 99, "int");
-	level.awe_stukascrash		= cvardef("awe_stukas_crash", 20, 0, 100, "int");
-	level.awe_stukascrashsafety	= cvardef("awe_stukas_crash_safety", 0, 0, 1, "int");
-	level.awe_stukascrashquake	= cvardef("awe_stukas_crash_quake", 1, 0, 1, "int");
-	level.awe_stukascrashstay	= cvardef("awe_stukas_crash_stay", 30, 0, 10000, "int");
-	level.awe_stukasdelay		= cvardef("awe_stukas_delay", 500, 1, 10000, "int"); 
+	level.empire_stukas			= cvardef("empire_stukas", 0, 0, 99, "int");
+	level.empire_stukascrash		= cvardef("empire_stukas_crash", 20, 0, 100, "int");
+	level.empire_stukascrashsafety	= cvardef("empire_stukas_crash_safety", 0, 0, 1, "int");
+	level.empire_stukascrashquake	= cvardef("empire_stukas_crash_quake", 1, 0, 1, "int");
+	level.empire_stukascrashstay	= cvardef("empire_stukas_crash_stay", 30, 0, 10000, "int");
+	level.empire_stukasdelay		= cvardef("empire_stukas_delay", 500, 1, 10000, "int"); 
 
 	// Dead body handling
-	level.awe_nobodies		= cvardef("awe_no_bodies", 0, 0, 2, "int");
-	level.awe_burningbodies		= cvardef("awe_burning_bodies", 5, 0, 99, "float");
-	level.awe_searchablebodies	= cvardef("awe_searchable_bodies", 1, 0, 99, "float");
-	level.awe_searchablebodieshealth = cvardef("awe_searchable_bodies_health", 1, 0, 1, "int");
+	level.empire_nobodies		= cvardef("empire_no_bodies", 0, 0, 2, "int");
+	level.empire_burningbodies		= cvardef("empire_burning_bodies", 5, 0, 99, "float");
+	level.empire_searchablebodies	= cvardef("empire_searchable_bodies", 1, 0, 99, "float");
+	level.empire_searchablebodieshealth = cvardef("empire_searchable_bodies_health", 1, 0, 1, "int");
 
 	// Pop head
-	level.awe_pophead		= cvardef("awe_pophead", 0, 0, 100, "int");
+	level.empire_pophead		= cvardef("empire_pophead", 0, 0, 100, "int");
 
 	// Anticamping
-	level.awe_anticamptime = cvardef("awe_anticamp_time", 0, 0, 1440, "int");
-	level.awe_anticampmethod = cvardef("awe_anticamp_method", 0, 0, level.awe_punishments + 1, "int");
+	level.empire_anticamptime = cvardef("empire_anticamp_time", 0, 0, 1440, "int");
+	level.empire_anticampmethod = cvardef("empire_anticamp_method", 0, 0, level.empire_punishments + 1, "int");
+	level.empire_afk_detection = cvardef("empire_afk_detection", 1, 0, 1, "int");
 
 	// Cold breath
-	level.awe_coldbreath = cvardef("awe_cold_breath", 0, 0, 1, "int");
+	level.empire_coldbreath = cvardef("empire_cold_breath", 0, 0, 1, "int");
 
         // Map voting
-        level.awe_mapvote = cvardef("awe_map_vote", 0, 0, 1, "int");
-        level.awe_mapvotetime = cvardef("awe_map_vote_time", 30, 10, 180, "int");
-        level.awe_mapvotereplay = cvardef("awe_map_vote_replay",0,0,1,"int");
+        level.empire_mapvote = cvardef("empire_map_vote", 0, 0, 1, "int");
+        level.empire_mapvotetime = cvardef("empire_map_vote_time", 30, 10, 180, "int");
+        level.empire_mapvotereplay = cvardef("empire_map_vote_replay",0,0,1,"int");
         // Map rotation history
-        level.awe_maphistory = cvardef("awe_map_history", "", "", "", "string");
-        level.awe_maphistorysize = cvardef("awe_map_history_size", 5, 1, 20, "int");
+        level.empire_maphistory = cvardef("empire_map_history", "", "", "", "string");
+        level.empire_maphistorysize = cvardef("empire_map_history_size", 5, 1, 20, "int");
         // Gametype rotation
-        level.awe_gametypemode = cvardef("awe_gametype_mode", 1, 1, 3, "int");
-        level.awe_allowedgametypes = cvardef("awe_allowed_gametypes", "", "", "", "string");
-        level.awe_gametypehistory = cvardef("awe_gametype_history", "", "", "", "string");
-        level.awe_gametypehistorysize = cvardef("awe_gametype_history_size", 5, 1, 20, "int");
-        level.awe_gametypeplayercountlimits = cvardef("awe_gametype_playercount_limits", "", "", "", "string");
-        level.awe_mapcandidatepoolsize = cvardef("awe_map_candidate_pool_size", 10, 5, 12, "int");
-        level.awe_mapcooldownwindow = cvardef("awe_map_cooldown_window", 8, 1, 40, "int");
-        level.awe_mapcooldownpenalty = cvardef("awe_map_cooldown_penalty", 20, 1, 200, "int");
-        level.awe_mapfrequencywindow = cvardef("awe_map_frequency_window", 16, 5, 60, "int");
-        level.awe_mapfrequencypenalty = cvardef("awe_map_frequency_penalty", 14, 1, 200, "int");
-        level.awe_gametypepenaltyscale = cvardef("awe_gametype_penalty_scale", 100, 25, 300, "int");
+        level.empire_gametypemode = cvardef("empire_gametype_mode", 1, 1, 3, "int");
+        level.empire_allowedgametypes = cvardef("empire_allowed_gametypes", "", "", "", "string");
+        level.empire_gametypehistory = cvardef("empire_gametype_history", "", "", "", "string");
+        level.empire_gametypehistorysize = cvardef("empire_gametype_history_size", 5, 1, 20, "int");
+        level.empire_gametypeplayercountlimits = cvardef("empire_gametype_playercount_limits", "", "", "", "string");
+        level.empire_mapcandidatepoolsize = cvardef("empire_map_candidate_pool_size", 10, 5, 12, "int");
+        level.empire_mapcooldownwindow = cvardef("empire_map_cooldown_window", 8, 1, 40, "int");
+        level.empire_mapcooldownpenalty = cvardef("empire_map_cooldown_penalty", 20, 1, 200, "int");
+        level.empire_mapfrequencywindow = cvardef("empire_map_frequency_window", 16, 5, 60, "int");
+        level.empire_mapfrequencypenalty = cvardef("empire_map_frequency_penalty", 14, 1, 200, "int");
+        level.empire_gametypepenaltyscale = cvardef("empire_gametype_penalty_scale", 100, 25, 300, "int");
 
         // Show grenade cooking
-        level.awe_showcooking = cvardef("awe_show_cooking", 1, 0, 1, "int");
+        level.empire_showcooking = cvardef("empire_show_cooking", 1, 0, 1, "int");
 	
 	// First aid
-	level.awe_firstaid	= cvardef("awe_firstaid",0,0,1,"int");
+	level.empire_firstaid	= cvardef("empire_firstaid",0,0,1,"int");
 
 	// UO Sprinting
-	level.awe_uosprint	= cvardef("awe_uo_sprint",1,0,3,"int");
+	level.empire_uosprint	= cvardef("empire_uo_sprint",1,0,3,"int");
 
-	// AWE Sprinting
-	level.awe_sprint 		= cvardef("awe_sprint",0,0,3,"int");
-	level.awe_sprinthud 	= cvardef("awe_sprint_hud",1,0,2,"int");
-	level.awe_sprinthudhint = cvardef("awe_sprint_hud_hint",1,0,1,"int");
+	// empire_mod Sprinting
+	level.empire_sprint 		= cvardef("empire_sprint",0,0,3,"int");
+	level.empire_sprinthud 	= cvardef("empire_sprint_hud",1,0,2,"int");
+	level.empire_sprinthudhint = cvardef("empire_sprint_hud_hint",1,0,1,"int");
 
 	// Override falldamage
-//	level.awe_falldamage = cvardef("awe_falldamage",100,1,99999,"int");
+//	level.empire_falldamage = cvardef("empire_falldamage",100,1,99999,"int");
 
 	for(;;)
 	{
 		// First aid
-		level.awe_firstaidkits	= cvardef("awe_firstaid_kits",1,1,99,"int");
-		level.awe_firstaidhealth= cvardef("awe_firstaid_health",25,1,100,"int");
-		level.awe_firstaiddelay	= cvardef("awe_firstaid_delay",10,0,999,"int");
+		level.empire_firstaidkits	= cvardef("empire_firstaid_kits",1,1,99,"int");
+		level.empire_firstaidhealth= cvardef("empire_firstaid_health",25,1,100,"int");
+		level.empire_firstaiddelay	= cvardef("empire_firstaid_delay",10,0,999,"int");
 
 		// Stick nades options
-		level.awe_stickynadesgrenadefuse	= cvardef("awe_sticky_nades_grenade_fuse", 4, 1, 99, "int");
-		level.awe_stickynadessatchelfuse	= cvardef("awe_sticky_nades_satchel_fuse", 6, 1, 99, "int");
+		level.empire_stickynadesgrenadefuse	= cvardef("empire_sticky_nades_grenade_fuse", 4, 1, 99, "int");
+		level.empire_stickynadessatchelfuse	= cvardef("empire_sticky_nades_satchel_fuse", 6, 1, 99, "int");
 
 		// Damage blocking
-		level.awe_blockdamagespectator = cvardef("awe_block_damage_spectator", 1, 0, 1, "int");
-		level.awe_blockdamageteamswitch= cvardef("awe_block_damage_team_switch", 1, 0, 1, "int");
+		level.empire_blockdamagespectator = cvardef("empire_block_damage_spectator", 1, 0, 1, "int");
+		level.empire_blockdamageteamswitch= cvardef("empire_block_damage_team_switch", 1, 0, 1, "int");
 
 		// Sprinting
-		level.awe_sprintspeed = (float)1 + cvardef("awe_sprint_speed",60,0,9999,"float")*(float)0.01;
-		level.awe_sprinttime = cvardef("awe_sprint_time",3,1,999,"int") * 20;
-		level.awe_sprintrecovertime = cvardef("awe_sprint_recover_time",2,0,999,"int") * 20;
+		level.empire_sprintspeed = (float)1 + cvardef("empire_sprint_speed",60,0,9999,"float")*(float)0.01;
+		level.empire_sprinttime = cvardef("empire_sprint_time",3,1,999,"int") * 20;
+		level.empire_sprintrecovertime = cvardef("empire_sprint_recover_time",2,0,999,"int") * 20;
 
 		// UO Sprinting
-		level.awe_uosprintspeed		= (float)cvardef("awe_uo_sprint_speed",100,0,9999,"float")*(float)0.01;
-		level.awe_uosprinttime		= (float)100 / (float)cvardef("awe_uo_sprint_time",100,1,9999,"int");
-		level.awe_uosprintrecovertime	= (float)100 / (float)cvardef("awe_uo_sprint_recover_time",100,1,9999,"int");
+		level.empire_uosprintspeed		= (float)cvardef("empire_uo_sprint_speed",100,0,9999,"float")*(float)0.01;
+		level.empire_uosprinttime		= (float)100 / (float)cvardef("empire_uo_sprint_time",100,1,9999,"int");
+		level.empire_uosprintrecovertime	= (float)100 / (float)cvardef("empire_uo_sprint_recover_time",100,1,9999,"int");
 
 		// Unlimted ammo
-		level.awe_unlimitedammo = cvardef("awe_unlimited_ammo", 0, 0, 2, "int");
-		level.awe_unlimitedgrenades = cvardef("awe_unlimited_grenades", 0, 0, 1, "int");
-		level.awe_unlimitedsmokegrenades = cvardef("awe_unlimited_smokegrenades", 0, 0, 1, "int");
+		level.empire_unlimitedammo = cvardef("empire_unlimited_ammo", 0, 0, 2, "int");
+		level.empire_unlimitedgrenades = cvardef("empire_unlimited_grenades", 0, 0, 1, "int");
+		level.empire_unlimitedsmokegrenades = cvardef("empire_unlimited_smokegrenades", 0, 0, 1, "int");
 
 		// head popping controls
-		level.awe_popheadbullet	= cvardef("awe_pophead_bullet", 1, 0, 1, "int");
-		level.awe_popheadmelee	= cvardef("awe_pophead_melee", 1, 0, 1, "int");
-		level.awe_popheadexplosion= cvardef("awe_pophead_explosion", 1, 0, 1, "int");
+		level.empire_popheadbullet	= cvardef("empire_pophead_bullet", 1, 0, 1, "int");
+		level.empire_popheadmelee	= cvardef("empire_pophead_melee", 1, 0, 1, "int");
+		level.empire_popheadexplosion= cvardef("empire_pophead_explosion", 1, 0, 1, "int");
 
 		// Zombie mode
-		level.awe_zombie	= cvardef("awe_zombie",0,0,1,"int");
+		level.empire_zombie	= cvardef("empire_zombie",0,0,1,"int");
 
 		// Player max speed
-		level.awe_playerspeed = cvardef("awe_player_speed",100,0,9999,"float");
+		level.empire_playerspeed = cvardef("empire_player_speed",100,0,9999,"float");
 
 		// Override gravity?
-		gravity = cvardef("awe_gravity",100,0,9999,"float");
-		if(!isdefined(level.awe_gravity) || gravity != level.awe_gravity)
+		gravity = cvardef("empire_gravity",100,0,9999,"float");
+		if(!isdefined(level.empire_gravity) || gravity != level.empire_gravity)
 		{
-			level.awe_gravity = gravity;
+			level.empire_gravity = gravity;
 			setcvar("g_gravity", 8 * gravity);
-			if(level.awe_debug)
+			if(level.empire_debug)
 				iprintln("Gravity set to:" + 8 * gravity);
 		}
 
 		// Unknown Soldiers handling
-		level.awe_unknownreflect = cvardef("awe_unknown_reflect",1,0,1,"int");
-		level.awe_unknownmethod = cvardef("awe_unknown_method",0,0,3,"int");
-		level.awe_unknownrenamemsg = cvardef("awe_unknown_rename_msg","Unknown Soldier is not a valid name! You have been renamed by the server.","","","string");
+		level.empire_unknownreflect = cvardef("empire_unknown_reflect",1,0,1,"int");
+		level.empire_unknownmethod = cvardef("empire_unknown_method",0,0,3,"int");
+		level.empire_unknownrenamemsg = cvardef("empire_unknown_rename_msg","Unknown Soldier is not a valid name! You have been renamed by the server.","","","string");
 
 		// Vsay dropping
-		level.awe_vsaydropweapon = cvardef("awe_vsay_drop_weapon",1,0,1,"int");
-		level.awe_vsaydrophealth = cvardef("awe_vsay_drop_health",0,0,1,"int");
+		level.empire_vsaydropweapon = cvardef("empire_vsay_drop_weapon",1,0,1,"int");
+		level.empire_vsaydrophealth = cvardef("empire_vsay_drop_health",0,0,1,"int");
 
 		// Use bots (for debugging)
-		level.awe_bots = cvardef("awe_bots", 0, 0, 99, "int");
+		level.empire_bots = cvardef("empire_bots", 0, 0, 99, "int");
 
 		// Disable crosshair?
-		level.awe_nocrosshair = cvardef("awe_no_crosshair", 0, 0, 2, "int");
+		level.empire_nocrosshair = cvardef("empire_no_crosshair", 0, 0, 2, "int");
 
 		if(!init) wait 0.5;
 
 		// turn on ambient mortars
-		level.awe_mortar = cvardef("awe_mortar", 3, 0, 10, "int");
+		level.empire_mortar = cvardef("empire_mortar", 3, 0, 10, "int");
 		// quake?
-		level.awe_mortar_quake = cvardef("awe_mortar_quake", 1, 0, 1, "int");
+		level.empire_mortar_quake = cvardef("empire_mortar_quake", 1, 0, 1, "int");
 		// random?
-		level.awe_mortar_random = cvardef("awe_mortar_random", 0, 0, 1, "int");
+		level.empire_mortar_random = cvardef("empire_mortar_random", 0, 0, 1, "int");
 		// make them safe for players
-		level.awe_mortar_safety = cvardef("awe_mortar_safety", 1, 0, 1, "int");
+		level.empire_mortar_safety = cvardef("empire_mortar_safety", 1, 0, 1, "int");
 		// minimum delay between mortars
-		level.awe_mortar_delay_min = cvardef("awe_mortar_delay_min", 20, 5, 179, "int");
+		level.empire_mortar_delay_min = cvardef("empire_mortar_delay_min", 20, 5, 179, "int");
 		// maximum delay between mortars
-		level.awe_mortar_delay_max = cvardef("awe_mortar_delay_max", 60, level.awe_mortar_delay_min+1, 180, "int");
+		level.empire_mortar_delay_max = cvardef("empire_mortar_delay_max", 60, level.empire_mortar_delay_min+1, 180, "int");
 	
 		// warm up round for round based gametypes
-		level.awe_warmupround 	= cvardef("awe_warmup_round", 0, 0, 1, "int");
+		level.empire_warmupround 	= cvardef("empire_warmup_round", 0, 0, 1, "int");
 
 		// team overriding
-		level.awe_teamallies	= cvardef("awe_team_allies","","","","string");
-		level.awe_teamswap	= cvardef("awe_team_swap", 0, 0, 1,"int");
+		level.empire_teamallies	= cvardef("empire_team_allies","","","","string");
+		level.empire_teamswap	= cvardef("empire_team_swap", 0, 0, 1,"int");
 
 		if(!init) wait 0.5;
 
 		// fog options
-		cfogstr = cvardef("awe_cfog", "none", "", "", "string");
-		if(cfogstr != "none" && (!isdefined(level.awe_cfogstr) || level.awe_cfogstr != cfogstr))
+		cfogstr = cvardef("empire_cfog", "none", "", "", "string");
+		if(cfogstr != "none" && (!isdefined(level.empire_cfogstr) || level.empire_cfogstr != cfogstr))
 		{
-			level.awe_cfogstr	= cfogstr;
-			cfogstr = strip(level.awe_cfogstr);
+			level.empire_cfogstr	= cfogstr;
+			cfogstr = strip(level.empire_cfogstr);
 			if(cfogstr!="")
 			{
 				cfog = explode(cfogstr," ");
 				if(cfog.size == 6)
 				{
-					level.awe_cfog		= (int)cfog[0];
-					level.awe_cfogdistance	= (int)cfog[1];
-					level.awe_cfogdistance2	= (int)cfog[2];
-					level.awe_cfogred		= (float)cfog[3];
-					level.awe_cfoggreen	= (float)cfog[4];
-					level.awe_cfogblue	= (float)cfog[5];
+					level.empire_cfog		= (int)cfog[0];
+					level.empire_cfogdistance	= (int)cfog[1];
+					level.empire_cfogdistance2	= (int)cfog[2];
+					level.empire_cfogred		= (float)cfog[3];
+					level.empire_cfoggreen	= (float)cfog[4];
+					level.empire_cfogblue	= (float)cfog[5];
 				}
 			}
 		}
-		efogstr = cvardef("awe_efog", "none", "", "", "string");
-		if(efogstr != "none" && (!isdefined(level.awe_efogstr) || level.awe_efogstr != efogstr))
+		efogstr = cvardef("empire_efog", "none", "", "", "string");
+		if(efogstr != "none" && (!isdefined(level.empire_efogstr) || level.empire_efogstr != efogstr))
 		{
-			level.awe_efogstr	= efogstr;
-			efogstr = strip(level.awe_efogstr);
+			level.empire_efogstr	= efogstr;
+			efogstr = strip(level.empire_efogstr);
 			if(efogstr!="")
 			{
 				efog = explode(efogstr," ");
 				if(efog.size == 6)
 				{
-					level.awe_efog 		= (int)efog[0];
-					level.awe_efogdensity	= (float)efog[1];
-					level.awe_efogdensity2	= (float)efog[2];
-					level.awe_efogred		= (float)efog[3];
-					level.awe_efoggreen	= (float)efog[4];
-					level.awe_efogblue	= (float)efog[5];
+					level.empire_efog 		= (int)efog[0];
+					level.empire_efogdensity	= (float)efog[1];
+					level.empire_efogdensity2	= (float)efog[2];
+					level.empire_efogred		= (float)efog[3];
+					level.empire_efoggreen	= (float)efog[4];
+					level.empire_efogblue	= (float)efog[5];
 				}
 			}
 		}
@@ -2234,257 +2235,257 @@ updateGametypeCvars(init)
 
 		// Damage modifiers
 		// American 
-		level.awe_dmgmod["m1carbine_mp"]		= (float)cvardef("awe_dmgmod_m1carbine_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["m1garand_mp"]		= (float)cvardef("awe_dmgmod_m1garand_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["thompson_mp"]		= (float)cvardef("awe_dmgmod_thompson_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["bar_mp"]			= (float)cvardef("awe_dmgmod_bar_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["springfield_mp"]		= (float)cvardef("awe_dmgmod_springfield_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["fraggrenade_mp"]		= (float)cvardef("awe_dmgmod_fraggrenade_mp",183,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["colt_mp"]			= (float)cvardef("awe_dmgmod_colt_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["m1carbine_mp"]		= (float)cvardef("empire_dmgmod_m1carbine_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["m1garand_mp"]		= (float)cvardef("empire_dmgmod_m1garand_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["thompson_mp"]		= (float)cvardef("empire_dmgmod_thompson_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["bar_mp"]			= (float)cvardef("empire_dmgmod_bar_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["springfield_mp"]		= (float)cvardef("empire_dmgmod_springfield_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["fraggrenade_mp"]		= (float)cvardef("empire_dmgmod_fraggrenade_mp",183,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["colt_mp"]			= (float)cvardef("empire_dmgmod_colt_mp",100,0,9999,"float")*(float)0.01;
 
 		// British
-		level.awe_dmgmod["enfield_mp"]		= (float)cvardef("awe_dmgmod_enfield_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["sten_mp"]			= (float)cvardef("awe_dmgmod_sten_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["bren_mp"]			= (float)cvardef("awe_dmgmod_bren_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["mk1britishfrag_mp"]	= (float)cvardef("awe_dmgmod_mk1britishfrag_mp",183,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["enfield_mp"]		= (float)cvardef("empire_dmgmod_enfield_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["sten_mp"]			= (float)cvardef("empire_dmgmod_sten_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["bren_mp"]			= (float)cvardef("empire_dmgmod_bren_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["mk1britishfrag_mp"]	= (float)cvardef("empire_dmgmod_mk1britishfrag_mp",183,0,9999,"float")*(float)0.01;
 
 		// German
-		level.awe_dmgmod["kar98k_mp"]			= (float)cvardef("awe_dmgmod_kar98k_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["mp40_mp"]			= (float)cvardef("awe_dmgmod_mp40_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["mp44_mp"]			= (float)cvardef("awe_dmgmod_mp44_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["kar98k_sniper_mp"]	= (float)cvardef("awe_dmgmod_kar98k_sniper_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["stielhandgranate_mp"]	= (float)cvardef("awe_dmgmod_stielhandgranate_mp",183,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["luger_mp"]			= (float)cvardef("awe_dmgmod_luger_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["kar98k_mp"]			= (float)cvardef("empire_dmgmod_kar98k_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["mp40_mp"]			= (float)cvardef("empire_dmgmod_mp40_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["mp44_mp"]			= (float)cvardef("empire_dmgmod_mp44_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["kar98k_sniper_mp"]	= (float)cvardef("empire_dmgmod_kar98k_sniper_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["stielhandgranate_mp"]	= (float)cvardef("empire_dmgmod_stielhandgranate_mp",183,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["luger_mp"]			= (float)cvardef("empire_dmgmod_luger_mp",100,0,9999,"float")*(float)0.01;
 
 		// Russian
-		level.awe_dmgmod["mosin_nagant_mp"]		= (float)cvardef("awe_dmgmod_mosin_nagant_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["ppsh_mp"]			= (float)cvardef("awe_dmgmod_ppsh_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["mosin_nagant_sniper_mp"]= (float)cvardef("awe_dmgmod_mosin_nagant_sniper_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["rgd-33russianfrag_mp"]	= (float)cvardef("awe_dmgmod_rgd-33russianfrag_mp",183,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["mosin_nagant_mp"]		= (float)cvardef("empire_dmgmod_mosin_nagant_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["ppsh_mp"]			= (float)cvardef("empire_dmgmod_ppsh_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["mosin_nagant_sniper_mp"]= (float)cvardef("empire_dmgmod_mosin_nagant_sniper_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["rgd-33russianfrag_mp"]	= (float)cvardef("empire_dmgmod_rgd-33russianfrag_mp",183,0,9999,"float")*(float)0.01;
 
 		// Turrets
-		level.awe_dmgmod["mg42_bipod_duck_mp"]	= (float)cvardef("awe_dmgmod_mg42_bipod_duck_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["mg42_bipod_prone_mp"]	= (float)cvardef("awe_dmgmod_mg42_bipod_prone_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["mg42_bipod_stand_mp"]	= (float)cvardef("awe_dmgmod_mg42_bipod_stand_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["ptrs41_antitank_rifle_mp"]= (float)cvardef("awe_dmgmod_ptrs41_antitank_rifle_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["mg42_bipod_duck_mp"]	= (float)cvardef("empire_dmgmod_mg42_bipod_duck_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["mg42_bipod_prone_mp"]	= (float)cvardef("empire_dmgmod_mg42_bipod_prone_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["mg42_bipod_stand_mp"]	= (float)cvardef("empire_dmgmod_mg42_bipod_stand_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["ptrs41_antitank_rifle_mp"]= (float)cvardef("empire_dmgmod_ptrs41_antitank_rifle_mp",100,0,9999,"float")*(float)0.01;
 
 		// "Common"
-		level.awe_dmgmod["fg42_mp"]			= (float)cvardef("awe_dmgmod_fg42_mp",100,0,9999,"float")*(float)0.01;
-		level.awe_dmgmod["panzerfaust_mp"]		= (float)cvardef("awe_dmgmod_panzerfaust_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["fg42_mp"]			= (float)cvardef("empire_dmgmod_fg42_mp",100,0,9999,"float")*(float)0.01;
+		level.empire_dmgmod["panzerfaust_mp"]		= (float)cvardef("empire_dmgmod_panzerfaust_mp",100,0,9999,"float")*(float)0.01;
 
-		if(isdefined(level.awe_uo))
+		if(isdefined(level.empire_uo))
 		{
 			// American
-			level.awe_dmgmod["mg30cal_mp"]		= (float)cvardef("awe_dmgmod_mg30cal_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["mg30cal_mp"]		= (float)cvardef("empire_dmgmod_mg30cal_mp",100,0,9999,"float")*(float)0.01;
 
 			// British
-			level.awe_dmgmod["webley_mp"]			= (float)cvardef("awe_dmgmod_webley_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["sten_silenced_mp"]	= (float)cvardef("awe_dmgmod_sten_silenced_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["webley_mp"]			= (float)cvardef("empire_dmgmod_webley_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["sten_silenced_mp"]	= (float)cvardef("empire_dmgmod_sten_silenced_mp",100,0,9999,"float")*(float)0.01;
 
 			// German
-			level.awe_dmgmod["gewehr43_mp"]		= (float)cvardef("awe_dmgmod_gewehr43_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["mg34_mp"]			= (float)cvardef("awe_dmgmod_mg34_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["gewehr43_mp"]		= (float)cvardef("empire_dmgmod_gewehr43_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["mg34_mp"]			= (float)cvardef("empire_dmgmod_mg34_mp",100,0,9999,"float")*(float)0.01;
 
 			// Russian
-			level.awe_dmgmod["tt33_mp"]			= (float)cvardef("awe_dmgmod_tt33_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["svt40_mp"]			= (float)cvardef("awe_dmgmod_svt40_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["dp28_mp"]			= (float)cvardef("awe_dmgmod_dp28_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["tt33_mp"]			= (float)cvardef("empire_dmgmod_tt33_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["svt40_mp"]			= (float)cvardef("empire_dmgmod_svt40_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["dp28_mp"]			= (float)cvardef("empire_dmgmod_dp28_mp",100,0,9999,"float")*(float)0.01;
 
 			// "Common"
-			level.awe_dmgmod["flamethrower_mp"]		= (float)cvardef("awe_dmgmod_flamethrower_mp",50,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["bazooka_mp"]		= (float)cvardef("awe_dmgmod_bazooka_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["panzerschreck_mp"]	= (float)cvardef("awe_dmgmod_panzerschreck_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["satchelcharge_mp"]	= (float)cvardef("awe_dmgmod_satchelcharge_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["flamethrower_mp"]		= (float)cvardef("empire_dmgmod_flamethrower_mp",50,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["bazooka_mp"]		= (float)cvardef("empire_dmgmod_bazooka_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["panzerschreck_mp"]	= (float)cvardef("empire_dmgmod_panzerschreck_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["satchelcharge_mp"]	= (float)cvardef("empire_dmgmod_satchelcharge_mp",100,0,9999,"float")*(float)0.01;
 
 			// Tanks & Turrets
-			level.awe_dmgmod["30cal_tank_mp"]		= (float)cvardef("awe_dmgmod_30cal_tank_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["50cal_tank_mp"]		= (float)cvardef("awe_dmgmod_50cal_tank_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["elefant_turret_mp"]	= (float)cvardef("awe_dmgmod_elefant_turret_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["mg34_tank_mp"]		= (float)cvardef("awe_dmgmod_mg34_tank_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["mg42_tank_mp"]		= (float)cvardef("awe_dmgmod_mg42_tank_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["panzeriv_turret_mp"]	= (float)cvardef("awe_dmgmod_panzeriv_turret_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["sg43_tank_mp"]		= (float)cvardef("awe_dmgmod_sg43_tank_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["sherman_turret_mp"]	= (float)cvardef("awe_dmgmod_sherman_turret_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["su152_turret_mp"]		= (float)cvardef("awe_dmgmod_su152_turret_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["flak88_turret_mp"]	= (float)cvardef("awe_dmgmod_flak88_turret_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["mg42_turret_mp"]		= (float)cvardef("awe_dmgmod_mg42_turret_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["mg50cal_tripod_stand_mp"]= (float)cvardef("awe_dmgmod_mg50cal_tripod_stand_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["mg_sg43_stand_mp"]	= (float)cvardef("awe_dmgmod_mg_sg43_stand_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["sg43_turret_mp"]		= (float)cvardef("awe_dmgmod_sg43_turret_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_dmgmod["t34_turret_mp"]		= (float)cvardef("awe_dmgmod_t34_turret_mp",100,0,9999,"float")*(float)0.01;
-			level.awe_flamethrowerhitrate			= cvardef("awe_flamethrower_hitrate",100,0,100,"int");
+			level.empire_dmgmod["30cal_tank_mp"]		= (float)cvardef("empire_dmgmod_30cal_tank_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["50cal_tank_mp"]		= (float)cvardef("empire_dmgmod_50cal_tank_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["elefant_turret_mp"]	= (float)cvardef("empire_dmgmod_elefant_turret_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["mg34_tank_mp"]		= (float)cvardef("empire_dmgmod_mg34_tank_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["mg42_tank_mp"]		= (float)cvardef("empire_dmgmod_mg42_tank_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["panzeriv_turret_mp"]	= (float)cvardef("empire_dmgmod_panzeriv_turret_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["sg43_tank_mp"]		= (float)cvardef("empire_dmgmod_sg43_tank_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["sherman_turret_mp"]	= (float)cvardef("empire_dmgmod_sherman_turret_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["su152_turret_mp"]		= (float)cvardef("empire_dmgmod_su152_turret_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["flak88_turret_mp"]	= (float)cvardef("empire_dmgmod_flak88_turret_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["mg42_turret_mp"]		= (float)cvardef("empire_dmgmod_mg42_turret_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["mg50cal_tripod_stand_mp"]= (float)cvardef("empire_dmgmod_mg50cal_tripod_stand_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["mg_sg43_stand_mp"]	= (float)cvardef("empire_dmgmod_mg_sg43_stand_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["sg43_turret_mp"]		= (float)cvardef("empire_dmgmod_sg43_turret_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_dmgmod["t34_turret_mp"]		= (float)cvardef("empire_dmgmod_t34_turret_mp",100,0,9999,"float")*(float)0.01;
+			level.empire_flamethrowerhitrate			= cvardef("empire_flamethrower_hitrate",100,0,100,"int");
 		}
 
 		if(!init) wait 0.5;
 
 		// welcome message
-		level.awe_welcomedelay		= cvardef("awe_welcome_delay", 1, 0.05, 30, "float");
+		level.empire_welcomedelay		= cvardef("empire_welcome_delay", 1, 0.05, 30, "float");
 
 		// Server messages
-		level.awe_messagedelay		= cvardef("awe_message_delay", 30, 1, 1440, "int");
-		level.awe_messagenextmap	= cvardef("awe_message_next_map", 2, 0, 4, "int");
-		level.awe_messageloop		= cvardef("awe_message_loop", 1, 0, 1, "int");
-		level.awe_messageindividual	= cvardef("awe_message_individual", 0, 0, 1, "int");
+		level.empire_messagedelay		= cvardef("empire_message_delay", 30, 1, 1440, "int");
+		level.empire_messagenextmap	= cvardef("empire_message_next_map", 2, 0, 4, "int");
+		level.empire_messageloop		= cvardef("empire_message_loop", 1, 0, 1, "int");
+		level.empire_messageindividual	= cvardef("empire_message_individual", 0, 0, 1, "int");
 
 		// Weapon limiting
-		level.awe_riflelimit	= cvardef("awe_rifle_limit", 0, 0, 100, "int");
-		level.awe_boltriflelimit= cvardef("awe_boltrifle_limit", 0, 0, 100, "int");
-		level.awe_semiriflelimit= cvardef("awe_semirifle_limit", 0, 0, 100, "int");
-		level.awe_smglimit	= cvardef("awe_smg_limit", 0, 0, 100, "int");
-		level.awe_assaultlimit	= cvardef("awe_assault_limit", 0, 0, 100, "int");
-		level.awe_sniperlimit	= cvardef("awe_sniper_limit", 0, 0, 100, "int");
-		level.awe_lmglimit	= cvardef("awe_lmg_limit", 0, 0, 100, "int");
-		level.awe_ftlimit		= cvardef("awe_ft_limit", 0, 0, 100, "int");
-		level.awe_rllimit		= cvardef("awe_rl_limit", 0, 0, 100, "int");
-		level.awe_fg42limit	= cvardef("awe_fg42_limit", 0, 0, 100, "int");
+		level.empire_riflelimit	= cvardef("empire_rifle_limit", 0, 0, 100, "int");
+		level.empire_boltriflelimit= cvardef("empire_boltrifle_limit", 0, 0, 100, "int");
+		level.empire_semiriflelimit= cvardef("empire_semirifle_limit", 0, 0, 100, "int");
+		level.empire_smglimit	= cvardef("empire_smg_limit", 0, 0, 100, "int");
+		level.empire_assaultlimit	= cvardef("empire_assault_limit", 0, 0, 100, "int");
+		level.empire_sniperlimit	= cvardef("empire_sniper_limit", 0, 0, 100, "int");
+		level.empire_lmglimit	= cvardef("empire_lmg_limit", 0, 0, 100, "int");
+		level.empire_ftlimit		= cvardef("empire_ft_limit", 0, 0, 100, "int");
+		level.empire_rllimit		= cvardef("empire_rl_limit", 0, 0, 100, "int");
+		level.empire_fg42limit	= cvardef("empire_fg42_limit", 0, 0, 100, "int");
 
 		// Drop weapon options
-		level.awe_droponarmhit	= cvardef("awe_droponarmhit", 0, 0, 100, "int");
-		level.awe_droponhandhit = cvardef("awe_droponhandhit", 0, 0, 100, "int");
-		level.awe_dropondeath	= cvardef("awe_dropondeath", 1, 0, 2, "int");
+		level.empire_droponarmhit	= cvardef("empire_droponarmhit", 0, 0, 100, "int");
+		level.empire_droponhandhit = cvardef("empire_droponhandhit", 0, 0, 100, "int");
+		level.empire_dropondeath	= cvardef("empire_dropondeath", 1, 0, 2, "int");
 
 		if(!init) wait 0.5;
 
 		// Display Obituary Messages.
-		level.awe_obituary = cvardef("awe_obituary", 1,0,2, "int");
-		level.awe_obituarydeath = cvardef("awe_obituary_death", 1,0,1, "int");
+		level.empire_obituary = cvardef("empire_obituary", 1,0,2, "int");
+		level.empire_obituarydeath = cvardef("empire_obituary_death", 1,0,1, "int");
 
 		// Trip on foot/leg hit
-		level.awe_triponleghit	= cvardef("awe_triponleghit", 0, 0, 100, "int");
-		level.awe_triponfoothit	= cvardef("awe_triponfoothit", 0, 0, 100, "int");
+		level.empire_triponleghit	= cvardef("empire_triponleghit", 0, 0, 100, "int");
+		level.empire_triponfoothit	= cvardef("empire_triponfoothit", 0, 0, 100, "int");
 			
 		// Pop helmet
-		level.awe_pophelmet = cvardef("awe_pophelmet", 50, 0, 100, "int");
+		level.empire_pophelmet = cvardef("empire_pophelmet", 50, 0, 100, "int");
 
 	     	// pain & death sounds
-		level.awe_painsound	= cvardef("awe_painsound", 1, 0, 1, "int");
+		level.empire_painsound	= cvardef("empire_painsound", 1, 0, 1, "int");
 
 	      // C47 planes
-		level.awe_bombers = cvardef("awe_bombers", 0, 0, 1, "int");
+		level.empire_bombers = cvardef("empire_bombers", 0, 0, 1, "int");
       	// C47 planes delay
-		level.awe_bombers_delay = cvardef("awe_bombers_delay", 300, 1, 1440, "int");	
+		level.empire_bombers_delay = cvardef("empire_bombers_delay", 300, 1, 1440, "int");	
 
 		if(!init) wait 0.5;
 
 	      // Override altitude?
-		level.awe_bombers_altitude = cvardef("awe_bombers_altitude", 0, 0, 10000, "int");
+		level.empire_bombers_altitude = cvardef("empire_bombers_altitude", 0, 0, 10000, "int");
 	      // Override distance?
-		level.awe_bombers_distance = cvardef("awe_bombers_distance", 0, -25000, 25000, "int");
+		level.empire_bombers_distance = cvardef("empire_bombers_distance", 0, -25000, 25000, "int");
 
 		// Ambient tracers
-		level.awe_tracers			= cvardef("awe_tracers", 0, 0, 100, "int");
-		level.awe_tracersdelaymin	= cvardef("awe_tracers_delay_min", 5, 1, 1440, "int");
-		level.awe_tracersdelaymax	= cvardef("awe_tracers_delay_max", 15, level.awe_tracersdelaymin + 1, 1440, "int");
+		level.empire_tracers			= cvardef("empire_tracers", 0, 0, 100, "int");
+		level.empire_tracersdelaymin	= cvardef("empire_tracers_delay_min", 5, 1, 1440, "int");
+		level.empire_tracersdelaymax	= cvardef("empire_tracers_delay_max", 15, level.empire_tracersdelaymin + 1, 1440, "int");
 
 		// Ambient skyflashes
-		level.awe_skyflashes		= cvardef("awe_skyflashes", 5, 0, 100, "int");
-		level.awe_skyflashesdelaymin	= cvardef("awe_skyflashes_delay_min", 5, 1, 1440, "int");
-		level.awe_skyflashesdelaymax	= cvardef("awe_skyflashes_delay_max", 15, level.awe_skyflashesdelaymin + 1, 1440, "int");
+		level.empire_skyflashes		= cvardef("empire_skyflashes", 5, 0, 100, "int");
+		level.empire_skyflashesdelaymin	= cvardef("empire_skyflashes_delay_min", 5, 1, 1440, "int");
+		level.empire_skyflashesdelaymax	= cvardef("empire_skyflashes_delay_max", 15, level.empire_skyflashesdelaymin + 1, 1440, "int");
 
 		if(!init) wait 0.5;
 
 		// Anti teamkilling
-		level.awe_teamkillmax = cvardef("awe_teamkill_max", 3, 0, 99, "int");
-		level.awe_teamkillwarn = cvardef("awe_teamkill_warn", 1, 0, 99, "int");
-		level.awe_teamkillmethod = cvardef("awe_teamkill_method", 0, 0, level.awe_punishments + 1, "int");
-		level.awe_teamkillreflect = cvardef("awe_teamkill_reflect", 1, 0, 1, "int");
-		level.awe_teamkillmsg = cvardef("awe_teamkill_msg","^6Good damnit! ^7Learn the difference between ^4friend ^7and ^1foe ^7you bastard!.","","","string");
+		level.empire_teamkillmax = cvardef("empire_teamkill_max", 3, 0, 99, "int");
+		level.empire_teamkillwarn = cvardef("empire_teamkill_warn", 1, 0, 99, "int");
+		level.empire_teamkillmethod = cvardef("empire_teamkill_method", 0, 0, level.empire_punishments + 1, "int");
+		level.empire_teamkillreflect = cvardef("empire_teamkill_reflect", 1, 0, 1, "int");
+		level.empire_teamkillmsg = cvardef("empire_teamkill_msg","^6Good damnit! ^7Learn the difference between ^4friend ^7and ^1foe ^7you bastard!.","","","string");
 
 		// Anti teamdamage
-		level.awe_teamdamagemax = cvardef("awe_teamdamage_max", 0, 0, 10000, "int");
-		level.awe_teamdamagewarn = cvardef("awe_teamdamage_warn", 0, 0, 10000, "int");
-		level.awe_teamdamagemethod = cvardef("awe_teamdamage_method", 0, 0, level.awe_punishments + 1, "int");
-		level.awe_teamdamagereflect = cvardef("awe_teamdamage_reflect", 1, 0, 1, "int");
-		level.awe_teamdamagemsg = cvardef("awe_teamdamage_msg","^6Good damnit! ^7Learn the difference between ^4friend ^7and ^1foe ^7you bastard!.","","","string");
+		level.empire_teamdamagemax = cvardef("empire_teamdamage_max", 0, 0, 10000, "int");
+		level.empire_teamdamagewarn = cvardef("empire_teamdamage_warn", 0, 0, 10000, "int");
+		level.empire_teamdamagemethod = cvardef("empire_teamdamage_method", 0, 0, level.empire_punishments + 1, "int");
+		level.empire_teamdamagereflect = cvardef("empire_teamdamage_reflect", 1, 0, 1, "int");
+		level.empire_teamdamagemsg = cvardef("empire_teamdamage_msg","^6Good damnit! ^7Learn the difference between ^4friend ^7and ^1foe ^7you bastard!.","","","string");
 
 		if(!init) wait 0.5;
 
 		// Anticamping
-		level.awe_anticampmarktime = cvardef("awe_anticamp_marktime", 90, 0, 1440, "int");
-		level.awe_anticampfun = cvardef("awe_anticamp_fun", 0, 0, 1440, "int");
-		level.awe_anticampmsgsurvived = cvardef("awe_anticamp_msg_survived", "^6Congratulations! ^7You are no longer marked and still alive.", "", "", "string");
-                level.awe_anticampmsgdied = cvardef("awe_anticamp_msg_died", "A ^1dead ^7camper is a ^2good ^7camper!", "", "", "string");
+		level.empire_anticampmarktime = cvardef("empire_anticamp_marktime", 90, 0, 1440, "int");
+		level.empire_anticampfun = cvardef("empire_anticamp_fun", 0, 0, 1440, "int");
+		level.empire_anticampmsgsurvived = cvardef("empire_anticamp_msg_survived", "^6Congratulations! ^7You are no longer marked and still alive.", "", "", "string");
+                level.empire_anticampmsgdied = cvardef("empire_anticamp_msg_died", "A ^1dead ^7camper is a ^2good ^7camper!", "", "", "string");
 
                 // Grenade options
-		level.awe_fusetime = cvardef("awe_fuse_time", 4, 1, 99, "int");
-		level.awe_grenadewarning = cvardef("awe_grenade_warning", 100, 0, 100, "int");
-		level.awe_grenadewarningrange = cvardef("awe_grenade_warning_range", 500, 0, 100000, "int");
-		level.awe_grenadecount = cvardef("awe_grenade_count", 0, 0, 999, "int");
-		level.awe_grenadecountrandom = cvardef("awe_grenade_count_random", 0, 0, 2, "int");
-		level.awe_smokegrenadecount = cvardef("awe_smokegrenade_count", 0, 0, 999, "int");
-		level.awe_smokegrenadecountrandom = cvardef("awe_smokegrenade_count_random", 0, 0, 2, "int");
-		level.awe_satchelcount = cvardef("awe_satchel_count", 0, 0, 999, "int");
+		level.empire_fusetime = cvardef("empire_fuse_time", 4, 1, 99, "int");
+		level.empire_grenadewarning = cvardef("empire_grenade_warning", 100, 0, 100, "int");
+		level.empire_grenadewarningrange = cvardef("empire_grenade_warning_range", 500, 0, 100000, "int");
+		level.empire_grenadecount = cvardef("empire_grenade_count", 0, 0, 999, "int");
+		level.empire_grenadecountrandom = cvardef("empire_grenade_count_random", 0, 0, 2, "int");
+		level.empire_smokegrenadecount = cvardef("empire_smokegrenade_count", 0, 0, 999, "int");
+		level.empire_smokegrenadecountrandom = cvardef("empire_smokegrenade_count_random", 0, 0, 2, "int");
+		level.empire_satchelcount = cvardef("empire_satchel_count", 0, 0, 999, "int");
 		
 		if(!init) wait 0.5;
 
 		// Ammo limiting
-		level.awe_ammomin = cvardef("awe_ammo_min",100,0,100,"int");
-		level.awe_ammomax = cvardef("awe_ammo_max",100,level.awe_ammomin,100,"int");
+		level.empire_ammomin = cvardef("empire_ammo_min",100,0,100,"int");
+		level.empire_ammomax = cvardef("empire_ammo_max",100,level.empire_ammomin,100,"int");
 
 		// Hud
-		level.awe_showlogo = cvardef("awe_show_logo", 1, 0, 1, "int");	
-		level.awe_showserverlogo = cvardef("awe_show_server_logo", 0, 0, 2, "int");	
-		level.awe_serverlogotext = cvardef("awe_server_logo_text", "", "", "", "string");	
-		level.awe_showsdtimer_cvar = cvardef("awe_show_sd_timer", 0, 0, 1, "int");	
-		if(level.awe_showsdtimer_cvar)
-			level.awe_showsdtimer = true;
+		level.empire_showlogo = cvardef("empire_show_logo", 1, 0, 1, "int");	
+		level.empire_showserverlogo = cvardef("empire_show_server_logo", 0, 0, 2, "int");	
+		level.empire_serverlogotext = cvardef("empire_server_logo_text", "", "", "", "string");	
+		level.empire_showsdtimer_cvar = cvardef("empire_show_sd_timer", 0, 0, 1, "int");	
+		if(level.empire_showsdtimer_cvar)
+			level.empire_showsdtimer = true;
 		else
-			level.awe_showsdtimer = undefined;
+			level.empire_showsdtimer = undefined;
 
 		// Fix corrupt maprotations
-		level.awe_fixmaprotation = cvardef("awe_fix_maprotation", 0, 0, 1, "int");	
+		level.empire_fixmaprotation = cvardef("empire_fix_maprotation", 0, 0, 1, "int");	
 
 		// Use random maprotation?
-		level.awe_randommaprotation = cvardef("awe_random_maprotation", 0, 0, 2, "int");	
+		level.empire_randommaprotation = cvardef("empire_random_maprotation", 0, 0, 2, "int");	
 
 		// Optional gametype weighting for random map rotation.
 		// Format example: "ctf:60,dm:20,tdm:10,hq:5,bel:5"
-		level.awe_randomgametypeweights = cvardef("awe_random_gametype_weights", "", "", "", "string");
+		level.empire_randomgametypeweights = cvardef("empire_random_gametype_weights", "", "", "", "string");
 
 		// Rotate map if server is empty?
-		level.awe_rotateifempty = cvardef("awe_rotate_if_empty", 30, 0, 1440, "int");
+		level.empire_rotateifempty = cvardef("empire_rotate_if_empty", 30, 0, 1440, "int");
 
 		if(!init) wait 0.5;
 
 		// Spawn protection
-		level.awe_spawnprotectionrange= cvardef("awe_spawn_protection_range", 50, 0, 10000, "int");
-		level.awe_spawnprotectionhud	= cvardef("awe_spawn_protection_hud", 1, 0, 2, "int");
-		level.awe_spawnprotectionheadicon = cvardef("awe_spawn_protection_headicon", 1, 0, 1, "int");
-		level.awe_spawnprotectiondropweapon = cvardef("awe_spawn_protection_dropweapon",0,0,1,"int");
-		level.awe_spawnprotectiondisableweapon = cvardef("awe_spawn_protection_disableweapon",0,0,1,"int");
+		level.empire_spawnprotectionrange= cvardef("empire_spawn_protection_range", 50, 0, 10000, "int");
+		level.empire_spawnprotectionhud	= cvardef("empire_spawn_protection_hud", 1, 0, 2, "int");
+		level.empire_spawnprotectionheadicon = cvardef("empire_spawn_protection_headicon", 1, 0, 1, "int");
+		level.empire_spawnprotectiondropweapon = cvardef("empire_spawn_protection_dropweapon",0,0,1,"int");
+		level.empire_spawnprotectiondisableweapon = cvardef("empire_spawn_protection_disableweapon",0,0,1,"int");
 
 		// Turret stuff
-		level.awe_mg42disable 		= cvardef("awe_mg42_disable", 0, 0, 1, "int");
-		level.awe_ptrs41disable 	= cvardef("awe_ptrs41_disable", 0, 0, 1, "int");
-		level.awe_turretpenalty 	= cvardef("awe_turret_penalty", 1, 0, 1, "int");
-		level.awe_turretrecover		= cvardef("awe_turret_recover", 1, 0, 1, "int");
+		level.empire_mg42disable 		= cvardef("empire_mg42_disable", 0, 0, 1, "int");
+		level.empire_ptrs41disable 	= cvardef("empire_ptrs41_disable", 0, 0, 1, "int");
+		level.empire_turretpenalty 	= cvardef("empire_turret_penalty", 1, 0, 1, "int");
+		level.empire_turretrecover		= cvardef("empire_turret_recover", 1, 0, 1, "int");
 
 		// Bleeding & taunts
-		level.awe_bleeding	= cvardef("awe_bleeding", 0, 0, 100, "int");
-		level.awe_taunts		= cvardef("awe_taunts", 0, 0, 1, "int");
+		level.empire_bleeding	= cvardef("empire_bleeding", 0, 0, 100, "int");
+		level.empire_taunts		= cvardef("empire_taunts", 0, 0, 1, "int");
 
 		if(!init) wait 0.5;
 
 		// If we are initializing variables, break here
 		if(init) break;
 
-//		if(getcvar("let_it_all_pour_down")=="1" && !isdefined(level.awe_raining))
+//		if(getcvar("let_it_all_pour_down")=="1" && !isdefined(level.empire_raining))
 //			thread letItRain();
 		
-		if(!isdefined(level.awe_tdom))
+		if(!isdefined(level.empire_tdom))
 		{
 			// Delete all stale objectives
-			for(i=level.awe_objnum_min;i<=level.awe_objnum_max;i++)	// Set up array and flag all as unused
+			for(i=level.empire_objnum_min;i<=level.empire_objnum_max;i++)	// Set up array and flag all as unused
 				objectives[i]=false;
 
 //			allplayers = getentarray("player", "classname");		// Get all players and flag all used objectives
 			
-			for(i = 0; i < level.awe_allplayers.size; i++)
-				if(isdefined(level.awe_allplayers[i]))
-					if( level.awe_allplayers[i].sessionstate == "playing" && isdefined(level.awe_allplayers[i].awe_objnum) )
-						objectives[level.awe_allplayers[i].awe_objnum]=true;
+			for(i = 0; i < level.empire_allplayers.size; i++)
+				if(isdefined(level.empire_allplayers[i]))
+					if( level.empire_allplayers[i].sessionstate == "playing" && isdefined(level.empire_allplayers[i].empire_objnum) )
+						objectives[level.empire_allplayers[i].empire_objnum]=true;
 
-			for(i=level.awe_objnum_min;i<=level.awe_objnum_max;i++)	// Delete unused objectives
+			for(i=level.empire_objnum_min;i<=level.empire_objnum_max;i++)	// Delete unused objectives
 				if(!objectives[i])
 					objective_delete(i);
 		}
@@ -2495,12 +2496,12 @@ updateGametypeCvars(init)
 
 incoming()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
-	if(level.awe_bombers_altitude)
-		maxz = level.awe_bombers_altitude;
+	if(level.empire_bombers_altitude)
+		maxz = level.empire_bombers_altitude;
 	else
-		maxz = level.awe_vMax[2];	
+		maxz = level.empire_vMax[2];	
 
 	surfaces = [];
 //	surfaces[surfaces.size] = "brick";
@@ -2514,22 +2515,22 @@ incoming()
 
 	for(;;)
 	{
-		range = (int)(level.awe_mortar_delay_max - level.awe_mortar_delay_min);
+		range = (int)(level.empire_mortar_delay_max - level.empire_mortar_delay_min);
 		delay = randomInt(range);
-		delay = delay + level.awe_mortar_delay_min;
+		delay = delay + level.empire_mortar_delay_min;
 		wait delay;
 
 		mortar = spawn("script_model", (0,0,0));
-		mortar setModel(level.awe_mortarmodel);
+		mortar setModel(level.empire_mortarmodel);
 		mortar hide();
 
 		distance = -1;
 		// if the safety is on for mortars, make sure they don't hit a player
 		range = 1000000;
-		while(distance < level.awe_mortar_safety * range * 2)
+		while(distance < level.empire_mortar_safety * range * 2)
 		{
 			// Get a random mortar incoming sound
-			m = randomInt(level.awe_mortars.size);
+			m = randomInt(level.empire_mortars.size);
 
 			// Random strength
 			pc = randomInt(100);
@@ -2539,12 +2540,12 @@ incoming()
 
 			// Get players
 			players = [];
-			for(i=0;i<level.awe_allplayers.size;i++)
-				if(isdefined(level.awe_allplayers[i]))
-					if(level.awe_allplayers[i].sessionstate == "playing")
-						players[players.size] = level.awe_allplayers[i];
+			for(i=0;i<level.empire_allplayers.size;i++)
+				if(isdefined(level.empire_allplayers[i]))
+					if(level.empire_allplayers[i].sessionstate == "playing")
+						players[players.size] = level.empire_allplayers[i];
 	
-			if(!level.awe_mortar_random && players.size)
+			if(!level.empire_mortar_random && players.size)
 			{
 				// Get a random player
 				p = randomInt(players.size);
@@ -2553,24 +2554,24 @@ incoming()
 				// Convert to vector
 				vector = anglesToForward(angle);
 				// Scale vector differently depending on safety
-				variance = maps\mp\_utility::vectorScale(vector, range*level.awe_mortar_safety*2 + randomInt(range*3) );
+				variance = maps\mp\_utility::vectorScale(vector, range*level.empire_mortar_safety*2 + randomInt(range*3) );
 				// Set mortar origin;
 				endorigin = players[p].origin + variance;
 			}
 			else
 			{
-				x = level.awe_vMin[0] + randomInt(level.awe_vMax[0]-level.awe_vMin[0]);
-				y = level.awe_vMin[1] + randomInt(level.awe_vMax[1]-level.awe_vMin[1]);
-				trace = bulletTrace((x,y,maxz),(x,y,level.awe_vMin[2]), false, undefined);
+				x = level.empire_vMin[0] + randomInt(level.empire_vMax[0]-level.empire_vMin[0]);
+				y = level.empire_vMin[1] + randomInt(level.empire_vMax[1]-level.empire_vMin[1]);
+				trace = bulletTrace((x,y,maxz),(x,y,level.empire_vMin[2]), false, undefined);
 				if(trace["fraction"] != 1)
 					z = trace["position"][2];
 				else
-					z = level.awe_vMin[2];
+					z = level.empire_vMin[2];
 				endorigin = (x,y,z);
 			}
 
 			// Check if any other player is within range
-			if(level.awe_mortar_safety && players.size)
+			if(level.empire_mortar_safety && players.size)
 			{
 				bplayers = sortByDist(players, mortar);
 				distance = distance(endorigin, bplayers[0].origin);
@@ -2582,7 +2583,7 @@ incoming()
 		}
 
 		// find the impact point
-		trace = bulletTrace((endorigin[0],endorigin[1],maxz),(endorigin[0],endorigin[1],level.awe_vMin[2]), false, undefined);
+		trace = bulletTrace((endorigin[0],endorigin[1],maxz),(endorigin[0],endorigin[1],level.empire_vMin[2]), false, undefined);
 		surface = trace["surfacetype"];
 		if(trace["fraction"] != 1)
 			endorigin = trace["position"];
@@ -2595,31 +2596,31 @@ incoming()
 		wait .05;
 
 		// play the incoming sound
-		mortar playsound(level.awe_mortars[m]["incoming"]);
+		mortar playsound(level.empire_mortars[m]["incoming"]);
 
 		// Make closest player yell warning
-		if(isdefined(level.awe_teamplay) && !level.awe_mortar_safety)
+		if(isdefined(level.empire_teamplay) && !level.empire_mortar_safety)
 		{
 //			allplayers = getentarray("player", "classname");
 			players = [];
-			for(i=0;i<level.awe_allplayers.size;i++)
-				if(isdefined(level.awe_allplayers[i]))
-					if(level.awe_allplayers[i].sessionstate == "playing")
-						players[players.size] = level.awe_allplayers[i];
+			for(i=0;i<level.empire_allplayers.size;i++)
+				if(isdefined(level.empire_allplayers[i]))
+					if(level.empire_allplayers[i].sessionstate == "playing")
+						players[players.size] = level.empire_allplayers[i];
 
 			if(players.size)
 			{
 				bplayers = sortByDist(players, mortar);
 				distance = distance(mortar.origin, bplayers[0].origin);
 				if(distance<range*2 && randomInt(2) && bplayers[0] teamMateInRange(range*2))
-					bplayers[0] playsound("awe_" + game[bplayers[0].sessionteam] + "_incoming");
+					bplayers[0] playsound("empire_" + game[bplayers[0].sessionteam] + "_incoming");
 			}
 		}
 
 		falltime = .5;
 
 		// wait for it to hit
-		wait level.awe_mortars[m]["delay"] - 0.05 - falltime;
+		wait level.empire_mortars[m]["delay"] - 0.05 - falltime;
 
 		// Show visible mortar object
 		mortar.angles = vectortoangles(vectornormalize(mortar.origin - startpoint)) + (90,0,0);
@@ -2633,19 +2634,19 @@ incoming()
 		wait falltime;
 
 		// play the visual effect
-		if(isdefined(level.awe_mortarfx[surface]))
+		if(isdefined(level.empire_mortarfx[surface]))
 		{
-			playfx(level.awe_mortarfx[surface], endorigin);
+			playfx(level.empire_mortarfx[surface], endorigin);
 		}
 		else
 		{
-			if(isdefined(level.awe_wintermap))
-				playfx(level.awe_mortarfx["snow"], endorigin);
+			if(isdefined(level.empire_wintermap))
+				playfx(level.empire_mortarfx["snow"], endorigin);
 			else
-				playfx(level.awe_mortarfx[surfaces[randomInt(surfaces.size)]], endorigin);
+				playfx(level.empire_mortarfx[surfaces[randomInt(surfaces.size)]], endorigin);
 		}
 
-		if(isdefined(level.awe_uo))
+		if(isdefined(level.empire_uo))
 		{
 			// play the hit sound
 			if (surface == "none")
@@ -2661,7 +2662,7 @@ incoming()
 		mortar hide();
 
 		// just to be extra safe, since a player MIGHT move in range during the "incoming" sound
-		if(!level.awe_mortar_safety)
+		if(!level.empire_mortar_safety)
 		{
 			// do the damage
 			max = 200 + 200*pc*0.01;
@@ -2669,7 +2670,7 @@ incoming()
 			radiusDamage(endorigin + (0,0,12), range, max, min);
 		}
 
-		if(level.awe_mortar_quake)
+		if(level.empire_mortar_quake)
 		{
 			// rock their world
 			strength = 0.5 + 0.5 * pc * 0.01;
@@ -2822,15 +2823,15 @@ sortByDist(points, startpoint, maxdist, mindist)
 
 painsound()
 {
-	if(isdefined(level.awe_teamplay))
+	if(isdefined(level.empire_teamplay))
 		team = self.sessionteam;
 	else
 		team = self.pers["team"];
 
 	nationality = game[team];
-	num =  randomInt(level.awe_voices[nationality]) + 1;
+	num =  randomInt(level.empire_voices[nationality]) + 1;
 
-	if(isdefined(level.awe_uo))
+	if(isdefined(level.empire_uo))
 	{
 		num = 1;
 		if(team == "axis")
@@ -2845,36 +2846,36 @@ painsound()
 
 taunts(victim)
 {
-	self notify("awe_taunts");
-	self endon("awe_taunts");
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self notify("empire_taunts");
+	self endon("empire_taunts");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
-	if(isdefined(level.awe_teamplay))
+	if(isdefined(level.empire_teamplay))
 	{
 		if(isPlayer(self) && self != victim && self.sessionteam != victim.sessionteam )
-			self.awe_killspree++;
+			self.empire_killspree++;
 		else
 			return;
 	}
 	else
 	{
 		if (isPlayer(self) && self != victim)
-			self.awe_killspree++;
+			self.empire_killspree++;
 		else
 			return;
 	}
 
 	rn = randomint(16);
 
-	if(self.awe_killspree == 2 || self.awe_killspree == 3)
+	if(self.empire_killspree == 2 || self.empire_killspree == 3)
 		rn = randomint(10);
-	if(self.awe_killspree == 4 || self.awe_killspree == 5)
+	if(self.empire_killspree == 4 || self.empire_killspree == 5)
 		rn = randomint(8);
-	if(self.awe_killspree > 5)
+	if(self.empire_killspree > 5)
 		rn = randomint(5);
 
-	if(isdefined(level.awe_teamplay))
+	if(isdefined(level.empire_teamplay))
 	{
 		team = self.sessionteam;
 		otherteam = victim.sessionteam;
@@ -2892,17 +2893,17 @@ taunts(victim)
 		nationality = game[team];
 		
 		if (rn == 1 || rn == 2)
-			self playsound("awe_" + nationality + "_taunt");
+			self playsound("empire_" + nationality + "_taunt");
 		if (rn == 3)
 		{
 			if((game[team] == "russian") && (game[team] == "german"))
-				self playsound ("awe_RvG");
+				self playsound ("empire_RvG");
 			else if ((game[team] == "german") && (game[team] == "american"))
-				self playsound ("awe_GvA");
+				self playsound ("empire_GvA");
 			else if ((game[team] == "german") && (game[team] == "russian"))
-				self playsound ("awe_GvR");
+				self playsound ("empire_GvR");
 			else 
-				self playsound("awe_" + nationality + "_taunt");
+				self playsound("empire_" + nationality + "_taunt");
 		}
 	}	
 }
@@ -2911,12 +2912,12 @@ taunts(victim)
 PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc)
 {
 	// Update old team on death
-	if(isdefined(level.awe_teamplay))
-		self.awe_oldteam = self.sessionteam;
+	if(isdefined(level.empire_teamplay))
+		self.empire_oldteam = self.sessionteam;
 	else
-		self.awe_oldteam = self.pers["team"];
+		self.empire_oldteam = self.pers["team"];
 
-	if(level.awe_disable)
+	if(level.empire_disable)
 	{
 		if(!isdefined(self.autobalance))
 		{
@@ -2927,11 +2928,11 @@ PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLo
 		return;
 	}
 
-	self notify("awe_died");
+	self notify("empire_died");
 
 	self cleanupPlayer1();
 
-	if(!isdefined(level.awe_merciless) && level.awe_taunts)
+	if(!isdefined(level.empire_merciless) && level.empire_taunts)
 		attacker thread taunts(self);
 
 	dropTurret(undefined, sMeansOfDeath);
@@ -2941,7 +2942,7 @@ PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLo
 	{
 		case "head":
 		case "helmet":
-			if( level.awe_popheadbullet && sMeansOfDeath != "MOD_MELEE" && (isWeaponType("rifle",sWeapon) || isWeaponType("sniper",sWeapon) || isWeaponType("turret",sWeapon)) )
+			if( level.empire_popheadbullet && sMeansOfDeath != "MOD_MELEE" && (isWeaponType("rifle",sWeapon) || isWeaponType("sniper",sWeapon) || isWeaponType("turret",sWeapon)) )
 				dopop = true;
 			break;
 		default:
@@ -2950,7 +2951,7 @@ PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLo
 	switch(sMeansOfDeath)
 	{
 		case "MOD_MELEE":
-			if(level.awe_popheadmelee && iDamage>=100 )
+			if(level.empire_popheadmelee && iDamage>=100 )
 				dopop = true;
 			break;
 		case "MOD_PROJECTILE":
@@ -2959,7 +2960,7 @@ PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLo
 		case "MOD_EXPLOSIVE":
 		case "MOD_ARTILLERY":
 		case "MOD_ARTILLERY_SPLASH":
-			if(level.awe_popheadexplosion && iDamage>=100 )
+			if(level.empire_popheadexplosion && iDamage>=100 )
 				dopop = true;
 			break;
 		default:
@@ -2968,14 +2969,14 @@ PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLo
 
 	if(isdefined(dopop))
 	{
-		if(randomInt(100) < level.awe_pophead && !isdefined(self.awe_headpopped) )
+		if(randomInt(100) < level.empire_pophead && !isdefined(self.empire_headpopped) )
 			self popHead( vDir, iDamage);
-		else if(randomInt(100) < level.awe_pophelmet && !isdefined(self.awe_helmetpopped) )
+		else if(randomInt(100) < level.empire_pophelmet && !isdefined(self.empire_helmetpopped) )
 			self popHelmet( vDir, iDamage);
 	}
 
 	// Deathshock
-	if(level.awe_deathshock && !isdefined(level.awe_merciless) )
+	if(level.empire_deathshock && !isdefined(level.empire_merciless) )
 	{
 		self shellshock("death", 2);
 	}
@@ -2983,7 +2984,7 @@ PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLo
 	if(!isdefined(self.autobalance))
 	{
 		// Drop weapon
-		switch(level.awe_dropondeath)
+		switch(level.empire_dropondeath)
 		{
 			case 1:
 				self dropItem(self getcurrentweapon());
@@ -2997,7 +2998,7 @@ PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLo
 				self dropitem(self getWeaponSlotWeapon("grenade"));
 				self.angles = angles + (0,60,0);
 				self dropitem(self getWeaponSlotWeapon("primaryb"));
-				if(!isdefined(level.awe_uo))
+				if(!isdefined(level.empire_uo))
 					break;
 				self.angles = angles + (0,-60,0);
 				self dropitem(self getWeaponSlotWeapon("smokegrenade"));
@@ -3011,13 +3012,13 @@ PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLo
 				break;
 		}
 		// Handle body
-		switch(level.awe_nobodies)
+		switch(level.empire_nobodies)
 		{
 			case 0:
 				level thread handleBody(self,sMeansOfDeath);
 				break;
 			case 2:
-				playfx(level.awe_burningbodies_smokefx,self.origin);
+				playfx(level.empire_burningbodies_smokefx,self.origin);
 				break;
 			default:
 				break;
@@ -3027,51 +3028,51 @@ PlayerKilled(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLo
 //	MonitorKills(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc);
 
 	// Show obituarys?
-	if(level.awe_obituary)
+	if(level.empire_obituary)
 		self aweObituary(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc);
 }
 
 teamkill()
 {
-	if(level.awe_disable) return;
+	if(level.empire_disable) return;
 
-	if (!level.awe_teamkillmax)
+	if (!level.empire_teamkillmax)
 		return;
 
 	// Increase value
-	self.pers["awe_teamkills"]++;
+	self.pers["empire_teamkills"]++;
 
 	// Check if it reached or passed the max level
-	if (self.pers["awe_teamkills"]>=level.awe_teamkillmax)
+	if (self.pers["empire_teamkills"]>=level.empire_teamkillmax)
 	{
-		if(level.awe_teamkillmethod)
-			iprintln(self.name + " ^7has killed ^1" + self.pers["awe_teamkills"] + " ^7teammate(s) and will be punished.");
-		if(level.awe_teamkillreflect)
-			iprintln(self.name + " ^7has killed ^1" + self.pers["awe_teamkills"] + " ^7teammate(s) and will reflect damage.");
+		if(level.empire_teamkillmethod)
+			iprintln(self.name + " ^7has killed ^1" + self.pers["empire_teamkills"] + " ^7teammate(s) and will be punished.");
+		if(level.empire_teamkillreflect)
+			iprintln(self.name + " ^7has killed ^1" + self.pers["empire_teamkills"] + " ^7teammate(s) and will reflect damage.");
 
-		self iprintlnbold(level.awe_teamkillmsg);
-		self thread punishme(level.awe_teamkillmethod, "teamkilling");
-		if(level.awe_teamkillreflect)
-			self.pers["awe_teamkiller"] = true;
+		self iprintlnbold(level.empire_teamkillmsg);
+		self thread punishme(level.empire_teamkillmethod, "teamkilling");
+		if(level.empire_teamkillreflect)
+			self.pers["empire_teamkiller"] = true;
 	}
 	// Check if it reached or passed the warning level
-	else if (self.pers["awe_teamkills"]>=level.awe_teamkillwarn)
+	else if (self.pers["empire_teamkills"]>=level.empire_teamkillwarn)
 	{
-		if(level.awe_teamkillmethod)
-			self iprintlnbold(level.awe_teamkillmax - self.pers["awe_teamkills"] + " ^7more teamkill(s) and you will be ^1punished^7!");
-		else if(level.awe_teamkillreflect)
-			self iprintlnbold(level.awe_teamkillmax - self.pers["awe_teamkills"] + " ^7more teamkill(s) and you will reflect damage!");
+		if(level.empire_teamkillmethod)
+			self iprintlnbold(level.empire_teamkillmax - self.pers["empire_teamkills"] + " ^7more teamkill(s) and you will be ^1punished^7!");
+		else if(level.empire_teamkillreflect)
+			self iprintlnbold(level.empire_teamkillmax - self.pers["empire_teamkills"] + " ^7more teamkill(s) and you will reflect damage!");
 		else 
-			self iprintlnbold(level.awe_teamkillmax - self.pers["awe_teamkills"] + " ^7more teamkill(s) and nothing will happen!");
+			self iprintlnbold(level.empire_teamkillmax - self.pers["empire_teamkills"] + " ^7more teamkill(s) and nothing will happen!");
 	}
 }
 
 teamdamagedialog(victim)
 {
-	self notify("awe_teamdamagedialog");
-	self endon("awe_teamdamagedialog");
-	self endon("awe_died");
-	self endon("awe_spawned");
+	self notify("empire_teamdamagedialog");
+	self endon("empire_teamdamagedialog");
+	self endon("empire_died");
+	self endon("empire_spawned");
 
 	wait(0.25 + randomFloat(0.5));	// 0.25 - 0.75 second delay
 
@@ -3080,7 +3081,7 @@ teamdamagedialog(victim)
 
 	if(randomInt(2))		// 50% chance
 	{
-		if(isdefined(level.awe_tdom)) 
+		if(isdefined(level.empire_tdom)) 
 			nationality = victim.nationality;
 		else
 		{
@@ -3104,7 +3105,7 @@ teamdamagedialog(victim)
 		if(!isAlive(self))
 			return;
 
-		if(isdefined(level.awe_tdom)) 
+		if(isdefined(level.empire_tdom)) 
 			nationality = self.nationality;
 		else
 		{
@@ -3118,13 +3119,13 @@ teamdamagedialog(victim)
 
 teamdamage(victim, damage)
 {
-	if(level.awe_disable) return;
+	if(level.empire_disable) return;
 
 	if(damage <= victim.health)
 		self thread teamdamagedialog(victim);
 
 	// Check if team damage is disabled
-	if (!level.awe_teamdamagemax)
+	if (!level.empire_teamdamagemax)
 		return;
 
 	// If damage is more than health left on victim, use health left.
@@ -3136,40 +3137,40 @@ teamdamage(victim, damage)
 		damage=100;
 
 	// Increase value
-	self.pers["awe_teamdamage"] += damage;
+	self.pers["empire_teamdamage"] += damage;
 
 	// Check if it reached or passed the max level
-	if (self.pers["awe_teamdamage"]>=level.awe_teamdamagemax)
+	if (self.pers["empire_teamdamage"]>=level.empire_teamdamagemax)
 	{
-		if(level.awe_teamdamagemethod)
-			iprintln(self.name + " ^7has caused ^1" + self.pers["awe_teamdamage"] + " ^7points of teamdamage and will be punished.");
-		if(level.awe_teamdamagereflect)
-			iprintln(self.name + " ^7has caused ^1" + self.pers["awe_teamdamage"] + " ^7points of teamdamage and will reflect damage.");
+		if(level.empire_teamdamagemethod)
+			iprintln(self.name + " ^7has caused ^1" + self.pers["empire_teamdamage"] + " ^7points of teamdamage and will be punished.");
+		if(level.empire_teamdamagereflect)
+			iprintln(self.name + " ^7has caused ^1" + self.pers["empire_teamdamage"] + " ^7points of teamdamage and will reflect damage.");
 
-		self iprintlnbold(level.awe_teamdamagemsg);
-		self thread punishme(level.awe_teamdamagemethod, "shooting teammates");
-		if(level.awe_teamdamagereflect)
-			self.pers["awe_teamkiller"] = true;
+		self iprintlnbold(level.empire_teamdamagemsg);
+		self thread punishme(level.empire_teamdamagemethod, "shooting teammates");
+		if(level.empire_teamdamagereflect)
+			self.pers["empire_teamkiller"] = true;
 	}
 	// Check if it reached or passed the warning level
-	else if (self.pers["awe_teamdamage"]>=level.awe_teamdamagewarn)
+	else if (self.pers["empire_teamdamage"]>=level.empire_teamdamagewarn)
 	{
-		if(level.awe_teamdamagemethod)
-			self iprintlnbold(level.awe_teamdamagemax - self.pers["awe_teamdamage"] + " ^7points more teamdamage and you will be ^1punished^7!");
-		else if(level.awe_teamdamagereflect)
-			self iprintlnbold(level.awe_teamdamagemax - self.pers["awe_teamdamage"] + " ^7points more teamdamage and you will reflect damage!");
+		if(level.empire_teamdamagemethod)
+			self iprintlnbold(level.empire_teamdamagemax - self.pers["empire_teamdamage"] + " ^7points more teamdamage and you will be ^1punished^7!");
+		else if(level.empire_teamdamagereflect)
+			self iprintlnbold(level.empire_teamdamagemax - self.pers["empire_teamdamage"] + " ^7points more teamdamage and you will reflect damage!");
 		else 
-			self iprintlnbold(level.awe_teamdamagemax - self.pers["awe_teamdamage"] + " ^7points more teamdamage and nothing will happen!");
+			self iprintlnbold(level.empire_teamdamagemax - self.pers["empire_teamdamage"] + " ^7points more teamdamage and nothing will happen!");
 	}
 }
 
 punishme(iMethod, sReason)
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	if(iMethod == 1)
-		iMethod = 2 + randomInt(level.awe_punishments);
+		iMethod = 2 + randomInt(level.empire_punishments);
 
 	switch (iMethod)
 	{
@@ -3183,7 +3184,7 @@ punishme(iMethod, sReason)
 			// play the hit sound
 			self playsound("grenade_explode_default");
 			// explode 
-			playfx(level.awe_effect["bombexplosion"], self.origin);
+			playfx(level.empire_effect["bombexplosion"], self.origin);
 			wait .05;
 			self suicide();
 			sMethodname = "blown up";
@@ -3195,7 +3196,7 @@ punishme(iMethod, sReason)
 
 			self thread punishtimer(time,(0,1,0));
 
-			self thread maps\mp\gametypes\_awe_uncommon::aweShellshock(time);
+			self thread maps\mp\gametypes\_empire_uncommon::aweShellshock(time);
 			self thread spankme(time);
 
 			sMethodname = "spanked";
@@ -3211,39 +3212,39 @@ punishme(iMethod, sReason)
 punishtimer(time,color)
 {
 	// Remove timer if it exists
-	if(isdefined(self.awe_punishtimer))
-		self.awe_punishtimer destroy();
+	if(isdefined(self.empire_punishtimer))
+		self.empire_punishtimer destroy();
 
 	// Set up timer
-	self.awe_punishtimer = newClientHudElem(self);
-	self.awe_punishtimer.archived = true;
-	self.awe_punishtimer.x = 420;
-	if(isdefined(level.awe_alternatehud))
-		self.awe_punishtimer.y = 420;
+	self.empire_punishtimer = newClientHudElem(self);
+	self.empire_punishtimer.archived = true;
+	self.empire_punishtimer.x = 420;
+	if(isdefined(level.empire_alternatehud))
+		self.empire_punishtimer.y = 420;
 	else
-		self.awe_punishtimer.y = 460;
-	self.awe_punishtimer.alignX = "center";
-	self.awe_punishtimer.alignY = "middle";
-	self.awe_punishtimer.alpha = 1;
-	self.awe_punishtimer.sort = -3;
-	self.awe_punishtimer.font = "bigfixed";
-	self.awe_punishtimer.color = color;
-	self.awe_punishtimer setTimer(time - 1);
+		self.empire_punishtimer.y = 460;
+	self.empire_punishtimer.alignX = "center";
+	self.empire_punishtimer.alignY = "middle";
+	self.empire_punishtimer.alpha = 1;
+	self.empire_punishtimer.sort = -3;
+	self.empire_punishtimer.font = "bigfixed";
+	self.empire_punishtimer.color = color;
+	self.empire_punishtimer setTimer(time - 1);
 
 	// Wait
 	wait time;
 
 	// Remove timer
-	if(isdefined(self.awe_punishtimer))
-		self.awe_punishtimer destroy();
+	if(isdefined(self.empire_punishtimer))
+		self.empire_punishtimer destroy();
 }
 
 spankme(time)
 {
-	self notify("awe_spankme");
-	self endon("awe_spankme");
-	self endon("awe_spawned");	
-	self endon("awe_died");	
+	self notify("empire_spankme");
+	self endon("empire_spankme");
+	self endon("empire_spawned");	
+	self endon("empire_died");	
 
 	for(i=0;i<(time*5);i++)
 	{
@@ -3255,30 +3256,30 @@ spankme(time)
 
 GetNextObjNum()
 {
-	num = level.awe_objnum_cur;
-	level.awe_objnum_cur++;
-	if(level.awe_objnum_cur > level.awe_objnum_max)
+	num = level.empire_objnum_cur;
+	level.empire_objnum_cur++;
+	if(level.empire_objnum_cur > level.empire_objnum_max)
 	{
-		level.awe_objnum_cur = level.awe_objnum_min;
+		level.empire_objnum_cur = level.empire_objnum_min;
 	}
 	return num;
 }
 
 markme(icon, obj, time)
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 	self endon("not_afk");
 
 	// Do not mark a player twice
-	if(isdefined(self.awe_objnum))
+	if(isdefined(self.empire_objnum))
 		return;
 
 	// gametype dm does not initialize level.drawfriend
 	if(!isdefined(level.drawfriend))
 		level.drawfriend = 0;
 
-	if(obj == "camper" && isdefined(level.awe_teamplay))	// Check if we are marking a camper and it's team play
+	if(obj == "camper" && isdefined(level.empire_teamplay))	// Check if we are marking a camper and it's team play
 	{
 		// Set up the headicon	
 		headicon = "headicon_" + self.pers["team"];
@@ -3321,7 +3322,7 @@ markme(icon, obj, time)
 
 	// Mark player on compass
 	objnum = GetNextObjNum();
-	self.awe_objnum = objnum;
+	self.empire_objnum = objnum;
 	objective_add(objnum, "current", self.origin, game[objective]);
 	objective_team(objnum, objectiveteam);
 	if(time)										// Time != 0 
@@ -3375,10 +3376,10 @@ markme(icon, obj, time)
 		}
 	}
 
-	if(isdefined(self.awe_objnum))
+	if(isdefined(self.empire_objnum))
 	{
 		objective_delete(objnum);
-		self.awe_objnum = undefined;
+		self.empire_objnum = undefined;
 	}
 
 	self restoreHeadicon(game["headicon_star"]);
@@ -3470,8 +3471,8 @@ findPlayArea()
 			iMinZ = spawnpoints[i].origin[2];
 	}
 
-	level.awe_playAreaMin = (iMinX,iMinY,iMinZ);
-	level.awe_playAreaMax = (iMaxX,iMaxX,iMaxZ);
+	level.empire_playAreaMin = (iMinX,iMinY,iMinZ);
+	level.empire_playAreaMax = (iMaxX,iMaxX,iMaxZ);
 }
 
 findmapdimensions()
@@ -3526,7 +3527,7 @@ findmapdimensions()
 		iMaxZ = iTracestart - (iTracelength * trace["fraction"]) - 100;
 	} 
 	
-	if(level.awe_debug)
+	if(level.empire_debug)
 	{
 		// Spawn stukas to mark center and corners that we got from the entities.
 		stuka1 = spawn_model("xmodel/vehicle_plane_stuka","stuka1",(iX,iY,iMaxZ),(0,90,0));
@@ -3587,7 +3588,7 @@ findmapdimensions()
 	{
 		iMinZ = iTracestart + (iTracelength * trace["fraction"]) + 100;
 	} 
-	if(level.awe_debug)
+	if(level.empire_debug)
 	{
 		// Spawn stukas to mark the corner we got from bulletTracing
 		stuka14 = spawn_model("xmodel/vehicle_plane_stuka","stuka14",(iMaxX,iMaxY,iMaxZ-200),(0,90,0));
@@ -3595,131 +3596,131 @@ findmapdimensions()
 		stuka16 = spawn_model("xmodel/vehicle_plane_stuka","stuka16",(iMaxX,iMinY,iMaxZ-200),(0,90,0));
 		stuka17 = spawn_model("xmodel/vehicle_plane_stuka","stuka17",(iMinX,iMaxY,iMaxZ-200),(0,90,0));
 	}
-	level.awe_vMax = (iMaxX, iMaxY, iMaxZ);
-	level.awe_vMin = (iMinX, iMinY, iMinZ);
+	level.empire_vMax = (iMaxX, iMaxY, iMaxZ);
+	level.empire_vMin = (iMinX, iMinY, iMinZ);
 }
 
 // Done on death/spawn and disconnect
 cleanupPlayer1()
 {
 	// Destroy hud elements
-	if(isdefined(self.awe_turretmessage))	self.awe_turretmessage destroy();
-	if(isdefined(self.awe_turretmessage2))	self.awe_turretmessage2 destroy();
-	if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-	if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
-	if(isdefined(self.awe_pickbarbackground))	self.awe_pickbarbackground destroy();
-	if(isdefined(self.awe_pickbar))		self.awe_pickbar destroy();
-	if(isdefined(self.awe_plantbarbackground))	self.awe_plantbarbackground destroy();
-	if(isdefined(self.awe_plantbar))		self.awe_plantbar destroy();
-	if(isdefined(self.awe_weaponselectmsg))	self.awe_weaponselectmsg destroy();
-	if(isdefined(self.awe_laserdot))		self.awe_laserdot destroy();
-	if(isdefined(self.awe_punishtimer))		self.awe_punishtimer destroy();
-	if(isdefined(self.awe_camptimer))		self.awe_camptimer destroy();
-	if(isdefined(self.awe_cookbar))		self.awe_cookbar destroy();
-	if(isdefined(self.awe_cookbarbackground))	self.awe_cookbarbackground destroy();
-	if(isdefined(self.awe_cookbartext))		self.awe_cookbartext destroy();
-	if(isdefined(self.awe_hitblip))		self.awe_hitblip destroy();
-	if(isdefined(self.awe_spawnprotection))	self.awe_spawnprotection destroy();
-	if(isdefined(self.awe_sprinthud))		self.awe_sprinthud destroy();
-	if(isdefined(self.awe_sprinthud_back))	self.awe_sprinthud_back destroy();
-	if(isdefined(self.awe_sprinthud_hint))	self.awe_sprinthud_hint destroy();
-	if(isdefined(self.awe_dropfirstaid))	self.awe_dropfirstaid destroy();
-	if(isdefined(self.awe_gettingfirstaid))	self.awe_gettingfirstaid destroy();
-	if(isdefined(self.awe_firstaidicon))	self.awe_firstaidicon destroy();
-	if(isdefined(self.awe_firstaidkits)) 	self.awe_firstaidkits destroy();		
+	if(isdefined(self.empire_turretmessage))	self.empire_turretmessage destroy();
+	if(isdefined(self.empire_turretmessage2))	self.empire_turretmessage2 destroy();
+	if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+	if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
+	if(isdefined(self.empire_pickbarbackground))	self.empire_pickbarbackground destroy();
+	if(isdefined(self.empire_pickbar))		self.empire_pickbar destroy();
+	if(isdefined(self.empire_plantbarbackground))	self.empire_plantbarbackground destroy();
+	if(isdefined(self.empire_plantbar))		self.empire_plantbar destroy();
+	if(isdefined(self.empire_weaponselectmsg))	self.empire_weaponselectmsg destroy();
+	if(isdefined(self.empire_laserdot))		self.empire_laserdot destroy();
+	if(isdefined(self.empire_punishtimer))		self.empire_punishtimer destroy();
+	if(isdefined(self.empire_camptimer))		self.empire_camptimer destroy();
+	if(isdefined(self.empire_cookbar))		self.empire_cookbar destroy();
+	if(isdefined(self.empire_cookbarbackground))	self.empire_cookbarbackground destroy();
+	if(isdefined(self.empire_cookbartext))		self.empire_cookbartext destroy();
+	if(isdefined(self.empire_hitblip))		self.empire_hitblip destroy();
+	if(isdefined(self.empire_spawnprotection))	self.empire_spawnprotection destroy();
+	if(isdefined(self.empire_sprinthud))		self.empire_sprinthud destroy();
+	if(isdefined(self.empire_sprinthud_back))	self.empire_sprinthud_back destroy();
+	if(isdefined(self.empire_sprinthud_hint))	self.empire_sprinthud_hint destroy();
+	if(isdefined(self.empire_dropfirstaid))	self.empire_dropfirstaid destroy();
+	if(isdefined(self.empire_gettingfirstaid))	self.empire_gettingfirstaid destroy();
+	if(isdefined(self.empire_firstaidicon))	self.empire_firstaidicon destroy();
+	if(isdefined(self.empire_firstaidkits)) 	self.empire_firstaidkits destroy();		
 
 	// Remove compass objective if present
-	if(isdefined(self.awe_objnum))
+	if(isdefined(self.empire_objnum))
 	{
-		objective_delete(self.awe_objnum);
-		self.awe_objnum = undefined;
+		objective_delete(self.empire_objnum);
+		self.empire_objnum = undefined;
 	}
 
 	// Remove parachute if present
-	if(isdefined(self.awe_parachute))
-		self.awe_parachute delete();
-	if(isdefined(self.awe_anchor))
-		self.awe_anchor delete();
+	if(isdefined(self.empire_parachute))
+		self.empire_parachute delete();
+	if(isdefined(self.empire_anchor))
+		self.empire_anchor delete();
 }
 
 // Done on spawn and disconnect
 cleanupPlayer2()
 {
 	// Remove painscreen and bloodyscreen if present
-	if (isDefined(self.awe_painscreen))
-		self.awe_painscreen destroy();
-	if (isDefined(self.awe_bloodyscreen))
-		self.awe_bloodyscreen destroy();
-	if (isDefined(self.awe_bloodyscreen1))
-		self.awe_bloodyscreen1 destroy();
-	if (isDefined(self.awe_bloodyscreen2))
-		self.awe_bloodyscreen2 destroy();
-	if (isDefined(self.awe_bloodyscreen3))
-		self.awe_bloodyscreen3 destroy();
+	if (isDefined(self.empire_painscreen))
+		self.empire_painscreen destroy();
+	if (isDefined(self.empire_bloodyscreen))
+		self.empire_bloodyscreen destroy();
+	if (isDefined(self.empire_bloodyscreen1))
+		self.empire_bloodyscreen1 destroy();
+	if (isDefined(self.empire_bloodyscreen2))
+		self.empire_bloodyscreen2 destroy();
+	if (isDefined(self.empire_bloodyscreen3))
+		self.empire_bloodyscreen3 destroy();
 
 	// Remove bulletholes if present
-	if(isdefined(self.awe_bulletholes))
-		if(self.awe_bulletholes.size)
-			for(i=0;i<self.awe_bulletholes.size;i++)
-				if(isdefined(self.awe_bulletholes[i]))
-					self.awe_bulletholes[i] destroy();
+	if(isdefined(self.empire_bulletholes))
+		if(self.empire_bulletholes.size)
+			for(i=0;i<self.empire_bulletholes.size;i++)
+				if(isdefined(self.empire_bulletholes[i]))
+					self.empire_bulletholes[i] destroy();
 }
 
 spawnPlayer()
 {
-	// Needed for MercilessUO if AWEUO has been disabled.
-	self.awe_helmetpopped = undefined;
+	// Needed for MercilessUO if empire_mod has been disabled.
+	self.empire_helmetpopped = undefined;
 
-	if(level.awe_disable) return;
+	if(level.empire_disable) return;
 
-	self notify("awe_spawned");
+	self notify("empire_spawned");
 
 	dropTurret(undefined, undefined);	// Just in case...
 
-	if(!isdefined(self.pers["awe_teamkills"]))
-		self.pers["awe_teamkills"] = 0;
+	if(!isdefined(self.pers["empire_teamkills"]))
+		self.pers["empire_teamkills"] = 0;
 
-	if(!isdefined(self.pers["awe_teamdamage"]))
-		self.pers["awe_teamdamage"] = 0;
+	if(!isdefined(self.pers["empire_teamdamage"]))
+		self.pers["empire_teamdamage"] = 0;
 
-	if(!isdefined(self.awe_pace))
-		self.awe_pace = 0;
+	if(!isdefined(self.empire_pace))
+		self.empire_pace = 0;
 
-	self.awe_killspree = 0;
+	self.empire_killspree = 0;
 
 	// Reset flags
-	self.awe_disableprimaryb = undefined;
-	self.awe_invulnerable = undefined;
-	self.awe_isparachuting = undefined;
-	self.awe_helmetpopped = undefined;
-	self.awe_headpopped = undefined;
-	self.awe_usingturret = undefined;
-	self.awe_touchingturret = undefined;
-	self.awe_placingturret = undefined;
-	self.awe_pickingturret = undefined;
-	self.awe_cooking = undefined;
-	self.awe_tripwirewarning = undefined;
-	self.awe_checkdefusetripwire = undefined;
-	self.awe_checkdefusesatchel = undefined;
-	self.awe_checkbodysearch = undefined;
-	self.awe_checkstickyplacement = undefined;
-	self.awe_camper = undefined;
-	self.awe_nohealthpack = undefined;
-	self.awe_body = undefined;
-	self.awe_sprinting = undefined;
+	self.empire_disableprimaryb = undefined;
+	self.empire_invulnerable = undefined;
+	self.empire_isparachuting = undefined;
+	self.empire_helmetpopped = undefined;
+	self.empire_headpopped = undefined;
+	self.empire_usingturret = undefined;
+	self.empire_touchingturret = undefined;
+	self.empire_placingturret = undefined;
+	self.empire_pickingturret = undefined;
+	self.empire_cooking = undefined;
+	self.empire_tripwirewarning = undefined;
+	self.empire_checkdefusetripwire = undefined;
+	self.empire_checkdefusesatchel = undefined;
+	self.empire_checkbodysearch = undefined;
+	self.empire_checkstickyplacement = undefined;
+	self.empire_camper = undefined;
+	self.empire_nohealthpack = undefined;
+	self.empire_body = undefined;
+	self.empire_sprinting = undefined;
 
 	self cleanupPlayer1();
 	self cleanupPlayer2();
 
 	// Force weapons
-	if(!isdefined(level.awe_classbased))
+	if(!isdefined(level.empire_classbased))
 		self forceWeapons(game[self.pers["team"]]);
 	
 	// Limit/Randomize ammo
 	self ammoLimiting();
 
 	// Parachute?
-	if( level.awe_parachutes && !isdefined(self.awe_haveparachuted) && ( !level.awe_parachutesonlyattackers || game["attackers"] == self.pers["team"] ) )
+	if( level.empire_parachutes && !isdefined(self.empire_haveparachuted) && ( !level.empire_parachutesonlyattackers || game["attackers"] == self.pers["team"] ) )
 		self thread PlayerParachute();
 
         self thread monitorme();
@@ -3728,58 +3729,58 @@ spawnPlayer()
         self thread monitorMenuResponse();
         self thread monitorStanceChange();
 
-	if(level.awe_grenadewarning || level.awe_turretmobile || level.awe_tripwire || level.awe_satchel || level.awe_stickynades || level.awe_showcooking)
+	if(level.empire_grenadewarning || level.empire_turretmobile || level.empire_tripwire || level.empire_satchel || level.empire_stickynades || level.empire_showcooking)
 		self thread whatscooking();
 
-	if(level.awe_sprint)
+	if(level.empire_sprint)
 		self thread monitorsprinting();
-	else if(isdefined(level.awe_uo) && level.awe_uosprint == 3)
+	else if(isdefined(level.empire_uo) && level.empire_uosprint == 3)
 		self thread monitoruosprinting();
 
 	// Announce next map and display server messages
-	if(level.awe_messageindividual)
+	if(level.empire_messageindividual)
 		self thread serverMessages();
 
-	if(getcvar("awe_welcome0") != "")
+	if(getcvar("empire_welcome0") != "")
 		self thread showWelcomeMessages();
 
 	// Cold breath
-	if(isdefined(level.awe_uo) && isdefined(level.awe_wintermap) && level.awe_coldbreath)
+	if(isdefined(level.empire_uo) && isdefined(level.empire_wintermap) && level.empire_coldbreath)
 		self thread breath_fx();	
 
 	// Laserdot
-	if(level.awe_laserdot)
+	if(level.empire_laserdot)
 	{
-		if(!isdefined(self.awe_laserdot))
+		if(!isdefined(self.empire_laserdot))
 		{
-			self.awe_laserdot = newClientHudElem(self);
-			self.awe_laserdot.x = 320;
-			self.awe_laserdot.y = 240;
-			self.awe_laserdot.alignX = "center";
-			self.awe_laserdot.alignY = "middle";
-			self.awe_laserdot.alpha = level.awe_laserdot;
-			self.awe_laserdot.color = (level.awe_laserdotred, level.awe_laserdotgreen, level.awe_laserdotblue);
-			self.awe_laserdot setShader("white", level.awe_laserdotsize, level.awe_laserdotsize );
+			self.empire_laserdot = newClientHudElem(self);
+			self.empire_laserdot.x = 320;
+			self.empire_laserdot.y = 240;
+			self.empire_laserdot.alignX = "center";
+			self.empire_laserdot.alignY = "middle";
+			self.empire_laserdot.alpha = level.empire_laserdot;
+			self.empire_laserdot.color = (level.empire_laserdotred, level.empire_laserdotgreen, level.empire_laserdotblue);
+			self.empire_laserdot setShader("white", level.empire_laserdotsize, level.empire_laserdotsize );
 		}
 	}
 
 	// Check if player is using a private slot
-	if(!isdefined(self.awe_privateplayer))
+	if(!isdefined(self.empire_privateplayer))
 	{
 		privateslots = getcvarint("sv_privateclients");
 		if(isdefined(privateslots) && privateslots)
 		{
 			if(self getEntityNumber() < privateslots)
-				self.awe_privateplayer = true;
+				self.empire_privateplayer = true;
 		}
 	}
 
 	// Wait for threads to die
 	wait .05;
 	// Make sure the invulnerable flag is clear
-	self.awe_invulnerable = undefined;
+	self.empire_invulnerable = undefined;
 
-	if(level.awe_spawnprotection)
+	if(level.empire_spawnprotection)
 		self thread spawnprotection();
 
 	// Handle the Unknown Soldiers
@@ -3789,63 +3790,63 @@ spawnPlayer()
 		// Get names
 		names = [];
 		count = 0;
-		name = cvardef("awe_unknown_name" + count, "", "", "", "string");
+		name = cvardef("empire_unknown_name" + count, "", "", "", "string");
 		while(name != "")
 		{
 			names[names.size] = name;
 			count++;
-			name = cvardef("awe_unknown_name" + count, "", "", "", "string");
+			name = cvardef("empire_unknown_name" + count, "", "", "", "string");
 			wait .05; // Avoid infinite loop complaints.
 		}
 		if(names.size)
 		{
-			self.pers["awe_unknown_name"] = names[randomInt(names.size)] + " " + randomInt(1000);
-			self setClientCvar("name", self.pers["awe_unknown_name"]);
-			if(level.awe_unknownrenamemsg != "none")
-				self iprintlnbold(level.awe_unknownrenamemsg);
+			self.pers["empire_unknown_name"] = names[randomInt(names.size)] + " " + randomInt(1000);
+			self setClientCvar("name", self.pers["empire_unknown_name"]);
+			if(level.empire_unknownrenamemsg != "none")
+				self iprintlnbold(level.empire_unknownrenamemsg);
 		}
 
 		// Make sure an unknown player can't do much damage
-		if(level.awe_unknownreflect)
-			self.pers["awe_teamkiller"] = true;
+		if(level.empire_unknownreflect)
+			self.pers["empire_teamkiller"] = true;
 	}
 
-	if(isdefined(level.awe_teamplay) && level.awe_firstaid)
+	if(isdefined(level.empire_teamplay) && level.empire_firstaid)
 		self thread firstaid();
 
-	if(!isdefined(level.awe_merciless) && level.awe_zombie && level.awe_pophead)
+	if(!isdefined(level.empire_merciless) && level.empire_zombie && level.empire_pophead)
 		self thread zombie();
 
 	// Track old team to be able to detect team changes
-	if(!isdefined(self.awe_oldteam))
-		self.awe_oldteam = self.pers["team"];
-	else if(self.awe_oldteam != self.pers["team"])
+	if(!isdefined(self.empire_oldteam))
+		self.empire_oldteam = self.pers["team"];
+	else if(self.empire_oldteam != self.pers["team"])
 		self thread delayoldteam();
 }
 
 delayoldteam()
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	// Wait longer for uo since they may have thrown a satchel before switching teams
-	if(isdefined(level.awe_uo))
+	if(isdefined(level.empire_uo))
 		wait 6;
 	else
 		wait 4;
-	if(isdefined(level.awe_teamplay))
-		self.awe_oldteam = self.sessionteam;
+	if(isdefined(level.empire_teamplay))
+		self.empire_oldteam = self.sessionteam;
 	else
-		self.awe_oldteam = self.pers["team"];
+		self.empire_oldteam = self.pers["team"];
 }
 
 // First Aid kits
 firstaid()
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
-	if(isdefined(self.awe_firstaidicon))
+	if(isdefined(self.empire_firstaidicon))
 		return;
 
 	if(getcvar("g_gametype") == "bel" || getcvar("g_gametype") == "mc_bel")
@@ -3865,37 +3866,37 @@ firstaid()
 	}
 
 
-	for(j=0;j<level.awe_firstaidkits;)
+	for(j=0;j<level.empire_firstaidkits;)
 	{
-		self.awe_firstaidicon = newClientHudElem(self);
-		self.awe_firstaidicon.alignX = "center";
-		self.awe_firstaidicon.alignY = "middle";
-		self.awe_firstaidicon.x = 560+xoff;
-		self.awe_firstaidicon.y = 410+yoff;
-		self.awe_firstaidicon.alpha = 1;
-		self.awe_firstaidicon setShader(game["firstaid"], 32, 32);
+		self.empire_firstaidicon = newClientHudElem(self);
+		self.empire_firstaidicon.alignX = "center";
+		self.empire_firstaidicon.alignY = "middle";
+		self.empire_firstaidicon.x = 560+xoff;
+		self.empire_firstaidicon.y = 410+yoff;
+		self.empire_firstaidicon.alpha = 1;
+		self.empire_firstaidicon setShader(game["firstaid"], 32, 32);
 
-		if(level.awe_firstaidkits>1 && !isdefined(self.awe_firstaidkits))
+		if(level.empire_firstaidkits>1 && !isdefined(self.empire_firstaidkits))
 		{
-			self.awe_firstaidkits = newClientHudElem(self);
-			self.awe_firstaidkits.alignX = "center";
-			self.awe_firstaidkits.alignY = "middle";
-			self.awe_firstaidkits.x = 567+xoff;
-			self.awe_firstaidkits.y = 415+yoff;
-			self.awe_firstaidkits.alpha = 1;
-			self.awe_firstaidkits.color = (1,1,1);
-			self.awe_firstaidkits.fontscale = 0.8;
-			self.awe_firstaidkits setValue(level.awe_firstaidkits);
+			self.empire_firstaidkits = newClientHudElem(self);
+			self.empire_firstaidkits.alignX = "center";
+			self.empire_firstaidkits.alignY = "middle";
+			self.empire_firstaidkits.x = 567+xoff;
+			self.empire_firstaidkits.y = 415+yoff;
+			self.empire_firstaidkits.alpha = 1;
+			self.empire_firstaidkits.color = (1,1,1);
+			self.empire_firstaidkits.fontscale = 0.8;
+			self.empire_firstaidkits setValue(level.empire_firstaidkits);
 		}
 
-		while(isalive(self) && self.sessionstate == "playing" && isdefined(self.awe_firstaidicon))
+		while(isalive(self) && self.sessionstate == "playing" && isdefined(self.empire_firstaidicon))
 		{
 			wait 0.05;
 
 			// wait for player to press the USE key (while on ground and not sprinting)
 			while(isalive(self) && self.sessionstate == "playing")
 			{
-				if(!self.awe_pace && self useButtonPressed() && self isOnGround())
+				if(!self.empire_pace && self useButtonPressed() && self isOnGround())
 					break;
 				wait 0.05;
 			}
@@ -3903,20 +3904,20 @@ firstaid()
 			if(!(isalive(self) && self.sessionstate == "playing")) // if they've been killed
 				break;
 
-			for(i = 0; i < level.awe_allplayers.size; i++)
+			for(i = 0; i < level.empire_allplayers.size; i++)
 			{
-				if(isdefined(level.awe_allplayers[i]))
+				if(isdefined(level.empire_allplayers[i]))
 				{
-					if(level.awe_allplayers[i] == self)
+					if(level.empire_allplayers[i] == self)
 						continue;	// can't heal yourself
 
-					if(level.awe_allplayers[i].sessionteam == self.sessionteam			// teammate
-						&& isalive(level.awe_allplayers[i])						// who is playing
-						&& level.awe_allplayers[i].health <= 80					// and is injured
-						&& !isdefined(level.awe_allplayers[i].awe_gettingfirstaid)		// and is not currently being treated
-						&& distance(level.awe_allplayers[i].origin, self.origin) < 48	// and within 4 feet of player
+					if(level.empire_allplayers[i].sessionteam == self.sessionteam			// teammate
+						&& isalive(level.empire_allplayers[i])						// who is playing
+						&& level.empire_allplayers[i].health <= 80					// and is injured
+						&& !isdefined(level.empire_allplayers[i].empire_gettingfirstaid)		// and is not currently being treated
+						&& distance(level.empire_allplayers[i].origin, self.origin) < 48	// and within 4 feet of player
 					){
-						targetPlayer = level.awe_allplayers[i];
+						targetPlayer = level.empire_allplayers[i];
 						break;
 					}
 				}
@@ -3945,42 +3946,42 @@ firstaid()
 			if(isdefined(self.defuseicon)) // can't heal while defusing a bomb
 				continue;
 
-			healamount = (level.awe_firstaidhealth + randomInt(15));	// (25 to 40 health)
+			healamount = (level.empire_firstaidhealth + randomInt(15));	// (25 to 40 health)
 			healtime = (float)healamount * .1;
 
 			// set up the healing icon on the target
-			targetPlayer.awe_gettingfirstaid = newClientHudElem(targetPlayer);
-			targetPlayer.awe_gettingfirstaid .alignX = "center";
-			targetPlayer.awe_gettingfirstaid.alignY = "middle";
-			targetPlayer.awe_gettingfirstaid.x = 320;
-			targetPlayer.awe_gettingfirstaid.y = 240;
-			targetPlayer.awe_gettingfirstaid.alpha = 0;
-			targetPlayer.awe_gettingfirstaid setShader(game["firstaid"], 1, 1);
+			targetPlayer.empire_gettingfirstaid = newClientHudElem(targetPlayer);
+			targetPlayer.empire_gettingfirstaid .alignX = "center";
+			targetPlayer.empire_gettingfirstaid.alignY = "middle";
+			targetPlayer.empire_gettingfirstaid.x = 320;
+			targetPlayer.empire_gettingfirstaid.y = 240;
+			targetPlayer.empire_gettingfirstaid.alpha = 0;
+			targetPlayer.empire_gettingfirstaid setShader(game["firstaid"], 1, 1);
 
-			targetPlayer.awe_gettingfirstaid scaleOverTime(0.5, 64, 64);
-			targetPlayer.awe_gettingfirstaid fadeOverTime(0.5);
-			targetPlayer.awe_gettingfirstaid.alpha = 0.5;
+			targetPlayer.empire_gettingfirstaid scaleOverTime(0.5, 64, 64);
+			targetPlayer.empire_gettingfirstaid fadeOverTime(0.5);
+			targetPlayer.empire_gettingfirstaid.alpha = 0.5;
 
 			// spawn a script origin, and lock the players in place
 			origin = spawn("script_origin", self.origin);
 			self linkTo(origin);
 			targetPlayer linkTo(origin);
 
-			self.awe_dropfirstaid = newClientHudElem(self);
-			self.awe_dropfirstaid.alignX = "center";
-			self.awe_dropfirstaid.alignY = "middle";
-			self.awe_dropfirstaid.x = 560+xoff;
-			self.awe_dropfirstaid.y = 240+yoff;
-			self.awe_dropfirstaid.alpha = 0;
-			self.awe_dropfirstaid setShader(game["firstaid"], 32, 32);
+			self.empire_dropfirstaid = newClientHudElem(self);
+			self.empire_dropfirstaid.alignX = "center";
+			self.empire_dropfirstaid.alignY = "middle";
+			self.empire_dropfirstaid.x = 560+xoff;
+			self.empire_dropfirstaid.y = 240+yoff;
+			self.empire_dropfirstaid.alpha = 0;
+			self.empire_dropfirstaid setShader(game["firstaid"], 32, 32);
 
-			self.awe_dropfirstaid fadeOverTime(0.5);
-			self.awe_dropfirstaid.alpha = 0.25;
-			self.awe_dropfirstaid scaleOverTime(0.5, 64, 64);
+			self.empire_dropfirstaid fadeOverTime(0.5);
+			self.empire_dropfirstaid.alpha = 0.25;
+			self.empire_dropfirstaid scaleOverTime(0.5, 64, 64);
 
-			self.awe_firstaidicon moveOverTime(healtime);
-			self.awe_firstaidicon.y = 240+yoff;
-			self.awe_firstaidicon scaleOverTime(healtime, 64, 64);
+			self.empire_firstaidicon moveOverTime(healtime);
+			self.empire_firstaidicon.y = 240+yoff;
+			self.empire_firstaidicon scaleOverTime(healtime, 64, 64);
 
 
 			healnow = 0;
@@ -4021,68 +4022,68 @@ firstaid()
 			origin delete();
 
 			// explode and fade-out firstaid kit (and the drop marker), destroy shader
-			if(isdefined(targetPlayer) && isdefined(targetPlayer.awe_gettingfirstaid))
+			if(isdefined(targetPlayer) && isdefined(targetPlayer.empire_gettingfirstaid))
 			{
-				targetPlayer.awe_gettingfirstaid scaleOverTime(0.5, 1, 1);
-				targetPlayer.awe_gettingfirstaid fadeOverTime(0.5);
-				targetPlayer.awe_gettingfirstaid.alpha = 0;
+				targetPlayer.empire_gettingfirstaid scaleOverTime(0.5, 1, 1);
+				targetPlayer.empire_gettingfirstaid fadeOverTime(0.5);
+				targetPlayer.empire_gettingfirstaid.alpha = 0;
 			}
 
-			if(isdefined(self) && isdefined(self.awe_dropfirstaid))
+			if(isdefined(self) && isdefined(self.empire_dropfirstaid))
 			{
-				self.awe_dropfirstaid fadeOverTime(0.5);
-				self.awe_dropfirstaid.alpha = 0;
+				self.empire_dropfirstaid fadeOverTime(0.5);
+				self.empire_dropfirstaid.alpha = 0;
 			}
 
-			if(isdefined(self) && isdefined(self.awe_firstaidicon))
+			if(isdefined(self) && isdefined(self.empire_firstaidicon))
 			{
-				self.awe_firstaidicon scaleOverTime(0.5, 128, 128);
-				self.awe_firstaidicon fadeOverTime(0.5);
-				self.awe_firstaidicon.alpha = 0;
+				self.empire_firstaidicon scaleOverTime(0.5, 128, 128);
+				self.empire_firstaidicon fadeOverTime(0.5);
+				self.empire_firstaidicon.alpha = 0;
 			}
 
 			wait 0.5;
 
 			if(isdefined(self))
 			{
-				if(isdefined(self.awe_firstaidicon))
-					self.awe_firstaidicon destroy();		
-				if(isdefined(self.awe_dropfirstaid))
-					self.awe_dropfirstaid destroy();
-				if(isdefined(targetPlayer.awe_gettingfirstaid))
-					targetPlayer.awe_gettingfirstaid destroy();
+				if(isdefined(self.empire_firstaidicon))
+					self.empire_firstaidicon destroy();		
+				if(isdefined(self.empire_dropfirstaid))
+					self.empire_dropfirstaid destroy();
+				if(isdefined(targetPlayer.empire_gettingfirstaid))
+					targetPlayer.empire_gettingfirstaid destroy();
 			}
 		}
 
-		if(isdefined(self.awe_firstaidicon)) // in case they were killed, but not healing a teammate, or got a bomb
-			self.awe_firstaidicon destroy();		
+		if(isdefined(self.empire_firstaidicon)) // in case they were killed, but not healing a teammate, or got a bomb
+			self.empire_firstaidicon destroy();		
 
 		j++;
 
-		if(isdefined(self.awe_firstaidkits)) 
-			self.awe_firstaidkits setValue(level.awe_firstaidkits - j);
+		if(isdefined(self.empire_firstaidkits)) 
+			self.empire_firstaidkits setValue(level.empire_firstaidkits - j);
 
-		if(j<level.awe_firstaidkits)
-			wait level.awe_firstaiddelay;
+		if(j<level.empire_firstaidkits)
+			wait level.empire_firstaiddelay;
 		else
 			break;
 
-//		if(isdefined(self.awe_firstaidkits)) 
-//			self.awe_firstaidkits destroy();		
+//		if(isdefined(self.empire_firstaidkits)) 
+//			self.empire_firstaidkits destroy();		
 
 		if(!(isalive(self) && self.sessionstate == "playing")) // if they've been killed
 			break;
 
 	}
-	if(isdefined(self.awe_firstaidkits)) 
-		self.awe_firstaidkits destroy();		
+	if(isdefined(self.empire_firstaidkits)) 
+		self.empire_firstaidkits destroy();		
 }
 
 zombie()
 {
-	level endon("awe_boot");
-	self endon("awe_spawned");
-	self endon("awe_died");
+	level endon("empire_boot");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	wait 5+randomInt(10);
 
@@ -4091,13 +4092,13 @@ zombie()
 	while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
 	{
 		wait 2+randomInt(5);
-		playfxontag(level.awe_popheadfx,self,"Bip01 Head");
+		playfxontag(level.empire_popheadfx,self,"Bip01 Head");
 	}
 }
 
 isUnknown()
 {
-	if(self.name == "Unknown Soldier" || (isdefined(self.pers["awe_unknown_name"]) && self.name == self.pers["awe_unknown_name"]) )
+	if(self.name == "Unknown Soldier" || (isdefined(self.pers["empire_unknown_name"]) && self.name == self.pers["empire_unknown_name"]) )
 		return true;
 	else
 		return false;
@@ -4116,17 +4117,17 @@ timedLine(from, to, time)
 
 rain()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
 	radius = 2000;
 	radius2 = radius + 1732;
 
 	if(getcvar("mapname")!="mp_pavlov")
 	{	// Find center of spawnarea
-		x = level.awe_playAreaMin[0] + (level.awe_playAreaMax[0] - level.awe_playAreaMin[0]) / 2;
-		y = level.awe_playAreaMin[1] + (level.awe_playAreaMax[1] - level.awe_playAreaMin[1]) / 2;
-		z = level.awe_playAreaMin[2] + (level.awe_playAreaMax[2] - level.awe_playAreaMin[2]) / 2;
-		zoffset = level.awe_vMax[2] - z;
+		x = level.empire_playAreaMin[0] + (level.empire_playAreaMax[0] - level.empire_playAreaMin[0]) / 2;
+		y = level.empire_playAreaMin[1] + (level.empire_playAreaMax[1] - level.empire_playAreaMin[1]) / 2;
+		z = level.empire_playAreaMin[2] + (level.empire_playAreaMax[2] - level.empire_playAreaMin[2]) / 2;
+		zoffset = level.empire_vMax[2] - z;
 		if(zoffset > 1000) zoffset = 1000;
 		center = (x,y,z + zoffset);
 	}
@@ -4147,39 +4148,39 @@ rain()
 		{
 			offset = maps\mp\_utility::vectorScale(anglestoforward((0,angle + i*60,0)),radius);
 			origin = center + offset;
-			playfx(level.awe_rainfx,origin);
+			playfx(level.empire_rainfx,origin);
 			origin = center - offset;
-			playfx(level.awe_rainfx,origin);
+			playfx(level.empire_rainfx,origin);
 			wait .05;
 		}				// 0.15s
 		for(i=0;i<3;i++)
 		{
 			offset = maps\mp\_utility::vectorScale(anglestoforward((0,angle + i*60 + 30,0)),radius2);
 			origin = center + offset;
-			playfx(level.awe_rainfx,origin);
+			playfx(level.empire_rainfx,origin);
 			origin = center - offset;
-			playfx(level.awe_rainfx,origin);
+			playfx(level.empire_rainfx,origin);
 			wait .05;
 		}				// 0.15s (0.3s)
-		playfx(level.awe_rainfx,center);
+		playfx(level.empire_rainfx,center);
 		wait .05;			// 0.05s (0.35s)
 	}
 }
 
 limitAmmo(slot)
 {
-	if(level.awe_ammomin == 100)
+	if(level.empire_ammomin == 100)
 		return;
 
 	if(self getWeaponSlotWeapon(slot) == "panzerfaust_mp" || self getWeaponSlotWeapon(slot) == "flamethrower_mp")
 		return;
 
-	if(!level.awe_ammomax)
+	if(!level.empire_ammomax)
 		ammopc = 0;
-	else if(level.awe_ammomin == level.awe_ammomax)
-		ammopc = level.awe_ammomin;
+	else if(level.empire_ammomin == level.empire_ammomax)
+		ammopc = level.empire_ammomin;
 	else
-		ammopc = level.awe_ammomin + randomInt(level.awe_ammomax - level.awe_ammomin + 1);
+		ammopc = level.empire_ammomin + randomInt(level.empire_ammomax - level.empire_ammomin + 1);
 
 	iAmmo = self getWeaponSlotAmmo(slot) + self getWeaponSlotClipAmmo(slot);
 	iAmmo = (int)(iAmmo * ammopc*0.01 + 0.5);
@@ -4203,13 +4204,13 @@ ammoLimiting()
 	self limitAmmo("pistol");
 
 	// Set weapon based grenade count
-	if(!isdefined(level.awe_classbased))
+	if(!isdefined(level.empire_classbased))
 	{
-		if(level.awe_grenadecount)
-			grenadecount = level.awe_grenadecount;
+		if(level.empire_grenadecount)
+			grenadecount = level.empire_grenadecount;
 		else
 		{
-			if(isdefined(self.awe_grenadeforced))
+			if(isdefined(self.empire_grenadeforced))
 				grenadecount = maps\mp\gametypes\_teams::getWeaponBasedGrenadeCount(self getWeaponSlotWeapon("primary"));
 			else
 			{
@@ -4223,11 +4224,11 @@ ammoLimiting()
 	}
 
 	// Randomize grenade count?
-	if(grenadecount && level.awe_grenadecountrandom)
+	if(grenadecount && level.empire_grenadecountrandom)
 	{
-		if(level.awe_grenadecountrandom == 1)
+		if(level.empire_grenadecountrandom == 1)
 			grenadecount = randomInt(grenadecount) + 1;
-		if(level.awe_grenadecountrandom == 2)
+		if(level.empire_grenadecountrandom == 2)
 			grenadecount = randomInt(grenadecount + 1);
 	}
 
@@ -4238,18 +4239,18 @@ ammoLimiting()
 		self setWeaponSlotClipAmmo("grenade", grenadecount);
 
 	// UO?
-	if(!isdefined(level.awe_uo))
+	if(!isdefined(level.empire_uo))
 		return;
 
 	// Set weapon based smokegrenade count
-	if(!isdefined(level.awe_classbased))
+	if(!isdefined(level.empire_classbased))
 	{
-		if(level.awe_smokegrenadecount)
-			smokegrenadecount = level.awe_smokegrenadecount;
+		if(level.empire_smokegrenadecount)
+			smokegrenadecount = level.empire_smokegrenadecount;
 		else
 		{
-			if(isdefined(self.awe_smokegrenadeforced))
-				smokegrenadecount = maps\mp\gametypes\_awe_uncommon::aweGetWeaponBasedSmokeGrenadeCount(self getWeaponSlotWeapon("primary"));
+			if(isdefined(self.empire_smokegrenadeforced))
+				smokegrenadecount = maps\mp\gametypes\_empire_uncommon::aweGetWeaponBasedSmokeGrenadeCount(self getWeaponSlotWeapon("primary"));
 			else
 			{
 				smokegrenadecount = self getWeaponSlotClipAmmo("smokegrenade");
@@ -4262,11 +4263,11 @@ ammoLimiting()
 	}
 
 	// Randomize smokegrenade count?
-	if(smokegrenadecount && level.awe_smokegrenadecountrandom)
+	if(smokegrenadecount && level.empire_smokegrenadecountrandom)
 	{
-		if(level.awe_smokegrenadecountrandom == 1)
+		if(level.empire_smokegrenadecountrandom == 1)
 			smokegrenadecount = randomInt(smokegrenadecount) + 1;
-		if(level.awe_smokegrenadecountrandom == 2)
+		if(level.empire_smokegrenadecountrandom == 2)
 			smokegrenadecount = randomInt(smokegrenadecount + 1);
 	}
 
@@ -4281,11 +4282,11 @@ ammoLimiting()
 	}
 
 	// Give satchel
-	if(level.awe_satchelcount)
+	if(level.empire_satchelcount)
 	{
 		if(self getWeaponSlotWeapon("satchel") == "none")
 			self setWeaponSlotWeapon("satchel", "satchelcharge_mp");
-		self setWeaponSlotClipAmmo("satchel", level.awe_satchelcount);
+		self setWeaponSlotClipAmmo("satchel", level.empire_satchelcount);
 	}
 }
 
@@ -4338,13 +4339,13 @@ randomWeapon(team)
 forceWeapons(team)
 {
 	// Force primary
-	if(level.awe_primaryweapon[team]!="")
-		weapon = level.awe_primaryweapon[team];
+	if(level.empire_primaryweapon[team]!="")
+		weapon = level.empire_primaryweapon[team];
 	else
-		weapon = level.awe_primaryweapon["default"];
+		weapon = level.empire_primaryweapon["default"];
 	if(weapon != "")
 	{
-		if(!level.awe_uomap || isWeaponType(game["allies"],weapon)|| isWeaponType(game["axis"],weapon) || isWeaponType("common",weapon) || weapon == "none" )
+		if(!level.empire_uomap || isWeaponType(game["allies"],weapon)|| isWeaponType(game["axis"],weapon) || isWeaponType("common",weapon) || weapon == "none" )
 		{
 			self forceWeapon("primary", weapon);
 			self setSpawnWeapon(weapon);
@@ -4352,18 +4353,18 @@ forceWeapons(team)
 	}
 
 	// Force secondary
-	if(level.awe_secondaryweapon[team]!="")
-		weapon = level.awe_secondaryweapon[team];
+	if(level.empire_secondaryweapon[team]!="")
+		weapon = level.empire_secondaryweapon[team];
 	else
-		weapon = level.awe_secondaryweapon["default"];
+		weapon = level.empire_secondaryweapon["default"];
 	if(weapon != "")
 	{
-		if(!level.awe_uomap || isWeaponType(game["allies"],weapon)|| isWeaponType(game["axis"],weapon) || isWeaponType("common",weapon) || weapon == "none" || weapon == "disable" || weapon == "select" || weapon == "selectother" || weapon == "random" || weapon == "randomother" )
+		if(!level.empire_uomap || isWeaponType(game["allies"],weapon)|| isWeaponType(game["axis"],weapon) || isWeaponType("common",weapon) || weapon == "none" || weapon == "disable" || weapon == "select" || weapon == "selectother" || weapon == "random" || weapon == "randomother" )
 		{
 			switch(weapon)
 			{
 				case "disable":
-					self.awe_disableprimaryb = true;
+					self.empire_disableprimaryb = true;
 					weapon = "none";
 					break;
 				case "random":
@@ -4384,42 +4385,42 @@ forceWeapons(team)
 	}
 
 	// Force pistol
-	if(level.awe_pistoltype[team]!="")
-		weapon = level.awe_pistoltype[team];
+	if(level.empire_pistoltype[team]!="")
+		weapon = level.empire_pistoltype[team];
 	else
-		weapon = level.awe_pistoltype["default"];
+		weapon = level.empire_pistoltype["default"];
 	if(weapon != "")
-		if(!level.awe_uomap || isWeaponType(game["allies"],weapon)|| isWeaponType(game["axis"],weapon) || isWeaponType("common",weapon) || weapon == "none")
+		if(!level.empire_uomap || isWeaponType(game["allies"],weapon)|| isWeaponType(game["axis"],weapon) || isWeaponType("common",weapon) || weapon == "none")
 			self forceWeapon("pistol", weapon);
 
 	// Force grenade
-	if(level.awe_grenadetype[team]!="")
-		weapon = level.awe_grenadetype[team];
+	if(level.empire_grenadetype[team]!="")
+		weapon = level.empire_grenadetype[team];
 	else
-		weapon = level.awe_grenadetype["default"];
+		weapon = level.empire_grenadetype["default"];
 	if(weapon != "")
 	{
-		if(!level.awe_uomap || isWeaponType(game["allies"],weapon)|| isWeaponType(game["axis"],weapon) || isWeaponType("common",weapon) || weapon == "none")
+		if(!level.empire_uomap || isWeaponType(game["allies"],weapon)|| isWeaponType(game["axis"],weapon) || isWeaponType("common",weapon) || weapon == "none")
 		{
 			self forceWeapon("grenade", weapon);
-			self.awe_grenadeforced = true;
+			self.empire_grenadeforced = true;
 		}
 	}
 	else
-		self.awe_grenadeforced = undefined;
+		self.empire_grenadeforced = undefined;
 
 	// Force smokegrenade
-	if(level.awe_smokegrenadetype[team]!="")
-		weapon = level.awe_smokegrenadetype[team];
+	if(level.empire_smokegrenadetype[team]!="")
+		weapon = level.empire_smokegrenadetype[team];
 	else
-		weapon = level.awe_smokegrenadetype["default"];
+		weapon = level.empire_smokegrenadetype["default"];
 	if(weapon != "")
 	{
 		self forceWeapon("smokegrenade", weapon);
-		self.awe_smokegrenadeforced = true;
+		self.empire_smokegrenadeforced = true;
 	}
 	else
-		self.awe_smokegrenadeforced = undefined;
+		self.empire_smokegrenadeforced = undefined;
 }	
 
 forceWeapon(slot, weapon)
@@ -4427,7 +4428,7 @@ forceWeapon(slot, weapon)
 	oldweapon = self getWeaponSlotWeapon(slot);
 
 	// Keep existing secondary weapon, in roundbased gametypes.
-	if(slot == "primaryb" && oldweapon != "none"  && level.awe_secondaryweaponkeepold)
+	if(slot == "primaryb" && oldweapon != "none"  && level.empire_secondaryweaponkeepold)
 		return;
 
 	if(slot == "primaryb" && (weapon == "select" || weapon == "selectother") )
@@ -4436,11 +4437,11 @@ forceWeapon(slot, weapon)
 		primaryweapon = self getWeaponSlotWeapon("primary");
 
 		// Check if primary weapon has been changed
-		if( isdefined(self.pers["awe_oldprimary_" + team]) && isdefined(self.pers["awe_oldprimaryb_" + team]) )
+		if( isdefined(self.pers["empire_oldprimary_" + team]) && isdefined(self.pers["empire_oldprimaryb_" + team]) )
 		{
-			if(primaryweapon == self.pers["awe_oldprimary_" + team])
+			if(primaryweapon == self.pers["empire_oldprimary_" + team])
 			{
-				weapon = self.pers["awe_oldprimaryb_" + team];
+				weapon = self.pers["empire_oldprimaryb_" + team];
 				skipmenu = true;
 			}
 			else
@@ -4451,14 +4452,14 @@ forceWeapon(slot, weapon)
 		{
 			self setClientCvar("ui_weapontab", "1");
 
-			self.awe_weaponselectmsg = newClientHudElem(self);
-			self.awe_weaponselectmsg.archived = false;
-			self.awe_weaponselectmsg.x = 320;
-			self.awe_weaponselectmsg.y = 400;
-			self.awe_weaponselectmsg.alignX = "center";
-			self.awe_weaponselectmsg.alignY = "middle";
-			self.awe_weaponselectmsg.fontScale = 2;
-			self.awe_weaponselectmsg setText(level.awe_secondaryweapontext);
+			self.empire_weaponselectmsg = newClientHudElem(self);
+			self.empire_weaponselectmsg.archived = false;
+			self.empire_weaponselectmsg.x = 320;
+			self.empire_weaponselectmsg.y = 400;
+			self.empire_weaponselectmsg.alignX = "center";
+			self.empire_weaponselectmsg.alignY = "middle";
+			self.empire_weaponselectmsg.fontScale = 2;
+			self.empire_weaponselectmsg setText(level.empire_secondaryweapontext);
 
 			if(self.pers["team"] == "allies")
 			{
@@ -4517,13 +4518,13 @@ forceWeapon(slot, weapon)
 			self setSpawnWeapon(primaryweapon);
 
 			// Save values so that we can detect a weapon change
-			self.pers["awe_oldprimary_" + team] = primaryweapon;
-			self.pers["awe_oldprimaryb_" + team] = weapon;
+			self.pers["empire_oldprimary_" + team] = primaryweapon;
+			self.pers["empire_oldprimaryb_" + team] = weapon;
 		}
 	}
 
-	if(isdefined(self.awe_weaponselectmsg))
-		self.awe_weaponselectmsg destroy();
+	if(isdefined(self.empire_weaponselectmsg))
+		self.empire_weaponselectmsg destroy();
 
 	// Weapon change?
 	if(oldweapon != weapon)
@@ -4649,7 +4650,7 @@ getWeaponName(weapon)
 
 precacheForcedWeapon(weapon)
 {
-	if( level.awe_uomap && !isWeaponType(game["allies"],weapon) && !isWeaponType(game["axis"],weapon) && !isWeaponType("common",weapon) )
+	if( level.empire_uomap && !isWeaponType(game["allies"],weapon) && !isWeaponType(game["axis"],weapon) && !isWeaponType("common",weapon) )
 		return;
 
 	if(	weapon == "none" || weapon == "" || weapon == "select" ||
@@ -4687,23 +4688,23 @@ testModel(model)
 NotAFK()
 {
     self notify("not_afk");
-    if (isdefined(self.awe_camptimer))
+    if (isdefined(self.empire_camptimer))
     {
-        self.awe_camptimer destroy();
-        self.awe_camptimer = undefined;
+        self.empire_camptimer destroy();
+        self.empire_camptimer = undefined;
         self iprintln(formatMessage(getcvar("ui_AutoAdmin_AFK_NotifyRemoved"), self));
     }
 
     // Reset AFK state and counter so camper() can be triggered again.
-    self.awe_objnum = undefined;
-    self.awe_camper = undefined;
+    self.empire_objnum = undefined;
+    self.empire_camper = undefined;
     self.afk_count = 0;
 }
 
 monitorInput()
 {
-    self endon("awe_spawned");
-    self endon("awe_died");
+    self endon("empire_spawned");
+    self endon("empire_died");
     self endon("disconnect");
 
     while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
@@ -4715,7 +4716,7 @@ monitorInput()
             self.afk_count = 0;
 
             //iprintln("DEBUG: monitorInput() detected input, calling NotAFK().");
-            if (isdefined(self.awe_camper))
+            if (isdefined(self.empire_camper))
                 NotAFK();
         }
         wait 0.10; // Poll every 100ms
@@ -4724,8 +4725,8 @@ monitorInput()
 
 monitorWeaponSwitch()
 {
-    self endon("awe_spawned");
-    self endon("awe_died");
+    self endon("empire_spawned");
+    self endon("empire_died");
     self endon("disconnect");
 
     previous_weapon = self GetCurrentWeapon();
@@ -4737,7 +4738,7 @@ monitorWeaponSwitch()
         if(current_weapon != previous_weapon)
         {
             self.afk_count = 0;
-            if(isdefined(self.awe_camper))
+            if(isdefined(self.empire_camper))
                 NotAFK();
 
             previous_weapon = current_weapon;
@@ -4749,23 +4750,23 @@ monitorWeaponSwitch()
 
 monitorMenuResponse()
 {
-    self endon("awe_spawned");
-    self endon("awe_died");
+    self endon("empire_spawned");
+    self endon("empire_died");
     self endon("disconnect");
 
     while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
     {
         self waittill("menuresponse");
         self.afk_count = 0;
-        if(isdefined(self.awe_camper))
+        if(isdefined(self.empire_camper))
             NotAFK();
     }
 }
 
 monitorStanceChange()
 {
-    self endon("awe_spawned");
-    self endon("awe_died");
+    self endon("empire_spawned");
+    self endon("empire_died");
     self endon("disconnect");
 
     previous_stance = aweGetStance(false);
@@ -4777,7 +4778,7 @@ monitorStanceChange()
         if(current_stance != previous_stance)
         {
             self.afk_count = 0;
-            if(isdefined(self.awe_camper))
+            if(isdefined(self.empire_camper))
                 NotAFK();
 
             if(isdefined(self.p_speeding_reset))
@@ -4792,8 +4793,8 @@ monitorStanceChange()
 
 monitorme()
 {
-        self endon("awe_spawned");
-        self endon("awe_died");
+        self endon("empire_spawned");
+        self endon("empire_died");
         self endon("disconnect");
 
         self.afk_count = 0;
@@ -4802,24 +4803,24 @@ monitorme()
 
 	while( isPlayer(self) && isAlive(self) && self.sessionstate=="playing" )
 	{
-		if(level.awe_sprint && level.awe_sprinthudhint)
+		if(level.empire_sprint && level.empire_sprinthudhint)
 		{
-			if(!isdefined(sprinthudvisible) && isdefined(self.awe_sprinttime) && self.awe_sprinttime && !isdefined(self.awe_sprinting) && self.awe_pace && level.awe_sprint>self aweGetStance(false) && !self maps\mp\gametypes\_awe_uncommon::aweIsInVehicle())
+			if(!isdefined(sprinthudvisible) && isdefined(self.empire_sprinttime) && self.empire_sprinttime && !isdefined(self.empire_sprinting) && self.empire_pace && level.empire_sprint>self aweGetStance(false) && !self maps\mp\gametypes\_empire_uncommon::aweIsInVehicle())
 			{
-				if(isdefined(self.awe_sprinthud_hint))
+				if(isdefined(self.empire_sprinthud_hint))
 				{
-					self.awe_sprinthud_hint fadeOverTime (1); 
-					self.awe_sprinthud_hint.alpha = 1;
+					self.empire_sprinthud_hint fadeOverTime (1); 
+					self.empire_sprinthud_hint.alpha = 1;
 					sprinthudvisible = true;
 				}
 			}
-			else if(isdefined(sprinthudvisible) && (isdefined(self.awe_sprinting) || !self.awe_pace || level.awe_sprint<=self aweGetStance(false) || self maps\mp\gametypes\_awe_uncommon::aweIsInVehicle()))
+			else if(isdefined(sprinthudvisible) && (isdefined(self.empire_sprinting) || !self.empire_pace || level.empire_sprint<=self aweGetStance(false) || self maps\mp\gametypes\_empire_uncommon::aweIsInVehicle()))
 			{
 				{
-					if(isdefined(self.awe_sprinthud_hint))
+					if(isdefined(self.empire_sprinthud_hint))
 					{
-						self.awe_sprinthud_hint fadeOverTime (1); 
-						self.awe_sprinthud_hint.alpha = 0;
+						self.empire_sprinthud_hint fadeOverTime (1); 
+						self.empire_sprinthud_hint.alpha = 0;
 						sprinthudvisible = undefined;
 					}
 				}
@@ -4827,46 +4828,46 @@ monitorme()
 		}
 
 		// Disable UO sprint?
-		if(isdefined(level.awe_uo) && (!level.awe_uosprint || level.awe_sprint))
-			self maps\mp\gametypes\_awe_uncommon::aweSetFatigue(0);
+		if(isdefined(level.empire_uo) && (!level.empire_uosprint || level.empire_sprint))
+			self maps\mp\gametypes\_empire_uncommon::aweSetFatigue(0);
 
 		// Eternal UO sprint?
-		if(isdefined(level.awe_uo) && (level.awe_uosprint==2 && !level.awe_sprint))
-			self maps\mp\gametypes\_awe_uncommon::aweSetFatigue(1);
+		if(isdefined(level.empire_uo) && (level.empire_uosprint==2 && !level.empire_sprint))
+			self maps\mp\gametypes\_empire_uncommon::aweSetFatigue(1);
 
-		if(!isdefined(self.awe_sprinting))
-			self.maxspeed = 1.9 * level.awe_playerspeed;
+		if(!isdefined(self.empire_sprinting))
+			self.maxspeed = 1.9 * level.empire_playerspeed;
 
-		if(level.awe_unlimitedammo)
+		if(level.empire_unlimitedammo)
 		{
 			self setWeaponSlotAmmo("primary", 999);
 			self setWeaponSlotAmmo("primaryb", 999);
 			self setWeaponSlotAmmo("pistol", 999);
-			if(level.awe_unlimitedammo == 2)
+			if(level.empire_unlimitedammo == 2)
 			{
 				self setWeaponSlotClipAmmo("primary", 999);
 				self setWeaponSlotClipAmmo("primaryb", 999);
 				self setWeaponSlotClipAmmo("pistol", 999);
 			}
 		}
-		if(level.awe_unlimitedgrenades)
+		if(level.empire_unlimitedgrenades)
 		{
 			self setWeaponSlotAmmo("grenade", 999);
 			self setWeaponSlotClipAmmo("grenade", 999);
 		}
-		if(level.awe_unlimitedsmokegrenades)
+		if(level.empire_unlimitedsmokegrenades)
 		{
 			self setWeaponSlotAmmo("smokegrenade", 999);
 			self setWeaponSlotClipAmmo("smokegrenade", 999);
 		}
 
-//		if(level.awe_debug)
+//		if(level.empire_debug)
 //			self iprintln("Maxspeed: " + self.maxspeed);
 
 		// Ugly fix to make sure self.headiconteam is not messed up
-		if(isdefined(level.awe_teamplay))			// Check if it's team play
+		if(isdefined(level.empire_teamplay))			// Check if it's team play
 		{
-			if(!isdefined(self.awe_objnum)) // Don't mess with marked players?
+			if(!isdefined(self.empire_objnum)) // Don't mess with marked players?
 			{
 				if(!isdefined(self.carrying) || !self.carrying ) // Don't mess with ACTF flag carriers
 				{
@@ -4879,10 +4880,10 @@ monitorme()
 		}
 
 		// Be un-nice to Unknown Players?
-		if(level.awe_unknownmethod && self isUnknown())
+		if(level.empire_unknownmethod && self isUnknown())
 		{
 			self iprintlnbold("^" + randomInt(8) + "Change your name!");
-			switch(level.awe_unknownmethod)
+			switch(level.empire_unknownmethod)
 			{
 				case 1:
 					self dropItem(self getcurrentweapon());
@@ -4891,18 +4892,18 @@ monitorme()
 					self thread spankme(1);
 					break;
 				case 3:
-					self thread maps\mp\gametypes\_awe_uncommon::aweShellshock(1);
+					self thread maps\mp\gametypes\_empire_uncommon::aweShellshock(1);
 					break;
 				default:
 					break;
 			}
 		}
 
-		if(!isdefined(level.awe_merciless) && level.awe_nocrosshair)
+		if(!isdefined(level.empire_merciless) && level.empire_nocrosshair)
 		{
 			if(ch_count>=10)
 			{
-				switch(level.awe_nocrosshair)
+				switch(level.empire_nocrosshair)
 				{
 					case 2:
 						self setClientCvar("cg_drawcrosshair", "1");
@@ -4917,9 +4918,9 @@ monitorme()
 			ch_count++;
 		}
 
-		if( isdefined(self.awe_carryingturret) )
+		if( isdefined(self.empire_carryingturret) )
 		{
-			if(level.awe_turretpenalty)
+			if(level.empire_turretpenalty)
 			{
 				w1 = self getWeaponSlotWeapon("primary");
 				w2 = self getWeaponSlotWeapon("primaryb");
@@ -4932,7 +4933,7 @@ monitorme()
 					self dropitem(w2);
 				if( w1 != "none" || w2 != "none")
 				{
-					if(level.awe_turrets[self.awe_carryingturret]["type"]=="misc_mg42")
+					if(level.empire_turrets[self.empire_carryingturret]["type"]=="misc_mg42")
 						self iprintln("You cannot carry a primary weapon while carrying an MG42");
 					else
 						self iprintln("You cannot carry a primary weapon while carrying a PTRS41");
@@ -4941,7 +4942,7 @@ monitorme()
 		}
 
 		// Disable primaryb?		
-		if(isdefined(self.awe_disableprimaryb))
+		if(isdefined(self.empire_disableprimaryb))
 		{
 			primaryb = self getWeaponSlotWeapon("primaryb");
 			if (primaryb != "none")
@@ -4971,20 +4972,20 @@ monitorme()
 		newpos = self.origin;
 		speed = distance(oldpos,newpos);
 
-		if(level.awe_debug)
+		if(level.empire_debug)
 			self iprintln("Speed: " + speed);
 
 		if (speed > 20) {
-			self.awe_pace = 1;
-			//iprintln("DEBUG: Movement detected, pace=" + self.awe_pace);
+			self.empire_pace = 1;
+			//iprintln("DEBUG: Movement detected, pace=" + self.empire_pace);
 			NotAFK(); // Call our function to cancel AFK marking and remove the HUD timer.
 			}
 		else {
-			self.awe_pace = 0;
-			//iprintln("DEBUG: Movement not detected, pace=" + self.awe_pace);
+			self.empire_pace = 0;
+			//iprintln("DEBUG: Movement not detected, pace=" + self.empire_pace);
 			}
 
-                if(level.awe_anticamptime && !isdefined(self.awe_camper) && !isdefined(level.awe_tdom))
+                if(level.empire_afk_detection && level.empire_anticamptime && !isdefined(self.empire_camper) && !isdefined(level.empire_tdom))
                 {
                         if(isdefined(self.hasflag) || (isdefined(self.carrying) && self.carrying))
                         {
@@ -4993,12 +4994,12 @@ monitorme()
                         else
                         {
                                // Check for campers - ignore players using LMGs
-                               if(self.awe_pace == 0 && !isWeaponType("lmg", self GetCurrentWeapon()))
+                               if(self.empire_pace == 0 && !isWeaponType("lmg", self GetCurrentWeapon()))
                                        self.afk_count++;
                                else
                                        self.afk_count = 0;
 
-                                if(self.afk_count >= level.awe_anticamptime)
+                                if(self.afk_count >= level.empire_anticamptime)
                                 {
                                         self thread camper();
                                         self.afk_count = 0;
@@ -5007,9 +5008,9 @@ monitorme()
                 }
 
 		// Mess with the poor camper
-		if(level.awe_anticampfun && isdefined(self.awe_camper))
+		if(level.empire_anticampfun && isdefined(self.empire_camper))
 		{
-			if(funcount>=level.awe_anticampfun)
+			if(funcount>=level.empire_anticampfun)
 			{
 				switch (randomInt(3))
 				{
@@ -5025,7 +5026,7 @@ monitorme()
 
 					// Shellshock for 5 seconds
 					case 2:
-						self thread maps\mp\gametypes\_awe_uncommon::aweShellshock(5);
+						self thread maps\mp\gametypes\_empire_uncommon::aweShellshock(5);
 						break;
 
 					default:
@@ -5042,31 +5043,34 @@ monitorme()
 
 camper()
 {
-    self endon("awe_spawned");
-    self endon("awe_died");
+    self endon("empire_spawned");
+    self endon("empire_died");
     self endon("disconnect");
     self endon("not_afk");
+
+    if(!level.empire_afk_detection)
+            return;
 
     // Skip AFK punishment if player is carrying the flag
     if (isdefined(self.hasflag) || (isdefined(self.carrying) && self.carrying))
             return;
         
     // Ensure any previous timer is cleared.
-    if(isdefined(self.awe_camptimer))
+    if(isdefined(self.empire_camptimer))
     {
-        self.awe_camptimer destroy();
-        self.awe_camptimer = undefined;
+        self.empire_camptimer destroy();
+        self.empire_camptimer = undefined;
     }
     
     // Now set the flag so we know this thread is running.
-    self.awe_camper = true;
+    self.empire_camper = true;
     
     // Retrieve the marking period from the anticamp marktime cvar.
-    // NOTE: the cvar value is stored in level.awe_anticampmarktime when
-    //       _awe::Setup() initializes all mod cvars. Use that variable here
-    //       so that user configured values (e.g. awe_anticamp_marktime) are
+    // NOTE: the cvar value is stored in level.empire_anticampmarktime when
+    //       _empire::Setup() initializes all mod cvars. Use that variable here
+    //       so that user configured values (e.g. empire_anticamp_marktime) are
     //       respected.
-    markTime = level.awe_anticampmarktime;
+    markTime = level.empire_anticampmarktime;
     if (!isdefined(markTime) || markTime <= 0)
         markTime = 30; // default to 30 seconds if not set
     
@@ -5074,66 +5078,66 @@ camper()
     self iprintlnbold(formatMessage(getcvar("ui_AutoAdmin_AFK_NotifyPlayer"), self, markTime));
     
     // Set up a HUD timer for feedback.
-    self.awe_camptimer = newClientHudElem(self);
-    self.awe_camptimer.archived = true;
-    self.awe_camptimer.x = 220;
-    if (isdefined(level.awe_alternatehud))
-        self.awe_camptimer.y = 420;
+    self.empire_camptimer = newClientHudElem(self);
+    self.empire_camptimer.archived = true;
+    self.empire_camptimer.x = 220;
+    if (isdefined(level.empire_alternatehud))
+        self.empire_camptimer.y = 420;
     else
-        self.awe_camptimer.y = 460;
-    self.awe_camptimer.alignX = "center";
-    self.awe_camptimer.alignY = "middle";
-    self.awe_camptimer.alpha = 1;
-    self.awe_camptimer.sort = -3;
-    self.awe_camptimer.font = "bigfixed";
-    self.awe_camptimer.color = (1, 1, 0);
-    self.awe_camptimer setTimer(markTime - 1);
+        self.empire_camptimer.y = 460;
+    self.empire_camptimer.alignX = "center";
+    self.empire_camptimer.alignY = "middle";
+    self.empire_camptimer.alpha = 1;
+    self.empire_camptimer.sort = -3;
+    self.empire_camptimer.font = "bigfixed";
+    self.empire_camptimer.color = (1, 1, 0);
+    self.empire_camptimer setTimer(markTime - 1);
     
     // Mark the player on the HUD and update the objective.
     // Note: markme() will block for markTime seconds.
     self markme("crosshair", "afk", markTime);
     
     // Remove the HUD timer (should be at 0 when markme() completes).
-    if (isdefined(self.awe_camptimer))
-        self.awe_camptimer destroy();
+    if (isdefined(self.empire_camptimer))
+        self.empire_camptimer destroy();
     
     // Immediately force the player into spectator mode.
     self.pers["team"] = "spectator";
     self.sessionteam = "spectator";
     self setClientCvar("g_scriptMainMenu", game["menu_team"]);
     self setClientCvar("scr_showweapontab", "0");
-    self thread maps\mp\gametypes\_awe::spawnSpectator();
+    self thread maps\mp\gametypes\_empire::spawnSpectator();
     
     if (isAlive(self))	//"^1~^3empire ^2| ^1automod: ^3You have been detected as ^1AFK^3. You will be forced into spectator mode in ^1" + markTime + "^3 seconds."
                 self iprintlnbold(formatMessage(getcvar("ui_AutoAdmin_AFK_NotifyActionTaken"), self));
     
-    self.awe_camper = undefined;
+    self.empire_camper = undefined;
 }
 
 
 PlayerParachute()
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	// Do not parachute in roundbased gametypes unless match has been started.
-	if(isdefined(level.awe_roundbased))
+	if(isdefined(level.empire_roundbased))
 		if(!game["matchstarted"])
 			return;
 		
 
-	if(level.awe_parachutes == 1)
-		self.awe_haveparachuted = true;
+	if(level.empire_parachutes == 1)
+		self.empire_haveparachuted = true;
 
 	// Starting point for player
 	ix = self.origin[0] - 150 + randomint(300);
 	iy = self.origin[1] - 150 + randomint(300);
 
 	// Calculate starting altitude
-	if(level.awe_bombers_altitude)
-		iz = level.awe_bombers_altitude - randomint(100);
+	if(level.empire_bombers_altitude)
+		iz = level.empire_bombers_altitude - randomint(100);
 	else
-		iz = level.awe_vMax[2] - randomint(100);	
+		iz = level.empire_vMax[2] - randomint(100);	
 
 	// Endpoint for player is 24 units above spawn point (origin)
 	endpoint = self.origin + ( 0, 0, 24);	// I use a low value here to avoid getting stuck
@@ -5144,10 +5148,10 @@ PlayerParachute()
 	iz = pos[2];
 
 	// Limit the altitude
-	if(level.awe_parachuteslimitaltitude)
+	if(level.empire_parachuteslimitaltitude)
 	{
-		if((iz-endpoint[2])>level.awe_parachuteslimitaltitude)
-			iz=endpoint[2] + level.awe_parachuteslimitaltitude - randomint(100);
+		if((iz-endpoint[2])>level.empire_parachuteslimitaltitude)
+			iz=endpoint[2] + level.empire_parachuteslimitaltitude - randomint(100);
 	}
 
 	// Starting point ready
@@ -5161,58 +5165,58 @@ PlayerParachute()
 		return;
 
 	// Now we are clear to parachute
-	self.awe_isparachuting = 1;
+	self.empire_isparachuting = 1;
 
 	//create a model to attach everything to
-	self.awe_anchor = spawn ("script_model",(0,0,0));
-	self.awe_anchor.origin = self.origin;
-	self.awe_anchor.angles = self.angles;
+	self.empire_anchor = spawn ("script_model",(0,0,0));
+	self.empire_anchor.origin = self.origin;
+	self.empire_anchor.angles = self.angles;
 	
-	self.awe_parachute = spawn_parachute();
+	self.empire_parachute = spawn_parachute();
 	
-	// Link player to self.awe_anchor
-	self linkto (self.awe_anchor);
+	// Link player to self.empire_anchor
+	self linkto (self.empire_anchor);
 
-	self.awe_parachute linkto (self.awe_anchor,"",(24,-32,128),(0,-40,0));
+	self.empire_parachute linkto (self.empire_anchor,"",(24,-32,128),(0,-40,0));
 
 	// Disable weapon & make player invulnerable
-	if(level.awe_parachutesprotection)
+	if(level.empire_parachutesprotection)
 	{
 		self disableWeapon();
-		self.awe_invulnerable = true;
+		self.empire_invulnerable = true;
 	}
 
 	// Get a random falltime
 	falltime = distance*0.01 + randomint(6);
 	
-	// Move self.awe_anchor
-	self.awe_anchor.origin = startpoint;
-	self.awe_anchor moveto (endpoint, falltime);
+	// Move self.empire_anchor
+	self.empire_anchor.origin = startpoint;
+	self.empire_anchor moveto (endpoint, falltime);
 
 	wait .05;
 
 	// Play wind sound
-	self.awe_anchor playLoopSound ("awe_Para_Wind");
+	self.empire_anchor playLoopSound ("empire_Para_Wind");
 
 	// Wait fall time - 3 seconds	
 	for(i=0;(i<(falltime - 3)*20) && isPlayer(self) && isAlive(self);i++)
 	{
 		self setClientCvar("cl_stance", "0");
-		self.awe_anchor.angles = self.angles;
+		self.empire_anchor.angles = self.angles;
 		wait 0.05;
 	}
 	// Play landing sound for the last 3 seconds
 	if(isPlayer(self) && isAlive(self))
-		self playSound("awe_Para_Land");
+		self playSound("empire_Para_Land");
 
 	for(i=0;(i<3*20) && isPlayer(self) && isAlive(self);i++)
 	{
 		self setClientCvar("cl_stance", "0");
-		self.awe_anchor.angles = self.angles;
+		self.empire_anchor.angles = self.angles;
 		wait 0.05;
 	}
 
-	self.awe_anchor stopLoopSound();
+	self.empire_anchor stopLoopSound();
 	
 	// Release player if he's dead
 	if(!isPlayer(self) || !isAlive(self))
@@ -5220,11 +5224,11 @@ PlayerParachute()
 
 	if(isPlayer(self) && isAlive(self))
 	{
-		// Make sure self.awe_anchor is on it's endpoint	
-		self.awe_anchor.origin = endpoint;
+		// Make sure self.empire_anchor is on it's endpoint	
+		self.empire_anchor.origin = endpoint;
 		
 		// Enabled weapon
-		if(level.awe_parachutesprotection)
+		if(level.empire_parachutesprotection)
 			self enableWeapon();
 
 		// Release player
@@ -5237,14 +5241,14 @@ PlayerParachute()
 		earthquake(0.4, 1.2, self.origin, 70);
 	}
 
-	if(level.awe_parachutesprotection)
-		self.awe_invulnerable = undefined;
+	if(level.empire_parachutesprotection)
+		self.empire_invulnerable = undefined;
 
-	self.awe_isparachuting = undefined;
+	self.empire_isparachuting = undefined;
 
 	// Remove parachute
-	self.awe_parachute delete();
-	self.awe_anchor delete();
+	self.empire_parachute delete();
+	self.empire_anchor delete();
 
 	return;
 }
@@ -5265,8 +5269,8 @@ spawn_parachute()
 
 spawnprotection()
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	if(!isdefined(level.drawfriend))
 		level.drawfriend = 0;
@@ -5275,63 +5279,63 @@ spawnprotection()
 	startposition = self.origin;
 	self iprintln("Spawn protection activated!");
 
-	if(level.awe_spawnprotectiondisableweapon)
+	if(level.empire_spawnprotectiondisableweapon)
 		self disableWeapon();
 
 	// Set up HUD element
-	if(level.awe_spawnprotectionhud == 1)
+	if(level.empire_spawnprotectionhud == 1)
 	{
-		self.awe_spawnprotection = newClientHudElem(self);	
-		self.awe_spawnprotection.x = 520;
-		self.awe_spawnprotection.y = 410;
-		self.awe_spawnprotection.alpha = 0.65;
-		self.awe_spawnprotection.alignX = "center";
-		self.awe_spawnprotection.alignY = "middle";
-		self.awe_spawnprotection setShader(game["headicon_protect"],40,40);
+		self.empire_spawnprotection = newClientHudElem(self);	
+		self.empire_spawnprotection.x = 520;
+		self.empire_spawnprotection.y = 410;
+		self.empire_spawnprotection.alpha = 0.65;
+		self.empire_spawnprotection.alignX = "center";
+		self.empire_spawnprotection.alignY = "middle";
+		self.empire_spawnprotection setShader(game["headicon_protect"],40,40);
 	}
 
-	if(level.awe_spawnprotectionhud == 2)
+	if(level.empire_spawnprotectionhud == 2)
 	{
-		self.awe_spawnprotection = newClientHudElem(self);	
-		self.awe_spawnprotection.x = 320;
-		self.awe_spawnprotection.y = 240;
-		self.awe_spawnprotection.alpha = 0.4;
-		self.awe_spawnprotection.alignX = "center";
-		self.awe_spawnprotection.alignY = "middle";
-		self.awe_spawnprotection setShader(game["headicon_protect"],350,320);
+		self.empire_spawnprotection = newClientHudElem(self);	
+		self.empire_spawnprotection.x = 320;
+		self.empire_spawnprotection.y = 240;
+		self.empire_spawnprotection.alpha = 0.4;
+		self.empire_spawnprotection.alignX = "center";
+		self.empire_spawnprotection.alignY = "middle";
+		self.empire_spawnprotection setShader(game["headicon_protect"],350,320);
 	}
 
-	while( isAlive(self) && self.sessionstate=="playing" && count < (level.awe_spawnprotection * 20) && !((self attackButtonPressed() || self meleeButtonPressed()) && self getCurrentWeapon()!="none" && !(isdefined(self.awe_isparachuting) && level.awe_parachutesprotection) ) )
+	while( isAlive(self) && self.sessionstate=="playing" && count < (level.empire_spawnprotection * 20) && !((self attackButtonPressed() || self meleeButtonPressed()) && self getCurrentWeapon()!="none" && !(isdefined(self.empire_isparachuting) && level.empire_parachutesprotection) ) )
 	{
-		self.awe_invulnerable = true;
+		self.empire_invulnerable = true;
 
-		if(level.awe_spawnprotectionheadicon)
+		if(level.empire_spawnprotectionheadicon)
 		{
 			// Setup headicon
 			self.headicon = game["headicon_protect"];
 			self.headiconteam = "none";
 		}
 
-		if(level.awe_spawnprotectionrange && !isdefined(self.awe_isparachuting))
+		if(level.empire_spawnprotectionrange && !isdefined(self.empire_isparachuting))
 		{
 			// Check moved range
 			distance = distance(startposition, self.origin);
-			if(distance > level.awe_spawnprotectionrange)
-				count = level.awe_spawnprotection * 20;
+			if(distance > level.empire_spawnprotectionrange)
+				count = level.empire_spawnprotection * 20;
 		}
 
 		// Don't count time while parachuting unless parachuter is unprotected
-		if(!(isdefined(self.awe_isparachuting) && level.awe_parachutesprotection))
+		if(!(isdefined(self.empire_isparachuting) && level.empire_parachutesprotection))
 			count++;
 
 		wait 0.05;
 	}
 
-	if(level.awe_spawnprotectiondisableweapon)
+	if(level.empire_spawnprotectiondisableweapon)
 		self enableWeapon();
 
-	self.awe_invulnerable = undefined;
-	if(level.awe_spawnprotectionheadicon)
+	self.empire_invulnerable = undefined;
+	if(level.empire_spawnprotectionheadicon)
 		self restoreHeadicon(game["headicon_protect"]);
 
 	if( isAlive(self) && self.sessionstate=="playing" )
@@ -5339,18 +5343,18 @@ spawnprotection()
 		self iprintln("You are no longer protected!");
 
 		// Fade HUD element
-		if(isdefined(self.awe_spawnprotection))
+		if(isdefined(self.empire_spawnprotection))
 		{
-			self.awe_spawnprotection fadeOverTime (1); 
-			self.awe_spawnprotection.alpha = 0;
+			self.empire_spawnprotection fadeOverTime (1); 
+			self.empire_spawnprotection.alpha = 0;
 		}
 
 		wait 1;
 	}
 
 	// Remove HUD element
-	if(isdefined(self.awe_spawnprotection))
-		self.awe_spawnprotection destroy();
+	if(isdefined(self.empire_spawnprotection))
+		self.empire_spawnprotection destroy();
 }
 
 restoreHeadicon(oldicon)
@@ -5358,9 +5362,9 @@ restoreHeadicon(oldicon)
 	// Restore headicon
 	if(level.drawfriend && self.pers["team"]!="spectator" )
 	{
-		if(isdefined(level.awe_uo) && level.battlerank)
+		if(isdefined(level.empire_uo) && level.battlerank)
 		{
-			self.headicon = maps\mp\gametypes\_awe_uncommon::aweGetRankHeadIcon(self);
+			self.headicon = maps\mp\gametypes\_empire_uncommon::aweGetRankHeadIcon(self);
 		}
 		else
 		{
@@ -5373,7 +5377,7 @@ restoreHeadicon(oldicon)
 		else
 			self.headiconteam = self.pers["team"];
 
-		if(isdefined(level.awe_classbased)) 	// Merciless v.6 classbased headicons
+		if(isdefined(level.empire_classbased)) 	// Merciless v.6 classbased headicons
 		{
 			self.headicon = self.pers["hicon"];
 		}
@@ -5414,33 +5418,33 @@ restoreHeadicon(oldicon)
 
 tracers()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 	for(;;)
 	{
-		delay = level.awe_tracersdelaymin + randomint(level.awe_tracersdelaymax - level.awe_tracersdelaymin);
+		delay = level.empire_tracersdelaymin + randomint(level.empire_tracersdelaymax - level.empire_tracersdelaymin);
 		wait delay;
 
 		iSide = randomInt(4);
 		switch (iSide)
 		{
 			case 0:
-				ix = level.awe_vMin[0];
-				iy = level.awe_vMin[1] + randomInt(level.awe_vMax[1] - level.awe_vMin[1]);
+				ix = level.empire_vMin[0];
+				iy = level.empire_vMin[1] + randomInt(level.empire_vMax[1] - level.empire_vMin[1]);
 				break;
 
 			case 1:
-				ix = level.awe_vMax[0];
-				iy = level.awe_vMin[1] + randomInt(level.awe_vMax[1] - level.awe_vMin[1]);
+				ix = level.empire_vMax[0];
+				iy = level.empire_vMin[1] + randomInt(level.empire_vMax[1] - level.empire_vMin[1]);
 				break;
 				
 			case 2:
-				ix = level.awe_vMin[0] + randomInt(level.awe_vMax[0] - level.awe_vMin[0]);
-				iy = level.awe_vMin[1];
+				ix = level.empire_vMin[0] + randomInt(level.empire_vMax[0] - level.empire_vMin[0]);
+				iy = level.empire_vMin[1];
 				break;
 		
 			case 3:
-				ix = level.awe_vMin[0] + randomInt(level.awe_vMax[0] - level.awe_vMin[0]);
-				iy = level.awe_vMax[1];
+				ix = level.empire_vMin[0] + randomInt(level.empire_vMax[0] - level.empire_vMin[0]);
+				iy = level.empire_vMax[1];
 				break;
 		}
 			
@@ -5458,48 +5462,48 @@ tracers()
 			spawnpoints = getentarray("mp_retrieval_spawn_axis", "classname");
 		iz = spawnpoints[0].origin[2] - 100;
 			
-		playfx(level._effect["awe_tracers"], (ix, iy, iz));
+		playfx(level._effect["empire_tracers"], (ix, iy, iz));
 	}
 }
 
 skyflashes()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
 
 	for(;;)
 	{
 		// wait a random delay
-		delay = level.awe_skyflashesdelaymin + randomint(level.awe_skyflashesdelaymax - level.awe_skyflashesdelaymin);
+		delay = level.empire_skyflashesdelaymin + randomint(level.empire_skyflashesdelaymax - level.empire_skyflashesdelaymin);
 		wait delay;
 			
 		// spawn object that is used to play sound
 		skyflash = spawn ( "script_model", ( 0, 0, 0) );
 
 		//get a random position
-		xwidth = level.awe_vMax[0] - level.awe_vMin[0] - 100;
-		ywidth = level.awe_vMax[1] - level.awe_vMin[1] - 100;
-		xpos = level.awe_vMin[0] + 50 + randomint(xwidth);
-		ypos = level.awe_vMin[1] + 50 + randomint(ywidth);
-		if(level.awe_bombers_altitude)
-			zpos = level.awe_bombers_altitude - 50;
+		xwidth = level.empire_vMax[0] - level.empire_vMin[0] - 100;
+		ywidth = level.empire_vMax[1] - level.empire_vMin[1] - 100;
+		xpos = level.empire_vMin[0] + 50 + randomint(xwidth);
+		ypos = level.empire_vMin[1] + 50 + randomint(ywidth);
+		if(level.empire_bombers_altitude)
+			zpos = level.empire_bombers_altitude - 50;
 		else
-			zpos = level.awe_vMax[2] - 50;	
+			zpos = level.empire_vMax[2] - 50;	
 		
 		position = ( xpos, ypos, zpos);
 
 		// get a random effect
-		s = randomInt(level.awe_skyeffects.size);
+		s = randomInt(level.empire_skyeffects.size);
 
 		skyflash.origin = position;
 		wait .05;
 		
 		// play effect
-		playfx(level.awe_skyeffects[s]["effect"], position);
+		playfx(level.empire_skyeffects[s]["effect"], position);
 		
 		// play sound
-		wait level.awe_skyeffects[s]["delay"];
-		skyflash playsound("awe_skyflash");
+		wait level.empire_skyeffects[s]["delay"];
+		skyflash playsound("empire_skyflash");
 		wait .05;
 		skyflash delete();
 	}
@@ -5507,7 +5511,7 @@ skyflashes()
 
 C47sounds(startpos, delay)
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 	for(;;)
 	{
 		wait delay;
@@ -5521,22 +5525,22 @@ C47sound(startpos, delay)
 	startpos = startpos - (0,500,0);
 
 	// spawn object that is used to play sound
-	if(level.awe_debug)
+	if(level.empire_debug)
 		sndobject = spawn_model("xmodel/vehicle_plane_stuka", "stuka", startpos, ( 0, 90, 0) );
 	else
 		sndobject = spawn("script_model",startpos);
 	wait 0.05;
 
 	// Move the sound object a bit longer to get better fading of sound
-	s = level.awe_vMax[1] - startpos[1] + 1000;
+	s = level.empire_vMax[1] - startpos[1] + 1000;
 	v = 150;
 
 	t = s / v;
 
 	// play sound
-	sndobject playloopsound("awe_planeloop");
+	sndobject playloopsound("empire_planeloop");
 
-	if(level.awe_debug)
+	if(level.empire_debug)
 	{
 		iprintlnbold("distance: " + s);
 		sndobject2 = spawn_model("xmodel/vehicle_plane_stuka", "stuka2", startpos + (0,s,0), ( 0, 90, 0) );
@@ -5551,11 +5555,11 @@ C47sound(startpos, delay)
 
 stukas()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 	for(;;)
 	{	
-		wait level.awe_stukasdelay;
-		stukas = level.awe_stukas + randomInt(3);
+		wait level.empire_stukasdelay;
+		stukas = level.empire_stukas + randomInt(3);
 		offset = -2000 + randomInt(4000);
 		angle = 90 * randomInt(4);
 		for(i=0;i<stukas;i++)
@@ -5566,10 +5570,10 @@ stukas()
 stuka(offset, angle)
 {
 	// Set height
-	if(level.awe_bombers_altitude)
-		iZ = level.awe_bombers_altitude;
+	if(level.empire_bombers_altitude)
+		iZ = level.empire_bombers_altitude;
 	else
-		iZ = level.awe_vMax[2];	
+		iZ = level.empire_vMax[2];	
 
 	iZstart 	= iZ + 1000 - randomInt(500);
 	iZend 	= iZ + 1000 - randomInt(500);
@@ -5578,35 +5582,35 @@ stuka(offset, angle)
 	switch(angle)
 	{
 		case 0:
-			iY 		= (int)(level.awe_vMax[1] + level.awe_vMin[1])/2 + offset;
+			iY 		= (int)(level.empire_vMax[1] + level.empire_vMin[1])/2 + offset;
 			iYstart 	= iY - 200 + randomInt(400);
 			iYend		= iY - 200 + randomInt(400);
-			iXstart 	= level.awe_vMin[0] - 6000 - randomInt(1000);	
-			iXend 	= level.awe_vMax[0] + 6000;
+			iXstart 	= level.empire_vMin[0] - 6000 - randomInt(1000);	
+			iXend 	= level.empire_vMax[0] + 6000;
 			break;
 
 		case 90:
-			iX 		= (int)(level.awe_vMax[0] + level.awe_vMin[0])/2 + offset;
+			iX 		= (int)(level.empire_vMax[0] + level.empire_vMin[0])/2 + offset;
 			iXstart 	= iX - 200 + randomInt(400);
 			iXend		= iX - 200 + randomInt(400);
-			iYstart 	= level.awe_vMin[1] - 6000 - randomInt(1000);	
-			iYend 	= level.awe_vMax[1] + 6000;
+			iYstart 	= level.empire_vMin[1] - 6000 - randomInt(1000);	
+			iYend 	= level.empire_vMax[1] + 6000;
 			break;
 
 		case 180:
-			iY 		= (int)(level.awe_vMax[1] + level.awe_vMin[1])/2 + offset;
+			iY 		= (int)(level.empire_vMax[1] + level.empire_vMin[1])/2 + offset;
 			iYstart 	= iY - 200 + randomInt(400);
 			iYend		= iY - 200 + randomInt(400);
-			iXstart 	= level.awe_vMax[0] + 6000 + randomInt(1000);	
-			iXend 	= level.awe_vMin[0] - 6000;
+			iXstart 	= level.empire_vMax[0] + 6000 + randomInt(1000);	
+			iXend 	= level.empire_vMin[0] - 6000;
 			break;
 
 		case 270:
-			iX 		= (int)(level.awe_vMax[0] + level.awe_vMin[0])/2 + offset;
+			iX 		= (int)(level.empire_vMax[0] + level.empire_vMin[0])/2 + offset;
 			iXstart 	= iX - 200 + randomInt(400);
 			iXend		= iX - 200 + randomInt(400);
-			iYstart 	= level.awe_vMax[1] + 6000 + randomInt(1000);	
-			iYend 	= level.awe_vMin[1] - 6000;
+			iYstart 	= level.empire_vMax[1] + 6000 + randomInt(1000);	
+			iYend 	= level.empire_vMin[1] - 6000;
 			break;
 			break;
 	}
@@ -5621,14 +5625,14 @@ stuka(offset, angle)
 	t = (float)(s / v);
 
 
-	if(!(randomInt(100) < level.awe_stukascrash))
+	if(!(randomInt(100) < level.empire_stukascrash))
 	{
 		// spawn stuka
 		stuka = spawn_model("xmodel/vehicle_plane_stuka", "stuka", startpos, ( 10, angle, 0) );
 		wait 0.05;
 
 		// play sound
-		stuka playloopsound("awe_stukaloop");
+		stuka playloopsound("empire_stukaloop");
 
 		// move object
 		stuka moveto( endpos , t);
@@ -5654,7 +5658,7 @@ stuka(offset, angle)
 		wait 0.05;
 
 		// play sound
-		stuka playloopsound("awe_stukaloop");
+		stuka playloopsound("empire_stukaloop");
 	
 		fraction = 0.2 + randomfloat(0.4);
 
@@ -5672,20 +5676,20 @@ stuka(offset, angle)
 withinMap(origin)
 {
 	margin = 250;
-	if(origin[0]<(level.awe_vMin[0]+margin)) return false;
-	if(origin[1]<(level.awe_vMin[1]+margin)) return false;
-	if(origin[2]<(level.awe_vMin[2]-margin)) return false;
-	if(origin[0]>(level.awe_vMax[0]-margin)) return false;
-	if(origin[1]>(level.awe_vMax[1]-margin)) return false;
-	if(origin[2]>(level.awe_vMax[2]+margin)) return false;
+	if(origin[0]<(level.empire_vMin[0]+margin)) return false;
+	if(origin[1]<(level.empire_vMin[1]+margin)) return false;
+	if(origin[2]<(level.empire_vMin[2]-margin)) return false;
+	if(origin[0]>(level.empire_vMax[0]-margin)) return false;
+	if(origin[1]>(level.empire_vMax[1]-margin)) return false;
+	if(origin[2]>(level.empire_vMax[2]+margin)) return false;
 	return true;
 }
 
 planeCrash(speed)
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
-	self playloopsound("awe_stukahit");
+	self playloopsound("empire_stukahit");
 
 	radius = 20;
 	vVelocity = maps\mp\_utility::vectorScale(anglestoforward(self.angles), speed/20 );
@@ -5697,10 +5701,10 @@ planeCrash(speed)
 	vGravity = (0,0,-0.75 + randomfloat(0.5));
 
 	stopme = 0;
-	ttl = level.awe_stukascrashstay;
+	ttl = level.empire_stukascrashstay;
 	falloff = 0.05;
 
-	bouncefx = level.awe_effect["bombexplosion"];
+	bouncefx = level.empire_effect["bombexplosion"];
 	finalfx = bouncefx;
 
 	// play the hit sound
@@ -5708,7 +5712,7 @@ planeCrash(speed)
 	playfx(bouncefx,self.origin);
 
 	// Drop with gravity
-	while(self.origin[2]>(level.awe_vMin[2] - 250))	// Exit if it missed the map
+	while(self.origin[2]>(level.empire_vMin[2] - 250))	// Exit if it missed the map
 	{
 		// Let gravity do, what gravity do best
 		vVelocity +=vGravity;
@@ -5787,24 +5791,24 @@ planeCrash(speed)
 	}
 	self stoploopsound();
 
-	if(self.origin[2]>(level.awe_vMin[2]-250))
+	if(self.origin[2]>(level.empire_vMin[2]-250))
 	{
 		// Set origin to impactpoint	
 		self.origin = neworigin;
 
 		surface = trace["surfacetype"];
-		if(isdefined(level.awe_mortarfx))
+		if(isdefined(level.empire_mortarfx))
 		{
-			if(isdefined(level.awe_mortarfx[surface]))
+			if(isdefined(level.empire_mortarfx[surface]))
 			{
-				playfx(level.awe_mortarfx[surface], self.origin);
+				playfx(level.empire_mortarfx[surface], self.origin);
 			}
 			else
 			{
-				if(isdefined(level.awe_wintermap) && isdefined(level.awe_mortarfx["snow"]) )
-					playfx(level.awe_mortarfx["snow"], self.origin);
-				else if(isdefined(level.awe_mortarfx["generic"]))
-					playfx(level.awe_mortarfx["generic"], self.origin);
+				if(isdefined(level.empire_wintermap) && isdefined(level.empire_mortarfx["snow"]) )
+					playfx(level.empire_mortarfx["snow"], self.origin);
+				else if(isdefined(level.empire_mortarfx["generic"]))
+					playfx(level.empire_mortarfx["generic"], self.origin);
 			}
 			self playsound("mortar_explode_" + surface);
 		}
@@ -5816,15 +5820,15 @@ planeCrash(speed)
 		}
 
 
-		if(!level.awe_stukascrashsafety)
+		if(!level.empire_stukascrashsafety)
 			self scriptedRadiusDamage(self, undefined, "none", 200, 200, 10, false);
 
 		wait 1 + randomfloat(2);
 
 		playfx(bouncefx,self.origin);
-		if(!level.awe_stukascrashsafety)
+		if(!level.empire_stukascrashsafety)
 			self scriptedRadiusDamage(self, undefined, "none", 500, 600, 10, false);
-		if(level.awe_stukascrashquake)
+		if(level.empire_stukascrashquake)
 			earthquake(0.8, 3, self.origin, 900); 
 
 		// Stay for the specified amount of time
@@ -5836,20 +5840,20 @@ planeCrash(speed)
 
 PlayerDisconnect()
 {
-	if(level.awe_disable) return;
+	if(level.empire_disable) return;
 
-	self notify("awe_died");
-	self notify("awe_spawned");
+	self notify("empire_died");
+	self notify("empire_spawned");
 	self notify("stop_turret_hud");
 
 	self cleanupPlayer1();
 	self cleanupPlayer2();
 
 	// Restart turret think thread if one was used when disconnected
-	if( isdefined(self.awe_usingturret) && isdefined(level.awe_turrets[self.awe_usingturret]["turret"]) )
-		level.awe_turrets[self.awe_usingturret]["turret"] thread maps\mp\_awe_turret::turret_think(self.awe_usingturret);
+	if( isdefined(self.empire_usingturret) && isdefined(level.empire_turrets[self.empire_usingturret]["turret"]) )
+		level.empire_turrets[self.empire_usingturret]["turret"] thread maps\mp\_empire_turret::turret_think(self.empire_usingturret);
 
-	if(level.awe_nocrosshair)
+	if(level.empire_nocrosshair)
 		self setClientCvar("cg_drawcrosshair", "1");
 
 	dropTurret(undefined, undefined);
@@ -5857,26 +5861,26 @@ PlayerDisconnect()
 
 Callback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc)
 {
-//	if(level.awe_debug)
+//	if(level.empire_debug)
 //	{
 //		iprintln("sMOD:" + sMeansOfDeath);
 //		iprintln("iDamage:" + iDamage);
 //	}
 
 	// Ignore damage from spectators
-	if(level.awe_blockdamagespectator && isdefined(eAttacker) && isPlayer(eAttacker) && isdefined(eAttacker.sessionstate) && eAttacker.sessionstate == "spectator")
+	if(level.empire_blockdamagespectator && isdefined(eAttacker) && isPlayer(eAttacker) && isdefined(eAttacker.sessionstate) && eAttacker.sessionstate == "spectator")
 	{
 //		eAttacker iprintlnbold("Blocked damage!");
 		return;
 	}
 	// Ignore damage from players that switched teams the last 7 seconds
-	if(level.awe_blockdamageteamswitch && isdefined(eAttacker) && isPlayer(eAttacker) && isdefined(eAttacker.awe_oldteam))
+	if(level.empire_blockdamageteamswitch && isdefined(eAttacker) && isPlayer(eAttacker) && isdefined(eAttacker.empire_oldteam))
 	{
-		if(isdefined(level.awe_teamplay))
+		if(isdefined(level.empire_teamplay))
 			team = eAttacker.sessionteam;
 		else
 			team = eAttacker.pers["team"];
-		if(team != eAttacker.awe_oldteam)
+		if(team != eAttacker.empire_oldteam)
 		{
 //			eAttacker iprintlnbold("Blocked damage!");
 			return;
@@ -5884,37 +5888,37 @@ Callback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sW
 	}
 
 	// Protected or a headshot on a zombie player
-	if(isdefined(self.awe_invulnerable) || (isdefined(self.awe_headpopped) && isdefined(sHitLoc) && sHitLoc == "head"))
+	if(isdefined(self.empire_invulnerable) || (isdefined(self.empire_headpopped) && isdefined(sHitLoc) && sHitLoc == "head"))
 		return;
 
 	// Block friendly melee in some cases (body search, etc...)
-	if(isdefined(level.awe_teamplay) && isPlayer(self) && isPlayer(eAttacker) && self.sessionteam == eAttacker.sessionteam && sMeansOfDeath == "MOD_MELEE")
+	if(isdefined(level.empire_teamplay) && isPlayer(self) && isPlayer(eAttacker) && self.sessionteam == eAttacker.sessionteam && sMeansOfDeath == "MOD_MELEE")
 	{
-		if(isDefined(self.awe_tripwiremessage) || isDefined(self.awe_turretmessage))
+		if(isDefined(self.empire_tripwiremessage) || isDefined(self.empire_turretmessage))
 			return;
 	}
 
 	// Block melee damage if grenade and sticky nades are allowed on players
-	if(level.awe_stickynades == 2 && isPlayer(self) && isPlayer(eAttacker) && sMeansOfDeath == "MOD_MELEE" && (isWeaponType("grenade",sWeapon) || sWeapon == "satchelcharge_mp"))
+	if(level.empire_stickynades == 2 && isPlayer(self) && isPlayer(eAttacker) && sMeansOfDeath == "MOD_MELEE" && (isWeaponType("grenade",sWeapon) || sWeapon == "satchelcharge_mp"))
 		return;
 
 	// Flamethrower hit rate
-	if(isdefined(level.awe_uo) && sMeansOfDeath != "MOD_MELEE" && sWeapon == "flamethrower_mp" && level.awe_flamethrowerhitrate <= randomInt(100))
+	if(isdefined(level.empire_uo) && sMeansOfDeath != "MOD_MELEE" && sWeapon == "flamethrower_mp" && level.empire_flamethrowerhitrate <= randomInt(100))
 		return;
 
 	// Damage modifiers
-	if(sMeansOfDeath != "MOD_MELEE" && isdefined(level.awe_dmgmod[sWeapon]))
+	if(sMeansOfDeath != "MOD_MELEE" && isdefined(level.empire_dmgmod[sWeapon]))
 	{
-		iDamage = iDamage * level.awe_dmgmod[sWeapon];
+		iDamage = iDamage * level.empire_dmgmod[sWeapon];
 	}
 
 	// Call original function
-	[[level.awe_orignalPlayerDamage]](eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
+	[[level.empire_orignalPlayerDamage]](eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
 }
 
 DoPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc)
 {
-	if(level.awe_disable) return;
+	if(level.empire_disable) return;
 
 //	self iprintlnbold("sWeapon:" + sWeapon + " sHitLoc:" + sHitLoc + " sMeansOfDeath:" + sMeansOfDeath);
 
@@ -5925,17 +5929,17 @@ DoPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, 
 	}
 
 	// Was the attacker a spawnprotected player?
-	if(isPlayer(eAttacker) && eAttacker != self && isdefined(eAttacker.awe_invulnerable) && level.awe_spawnprotectiondropweapon)
+	if(isPlayer(eAttacker) && eAttacker != self && isdefined(eAttacker.empire_invulnerable) && level.empire_spawnprotectiondropweapon)
 	{
 		eAttacker iprintlnbold("Don't abuse the spawnprotection!");
 		eAttacker dropItem(eAttacker getcurrentweapon());
 	}
 
-	if(level.awe_bulletholes)
+	if(level.empire_bulletholes)
 		if(sMeansOfDeath == "MOD_PISTOL_BULLET" || sMeansOfDeath == "MOD_RIFLE_BULLET")
 			self thread bullethole(sHitLoc);
 
-	if(isPlayer(eAttacker) && eAttacker != self && level.awe_showhit)
+	if(isPlayer(eAttacker) && eAttacker != self && level.empire_showhit)
 		eAttacker thread showhit();
 
 	if(isPlayer(eAttacker) && sMeansOfDeath != "MOD_FALLING")
@@ -5952,32 +5956,32 @@ DoPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, 
 			case "helmet":
 			case "head":
 				self thread Splatter_View();
-				if( randomInt(100) < level.awe_pophelmet && !isdefined(self.awe_helmetpopped) )
+				if( randomInt(100) < level.empire_pophelmet && !isdefined(self.empire_helmetpopped) )
 					self thread popHelmet( vDir, iDamage );
 				break;
 
 			case "right_hand":
 			case "left_hand":
 			case "gun":
-				if( !isdefined(level.awe_merciless) && randomInt(100)<level.awe_droponhandhit)
+				if( !isdefined(level.empire_merciless) && randomInt(100)<level.empire_droponhandhit)
 					self dropItem(self getcurrentweapon());
 				break;
 			
 			case "right_arm_lower":
 			case "left_arm_lower":
-				if(!isdefined(level.awe_merciless) && randomInt(100)<level.awe_droponarmhit )
+				if(!isdefined(level.empire_merciless) && randomInt(100)<level.empire_droponarmhit )
 					self dropItem(self getcurrentweapon());
 				break;
 	
 			case "right_foot":
 			case "left_foot":
-				if(randomInt(100)<level.awe_triponfoothit)
+				if(randomInt(100)<level.empire_triponfoothit)
 					self thread spankme(1);
 				break;
 
 			case "right_leg_lower":
 			case "left_leg_lower":
-				if(randomInt(100)<level.awe_triponleghit)
+				if(randomInt(100)<level.empire_triponleghit)
 					self thread spankme(1);
 				break;
 		}
@@ -5985,12 +5989,12 @@ DoPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, 
 
 	if(isalive(self))
 	{	
-		if(level.awe_shellshock && !isdefined(level.awe_merciless))
-			self thread maps\mp\gametypes\_awe_uncommon::shockme(iDamage, sMeansOfDeath);
+		if(level.empire_shellshock && !isdefined(level.empire_merciless))
+			self thread maps\mp\gametypes\_empire_uncommon::shockme(iDamage, sMeansOfDeath);
 		// Pains sound
-		if(level.awe_painsound && !isdefined(level.awe_merciless))
+		if(level.empire_painsound && !isdefined(level.empire_merciless))
 			self painsound();
-		if(level.awe_bleeding && !isdefined(level.awe_merciless))
+		if(level.empire_bleeding && !isdefined(level.empire_merciless))
 			self thread DoBleedingPain(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc);
 		self thread DoPainScreen(iDamage);
 	}	
@@ -6001,15 +6005,15 @@ DoPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, 
 //////////////////////////////////////////////////////////////////////////////////
 DoBleedingPain(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc)
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
-	self notify("awe_dobleedingpain");	// Kill any previous bleeding
-	self endon("awe_dobleedingpain");
+	self notify("empire_dobleedingpain");	// Kill any previous bleeding
+	self endon("empire_dobleedingpain");
 
 	bLoc = getHitLocTag(sHitLoc);
 
-	x = level.awe_bleeding;
+	x = level.empire_bleeding;
 
 	if ((self.health - x) < 1 )
 		willdie = 1;
@@ -6045,7 +6049,7 @@ DoBleedingPain(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, 
 		}
 			
 
-		if(isdefined(level.awe_teamplay))
+		if(isdefined(level.empire_teamplay))
 			team = self.sessionteam;
 		else
 			team = self.pers["team"];
@@ -6053,7 +6057,7 @@ DoBleedingPain(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, 
 		if ( (i == 4 || i == 6 || i == 8) && randomInt(4) )
 		{
 			if(randomInt(3))
-				self playsound("awe_" + team + "_bleedpain"); 
+				self playsound("empire_" + team + "_bleedpain"); 
 			else
 				self playsound("fatigue_breath");
 		}
@@ -6062,8 +6066,8 @@ DoBleedingPain(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, 
 		for(k = 0 ; k < 3 ; k++ )
 		{
 			p = (randomInt(2) *.1) + (randomInt(5) * .01);
-			if(!self maps\mp\gametypes\_awe_uncommon::aweIsInVehicle())
-				playfxontag(level.awe_bleedingfx, self ,bLoc );
+			if(!self maps\mp\gametypes\_empire_uncommon::aweIsInVehicle())
+				playfxontag(level.empire_bleedingfx, self ,bLoc );
 			wait p;
 			s = s + p;
 		}
@@ -6078,45 +6082,45 @@ DoBleedingPain(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, 
 //////////////////////////////////////////////////////
 DoPainScreen(iDamage)
 {
-	self endon("awe_spawned");
-	self notify("awe_dopainscreen");
-	self endon("awe_dopainscreen");
+	self endon("empire_spawned");
+	self notify("empire_dopainscreen");
+	self endon("empire_dopainscreen");
 
-	if(!level.awe_painscreen || isdefined(level.awe_merciless))
+	if(!level.empire_painscreen || isdefined(level.empire_merciless))
 		return;
 
 	// Wait for any previous painscreen thread to die
 	wait 0.05;
 
 	// Remove previous painscreen if present
-	if (isDefined(self.awe_painscreen))
-		self.awe_painscreen destroy();
+	if (isDefined(self.empire_painscreen))
+		self.empire_painscreen destroy();
 
-	if (!isDefined(self.awe_painscreen))
+	if (!isDefined(self.empire_painscreen))
 	{
-		self.awe_painscreen = newClientHudElem(self);
-		self.awe_painscreen.alignX = "left";
-		self.awe_painscreen.alignY = "top";
-		self.awe_painscreen.x = 0;
-		self.awe_painscreen.y = 0;	
+		self.empire_painscreen = newClientHudElem(self);
+		self.empire_painscreen.alignX = "left";
+		self.empire_painscreen.alignY = "top";
+		self.empire_painscreen.x = 0;
+		self.empire_painscreen.y = 0;	
 		p = iDamage * .01;
 		if (p >= 1 ) 
 			P = .9;
-		self.awe_painscreen.alpha = p * level.awe_painscreen / 100;
-		t = self.awe_painscreen.alpha * .1;
+		self.empire_painscreen.alpha = p * level.empire_painscreen / 100;
+		t = self.empire_painscreen.alpha * .1;
 
-		self.awe_painscreen.color = (1,0,0);
-		self.awe_painscreen SetShader("white",640,480);	
+		self.empire_painscreen.color = (1,0,0);
+		self.empire_painscreen SetShader("white",640,480);	
 		
 		wait ((p * 10) * .15 );
 		for(v = 0; v < 10; v++)
 		{
-			self.awe_painscreen.alpha = self.awe_painscreen.alpha - t;
+			self.empire_painscreen.alpha = self.empire_painscreen.alpha - t;
 			wait (.05);
 		}
 		// Remove painscreen if present
-		if (isDefined(self.awe_painscreen))
-			self.awe_painscreen destroy();
+		if (isDefined(self.empire_painscreen))
+			self.empire_painscreen destroy();
 	}
 }
 
@@ -6128,11 +6132,11 @@ teamMateInRange(range)
 	// Get all players and pick out the ones that are playing and are in the same team
 //	allplayers = getentarray("player", "classname");
 	players = [];
-	for(i = 0; i < level.awe_allplayers.size; i++)
+	for(i = 0; i < level.empire_allplayers.size; i++)
 	{
-		if(isdefined(level.awe_allplayers[i]))
-			if(level.awe_allplayers[i].sessionstate == "playing" && level.awe_allplayers[i].pers["team"] == self.pers["team"])
-				players[players.size] = level.awe_allplayers[i];
+		if(isdefined(level.empire_allplayers[i]))
+			if(level.empire_allplayers[i].sessionstate == "playing" && level.empire_allplayers[i].pers["team"] == self.pers["team"])
+				players[players.size] = level.empire_allplayers[i];
 	}
 
 	// Get the players that are in range
@@ -6152,29 +6156,29 @@ teamMateInRange(range)
 
 Splatter_View()
 {
-	self endon("awe_spawned");
+	self endon("empire_spawned");
 
-	if (!level.awe_bloodyscreen || isdefined(level.awe_merciless))
+	if (!level.empire_bloodyscreen || isdefined(level.empire_merciless))
 		return;
 
-	if(!isDefined(self.awe_bloodyscreen))
+	if(!isDefined(self.empire_bloodyscreen))
 	{
-		self.awe_bloodyscreen = newClientHudElem(self);
-		self.awe_bloodyscreen1 = newClientHudElem(self);
-		self.awe_bloodyscreen2 = newClientHudElem(self);
-		self.awe_bloodyscreen3 = newClientHudElem(self);
+		self.empire_bloodyscreen = newClientHudElem(self);
+		self.empire_bloodyscreen1 = newClientHudElem(self);
+		self.empire_bloodyscreen2 = newClientHudElem(self);
+		self.empire_bloodyscreen3 = newClientHudElem(self);
 
-		self.awe_bloodyscreen.alignX = "left";
-		self.awe_bloodyscreen.alignY = "top";
+		self.empire_bloodyscreen.alignX = "left";
+		self.empire_bloodyscreen.alignY = "top";
 	
-		self.awe_bloodyscreen1.alignX = "left";
-		self.awe_bloodyscreen1.alignY = "top";
+		self.empire_bloodyscreen1.alignX = "left";
+		self.empire_bloodyscreen1.alignY = "top";
 
-		self.awe_bloodyscreen2.alignX = "left";
-		self.awe_bloodyscreen2.alignY = "top";
+		self.empire_bloodyscreen2.alignX = "left";
+		self.empire_bloodyscreen2.alignY = "top";
 		
-		self.awe_bloodyscreen3.alignX = "left";
-		self.awe_bloodyscreen3.alignY = "top";
+		self.empire_bloodyscreen3.alignX = "left";
+		self.empire_bloodyscreen3.alignY = "top";
 		
 		bs1 = (randomint(496));
 		bs2 = (randomint(336));
@@ -6185,80 +6189,80 @@ Splatter_View()
 		bs1c = (randomint(496));
 		bs2c = (randomint(336));
 
-		self.awe_bloodyscreen.x = bs1;
-		self.awe_bloodyscreen.y = bs2;
+		self.empire_bloodyscreen.x = bs1;
+		self.empire_bloodyscreen.y = bs2;
 
-		self.awe_bloodyscreen1.x = bs1a;
-		self.awe_bloodyscreen1.y = bs2a;
+		self.empire_bloodyscreen1.x = bs1a;
+		self.empire_bloodyscreen1.y = bs2a;
 
-		self.awe_bloodyscreen2.x = bs1b;
-		self.awe_bloodyscreen2.y = bs2b;
+		self.empire_bloodyscreen2.x = bs1b;
+		self.empire_bloodyscreen2.y = bs2b;
 
-		self.awe_bloodyscreen3.x = bs1c;
-		self.awe_bloodyscreen3.y = bs2c;
+		self.empire_bloodyscreen3.x = bs1c;
+		self.empire_bloodyscreen3.y = bs2c;
 
 		bs3 = randomint(48);
 		bs3a = randomint(48);
 		bs3b = randomint(48);
 		bs3c = randomint(48);
-		self.awe_bloodyscreen.color = (1,1,1);
-		self.awe_bloodyscreen1.color = (1,1,1);
-		self.awe_bloodyscreen2.color = (1,1,1);
-		self.awe_bloodyscreen3.color = (1,1,1);
-		self.awe_bloodyscreen.alpha = 1;
-		self.awe_bloodyscreen1.alpha = 1;
-		self.awe_bloodyscreen2.alpha = 1;
-		self.awe_bloodyscreen3.alpha = 1;
+		self.empire_bloodyscreen.color = (1,1,1);
+		self.empire_bloodyscreen1.color = (1,1,1);
+		self.empire_bloodyscreen2.color = (1,1,1);
+		self.empire_bloodyscreen3.color = (1,1,1);
+		self.empire_bloodyscreen.alpha = 1;
+		self.empire_bloodyscreen1.alpha = 1;
+		self.empire_bloodyscreen2.alpha = 1;
+		self.empire_bloodyscreen3.alpha = 1;
 
-		self.awe_bloodyscreen SetShader("gfx/impact/flesh_hit1.tga",96 + bs3 , 96 + bs3);
-		self.awe_bloodyscreen1 SetShader("gfx/impact/flesh_hit2.tga",96 + bs3a , 96 + bs3a);
-		self.awe_bloodyscreen2 SetShader("gfx/impact/flesh_hit1.tga",96 + bs3b , 96 + bs3b);
-		self.awe_bloodyscreen3 SetShader("gfx/impact/flesh_hit2.tga",96 + bs3c , 96 + bs3c);
+		self.empire_bloodyscreen SetShader("gfx/impact/flesh_hit1.tga",96 + bs3 , 96 + bs3);
+		self.empire_bloodyscreen1 SetShader("gfx/impact/flesh_hit2.tga",96 + bs3a , 96 + bs3a);
+		self.empire_bloodyscreen2 SetShader("gfx/impact/flesh_hit1.tga",96 + bs3b , 96 + bs3b);
+		self.empire_bloodyscreen3 SetShader("gfx/impact/flesh_hit2.tga",96 + bs3c , 96 + bs3c);
 
 		wait (4);
 
-		if(!isdefined(self.awe_bloodyscreen))
+		if(!isdefined(self.empire_bloodyscreen))
 			return;
 
-		self.awe_bloodyscreen fadeOverTime (2); 
-		self.awe_bloodyscreen.alpha = 0;
-		self.awe_bloodyscreen1 fadeOverTime (2);
-		self.awe_bloodyscreen1.alpha = 0;
-		self.awe_bloodyscreen2 fadeOverTime (2);
-		self.awe_bloodyscreen2.alpha = 0;
-		self.awe_bloodyscreen3 fadeOverTime (2);
-		self.awe_bloodyscreen3.alpha = 0;
+		self.empire_bloodyscreen fadeOverTime (2); 
+		self.empire_bloodyscreen.alpha = 0;
+		self.empire_bloodyscreen1 fadeOverTime (2);
+		self.empire_bloodyscreen1.alpha = 0;
+		self.empire_bloodyscreen2 fadeOverTime (2);
+		self.empire_bloodyscreen2.alpha = 0;
+		self.empire_bloodyscreen3 fadeOverTime (2);
+		self.empire_bloodyscreen3.alpha = 0;
 		wait(2);
-		self.awe_bloodyscreen destroy();
-		self.awe_bloodyscreen1 destroy();
-		self.awe_bloodyscreen2 destroy();
-		self.awe_bloodyscreen3 destroy();
+		self.empire_bloodyscreen destroy();
+		self.empire_bloodyscreen1 destroy();
+		self.empire_bloodyscreen2 destroy();
+		self.empire_bloodyscreen3 destroy();
 	}
 }
 
 showhit()
 {
-	self notify("awe_showhit");
-	self endon("awe_showhit");
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self notify("empire_showhit");
+	self endon("empire_showhit");
+	self endon("empire_spawned");
+	self endon("empire_died");
 	
-	if(isdefined(self.awe_hitblip))
-		self.awe_hitblip destroy();
+	if(isdefined(self.empire_hitblip))
+		self.empire_hitblip destroy();
 
-	self.awe_hitblip = newClientHudElem(self);
-	self.awe_hitblip.alignX = "center";
-	self.awe_hitblip.alignY = "middle";
-	self.awe_hitblip.x = 320;
-	self.awe_hitblip.y = 240;
-	self.awe_hitblip.alpha = 0.5;
-	self.awe_hitblip setShader("gfx/hud/hud@fire_ready.tga", 32, 32);
-	self.awe_hitblip scaleOverTime(0.15, 64, 64);
+	self.empire_hitblip = newClientHudElem(self);
+	self.empire_hitblip.alignX = "center";
+	self.empire_hitblip.alignY = "middle";
+	self.empire_hitblip.x = 320;
+	self.empire_hitblip.y = 240;
+	self.empire_hitblip.alpha = 0.5;
+	self.empire_hitblip setShader("gfx/hud/hud@fire_ready.tga", 32, 32);
+	self.empire_hitblip scaleOverTime(0.15, 64, 64);
 
 	wait 0.15;
 
-	if(isdefined(self.awe_hitblip))
-		self.awe_hitblip destroy();
+	if(isdefined(self.empire_hitblip))
+		self.empire_hitblip destroy();
 }
 
 // Check if a position is indoor(under a roof) or outdoor(not under a roof)
@@ -6267,7 +6271,7 @@ outdoor(origin)
 	if(!isdefined(origin))
 		return false;
 
-	trace = bulletTrace(origin+(0,0,level.awe_vMax[2]), origin, false, undefined);
+	trace = bulletTrace(origin+(0,0,level.empire_vMax[2]), origin, false, undefined);
 
 	// If it didn't hit ANYTHING, it's outdoor
 	if(trace["fraction"] == 1)
@@ -6278,266 +6282,266 @@ outdoor(origin)
 
 bullethole(sHitLoc)
 {
-	self endon("awe_spawned");
+	self endon("empire_spawned");
 
-	if(level.awe_bulletholes == 1 && sHitLoc != "head")
+	if(level.empire_bulletholes == 1 && sHitLoc != "head")
 		return;
 
 	if(!isPlayer(self))
 		return;
 
-	if(!isdefined(self.awe_bulletholes))
-		self.awe_bulletholes = [];
+	if(!isdefined(self.empire_bulletholes))
+		self.empire_bulletholes = [];
 
-	hole = self.awe_bulletholes.size;
+	hole = self.empire_bulletholes.size;
 	
-	self.awe_bulletholes[hole] = newClientHudElem(self);
-	self.awe_bulletholes[hole].alignX = "center";
-	self.awe_bulletholes[hole].alignY = "middle";
-	self.awe_bulletholes[hole].x = 48 + randomInt(544);
-	self.awe_bulletholes[hole].y = 48 + randomInt(304);
-	self.awe_bulletholes[hole].color = (1,1,1);
-	self.awe_bulletholes[hole].alpha = 0.8 + randomFloat(0.2);
+	self.empire_bulletholes[hole] = newClientHudElem(self);
+	self.empire_bulletholes[hole].alignX = "center";
+	self.empire_bulletholes[hole].alignY = "middle";
+	self.empire_bulletholes[hole].x = 48 + randomInt(544);
+	self.empire_bulletholes[hole].y = 48 + randomInt(304);
+	self.empire_bulletholes[hole].color = (1,1,1);
+	self.empire_bulletholes[hole].alpha = 0.8 + randomFloat(0.2);
 
 	xsize = 64 + randomInt(32);
 	ysize = 64 + randomInt(32);
 
 	if(randomInt(2))
-		self.awe_bulletholes[hole] setShader("gfx/impact/bullethit_glass.tga", xsize, ysize);
+		self.empire_bulletholes[hole] setShader("gfx/impact/bullethit_glass.tga", xsize, ysize);
 	else
-		self.awe_bulletholes[hole] setShader("gfx/impact/bullethit_glass2.tga", xsize, ysize);
+		self.empire_bulletholes[hole] setShader("gfx/impact/bullethit_glass2.tga", xsize, ysize);
 
 	self playLocalSound("bullet_large_glass");
 }
 
 updateteamstatus()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
 	for(;;)
 	{
 		wait 1;
 
-		level.awe_allplayers = getentarray("player", "classname");
+		level.empire_allplayers = getentarray("player", "classname");
 
-		if(level.awe_debugentities)
+		if(level.empire_debugentities)
 		{
 			allents = getentarray();
 			iprintln("Entities:" + allents.size);
 		}
 
-		if(!level.awe_showteamstatus || !isdefined(level.awe_teamplay))
+		if(!level.empire_showteamstatus || !isdefined(level.empire_teamplay))
 			continue;
 
-		if(level.awe_showteamstatus == 1)
+		if(level.empire_showteamstatus == 1)
 		{
 			color = (1,1,0);
 			deadcolor = (1,0,0);
-			if(!isdefined(level.awe_axisicon))
+			if(!isdefined(level.empire_axisicon))
 			{
-				level.awe_axisicon = newHudElem();	
-				level.awe_axisicon.x = 0;
-				level.awe_axisicon.y = 16;
-				level.awe_axisicon.alignX = "left";
-				level.awe_axisicon.alignY = "middle";
-				level.awe_axisicon.alpha = 0.7;
-				level.awe_axisicon setShader(game["radio_axis"],32,32);
+				level.empire_axisicon = newHudElem();	
+				level.empire_axisicon.x = 0;
+				level.empire_axisicon.y = 16;
+				level.empire_axisicon.alignX = "left";
+				level.empire_axisicon.alignY = "middle";
+				level.empire_axisicon.alpha = 0.7;
+				level.empire_axisicon setShader(game["radio_axis"],32,32);
 			}
-			if(!isdefined(level.awe_axisnumber))
+			if(!isdefined(level.empire_axisnumber))
 			{
-				level.awe_axisnumber = newHudElem();	
-				level.awe_axisnumber.x = 32;
-				level.awe_axisnumber.y = 12;
-				level.awe_axisnumber.alignX = "left";
-				level.awe_axisnumber.alignY = "middle";
-				level.awe_axisnumber.alpha = 1;
-				level.awe_axisnumber.font = "bigfixed";
-				level.awe_axisnumber.color = color;
-				level.awe_axisnumber setValue(0);
+				level.empire_axisnumber = newHudElem();	
+				level.empire_axisnumber.x = 32;
+				level.empire_axisnumber.y = 12;
+				level.empire_axisnumber.alignX = "left";
+				level.empire_axisnumber.alignY = "middle";
+				level.empire_axisnumber.alpha = 1;
+				level.empire_axisnumber.font = "bigfixed";
+				level.empire_axisnumber.color = color;
+				level.empire_axisnumber setValue(0);
 			}
-			if(!isdefined(level.awe_deadaxisicon))
+			if(!isdefined(level.empire_deadaxisicon))
 			{
-				level.awe_deadaxisicon = newHudElem();	
-				level.awe_deadaxisicon.x = 64;
-				level.awe_deadaxisicon.y = 16;
-				level.awe_deadaxisicon.alignX = "left";
-				level.awe_deadaxisicon.alignY = "middle";
-				level.awe_deadaxisicon.alpha = 0.7;
-				level.awe_deadaxisicon setShader("gfx/hud/death_suicide.dds",29,29);
+				level.empire_deadaxisicon = newHudElem();	
+				level.empire_deadaxisicon.x = 64;
+				level.empire_deadaxisicon.y = 16;
+				level.empire_deadaxisicon.alignX = "left";
+				level.empire_deadaxisicon.alignY = "middle";
+				level.empire_deadaxisicon.alpha = 0.7;
+				level.empire_deadaxisicon setShader("gfx/hud/death_suicide.dds",29,29);
 			}
-			if(!isdefined(level.awe_deadaxisnumber))
+			if(!isdefined(level.empire_deadaxisnumber))
 			{
-				level.awe_deadaxisnumber = newHudElem();	
-				level.awe_deadaxisnumber.x = 96;
-				level.awe_deadaxisnumber.y = 12;
-				level.awe_deadaxisnumber.alignX = "left";
-				level.awe_deadaxisnumber.alignY = "middle";
-				level.awe_deadaxisnumber.alpha = 1;
-				level.awe_deadaxisnumber.font = "bigfixed";
-				level.awe_deadaxisnumber.color = deadcolor;
-				level.awe_deadaxisnumber setValue(0);
+				level.empire_deadaxisnumber = newHudElem();	
+				level.empire_deadaxisnumber.x = 96;
+				level.empire_deadaxisnumber.y = 12;
+				level.empire_deadaxisnumber.alignX = "left";
+				level.empire_deadaxisnumber.alignY = "middle";
+				level.empire_deadaxisnumber.alpha = 1;
+				level.empire_deadaxisnumber.font = "bigfixed";
+				level.empire_deadaxisnumber.color = deadcolor;
+				level.empire_deadaxisnumber setValue(0);
 			}
-			if(!isdefined(level.awe_alliedicon))
+			if(!isdefined(level.empire_alliedicon))
 			{
-				level.awe_alliedicon = newHudElem();	
-				level.awe_alliedicon.x = 0;
-				level.awe_alliedicon.y = 48;
-				level.awe_alliedicon.alignX = "left";
-				level.awe_alliedicon.alignY = "middle";
-				level.awe_alliedicon.alpha = 0.7;
-				level.awe_alliedicon setShader(game["radio_allies"],32,32);
+				level.empire_alliedicon = newHudElem();	
+				level.empire_alliedicon.x = 0;
+				level.empire_alliedicon.y = 48;
+				level.empire_alliedicon.alignX = "left";
+				level.empire_alliedicon.alignY = "middle";
+				level.empire_alliedicon.alpha = 0.7;
+				level.empire_alliedicon setShader(game["radio_allies"],32,32);
 			}
-			if(!isdefined(level.awe_alliednumber))
+			if(!isdefined(level.empire_alliednumber))
 			{
-				level.awe_alliednumber = newHudElem();	
-				level.awe_alliednumber.x = 32;
-				level.awe_alliednumber.y = 44;
-				level.awe_alliednumber.alignX = "left";
-				level.awe_alliednumber.alignY = "middle";
-				level.awe_alliednumber.alpha = 1;
-				level.awe_alliednumber.font = "bigfixed";
-				level.awe_alliednumber.color = color;
-				level.awe_alliednumber setValue(0);
+				level.empire_alliednumber = newHudElem();	
+				level.empire_alliednumber.x = 32;
+				level.empire_alliednumber.y = 44;
+				level.empire_alliednumber.alignX = "left";
+				level.empire_alliednumber.alignY = "middle";
+				level.empire_alliednumber.alpha = 1;
+				level.empire_alliednumber.font = "bigfixed";
+				level.empire_alliednumber.color = color;
+				level.empire_alliednumber setValue(0);
 			}
-			if(!isdefined(level.awe_deadalliedicon))
+			if(!isdefined(level.empire_deadalliedicon))
 			{
-				level.awe_deadalliedicon = newHudElem();	
-				level.awe_deadalliedicon.x = 64;
-				level.awe_deadalliedicon.y = 48;
-				level.awe_deadalliedicon.alignX = "left";
-				level.awe_deadalliedicon.alignY = "middle";
-				level.awe_deadalliedicon.alpha = 0.7;
-				level.awe_deadalliedicon setShader("gfx/hud/death_suicide.dds",29,29);
+				level.empire_deadalliedicon = newHudElem();	
+				level.empire_deadalliedicon.x = 64;
+				level.empire_deadalliedicon.y = 48;
+				level.empire_deadalliedicon.alignX = "left";
+				level.empire_deadalliedicon.alignY = "middle";
+				level.empire_deadalliedicon.alpha = 0.7;
+				level.empire_deadalliedicon setShader("gfx/hud/death_suicide.dds",29,29);
 			}
-			if(!isdefined(level.awe_deadalliednumber))
+			if(!isdefined(level.empire_deadalliednumber))
 			{
-				level.awe_deadalliednumber = newHudElem();	
-				level.awe_deadalliednumber.x = 96;
-				level.awe_deadalliednumber.y = 44;
-				level.awe_deadalliednumber.alignX = "left";
-				level.awe_deadalliednumber.alignY = "middle";
-				level.awe_deadalliednumber.alpha = 1;
-				level.awe_deadalliednumber.font = "bigfixed";
-				level.awe_deadalliednumber.color = deadcolor;
-				level.awe_deadalliednumber setValue(0);
+				level.empire_deadalliednumber = newHudElem();	
+				level.empire_deadalliednumber.x = 96;
+				level.empire_deadalliednumber.y = 44;
+				level.empire_deadalliednumber.alignX = "left";
+				level.empire_deadalliednumber.alignY = "middle";
+				level.empire_deadalliednumber.alpha = 1;
+				level.empire_deadalliednumber.font = "bigfixed";
+				level.empire_deadalliednumber.color = deadcolor;
+				level.empire_deadalliednumber setValue(0);
 			}
 		}
-		if(level.awe_showteamstatus == 2)
+		if(level.empire_showteamstatus == 2)
 		{
 			color = (1,1,0);
 			deadcolor = (1,0,0);
-			if(!isdefined(level.awe_axisicon))
+			if(!isdefined(level.empire_axisicon))
 			{
-				level.awe_axisicon = newHudElem();	
-				level.awe_axisicon.x = 624;
-				level.awe_axisicon.y = 20;
-				level.awe_axisicon.alignX = "center";
-				level.awe_axisicon.alignY = "middle";
-				level.awe_axisicon.alpha = 0.7;
-				level.awe_axisicon setShader(game["headicon_axis"],16,16);
+				level.empire_axisicon = newHudElem();	
+				level.empire_axisicon.x = 624;
+				level.empire_axisicon.y = 20;
+				level.empire_axisicon.alignX = "center";
+				level.empire_axisicon.alignY = "middle";
+				level.empire_axisicon.alpha = 0.7;
+				level.empire_axisicon setShader(game["headicon_axis"],16,16);
 			}
-			if(!isdefined(level.awe_axisnumber))
+			if(!isdefined(level.empire_axisnumber))
 			{
-				level.awe_axisnumber = newHudElem();	
-				level.awe_axisnumber.x = 624;
-				level.awe_axisnumber.y = 36;
-				level.awe_axisnumber.alignX = "center";
-				level.awe_axisnumber.alignY = "middle";
-				level.awe_axisnumber.alpha = 0.8;
-				level.awe_axisnumber.fontscale = 1.0;
-				level.awe_axisnumber.color = color;
-				level.awe_axisnumber setValue(0);
+				level.empire_axisnumber = newHudElem();	
+				level.empire_axisnumber.x = 624;
+				level.empire_axisnumber.y = 36;
+				level.empire_axisnumber.alignX = "center";
+				level.empire_axisnumber.alignY = "middle";
+				level.empire_axisnumber.alpha = 0.8;
+				level.empire_axisnumber.fontscale = 1.0;
+				level.empire_axisnumber.color = color;
+				level.empire_axisnumber setValue(0);
 			}
-			if(!isdefined(level.awe_deadaxisicon))
+			if(!isdefined(level.empire_deadaxisicon))
 			{
-				level.awe_deadaxisicon = newHudElem();	
-				level.awe_deadaxisicon.x = 592;
-				level.awe_deadaxisicon.y = 52;
-				level.awe_deadaxisicon.alignX = "center";
-				level.awe_deadaxisicon.alignY = "middle";
-				level.awe_deadaxisicon.alpha = 0.7;
-				level.awe_deadaxisicon setShader("gfx/hud/death_suicide.dds",16,16);
+				level.empire_deadaxisicon = newHudElem();	
+				level.empire_deadaxisicon.x = 592;
+				level.empire_deadaxisicon.y = 52;
+				level.empire_deadaxisicon.alignX = "center";
+				level.empire_deadaxisicon.alignY = "middle";
+				level.empire_deadaxisicon.alpha = 0.7;
+				level.empire_deadaxisicon setShader("gfx/hud/death_suicide.dds",16,16);
 			}
-			if(!isdefined(level.awe_deadaxisnumber))
+			if(!isdefined(level.empire_deadaxisnumber))
 			{
-				level.awe_deadaxisnumber = newHudElem();	
-				level.awe_deadaxisnumber.x = 624;
-				level.awe_deadaxisnumber.y = 52;
-				level.awe_deadaxisnumber.alignX = "center";
-				level.awe_deadaxisnumber.alignY = "middle";
-				level.awe_deadaxisnumber.alpha = 0.8;
-				level.awe_deadaxisnumber.fontscale = 1.0;
-				level.awe_deadaxisnumber.color = deadcolor;
-				level.awe_deadaxisnumber setValue(0);
+				level.empire_deadaxisnumber = newHudElem();	
+				level.empire_deadaxisnumber.x = 624;
+				level.empire_deadaxisnumber.y = 52;
+				level.empire_deadaxisnumber.alignX = "center";
+				level.empire_deadaxisnumber.alignY = "middle";
+				level.empire_deadaxisnumber.alpha = 0.8;
+				level.empire_deadaxisnumber.fontscale = 1.0;
+				level.empire_deadaxisnumber.color = deadcolor;
+				level.empire_deadaxisnumber setValue(0);
 			}
-			if(!isdefined(level.awe_alliedicon))
+			if(!isdefined(level.empire_alliedicon))
 			{
-				level.awe_alliedicon = newHudElem();	
-				level.awe_alliedicon.x = 608;
-				level.awe_alliedicon.y = 20;
-				level.awe_alliedicon.alignX = "center";
-				level.awe_alliedicon.alignY = "middle";
-				level.awe_alliedicon.alpha = 0.7;
-				level.awe_alliedicon setShader(game["headicon_allies"],16,16);
+				level.empire_alliedicon = newHudElem();	
+				level.empire_alliedicon.x = 608;
+				level.empire_alliedicon.y = 20;
+				level.empire_alliedicon.alignX = "center";
+				level.empire_alliedicon.alignY = "middle";
+				level.empire_alliedicon.alpha = 0.7;
+				level.empire_alliedicon setShader(game["headicon_allies"],16,16);
 			}
-			if(!isdefined(level.awe_alliednumber))
+			if(!isdefined(level.empire_alliednumber))
 			{
-				level.awe_alliednumber = newHudElem();	
-				level.awe_alliednumber.x = 608;
-				level.awe_alliednumber.y = 36;
-				level.awe_alliednumber.alignX = "center";
-				level.awe_alliednumber.alignY = "middle";
-				level.awe_alliednumber.alpha = 0.8;
-				level.awe_alliednumber.fontscale = 1.0;
-				level.awe_alliednumber.color = color;
-				level.awe_alliednumber setValue(0);
+				level.empire_alliednumber = newHudElem();	
+				level.empire_alliednumber.x = 608;
+				level.empire_alliednumber.y = 36;
+				level.empire_alliednumber.alignX = "center";
+				level.empire_alliednumber.alignY = "middle";
+				level.empire_alliednumber.alpha = 0.8;
+				level.empire_alliednumber.fontscale = 1.0;
+				level.empire_alliednumber.color = color;
+				level.empire_alliednumber setValue(0);
 			}
-			if(!isdefined(level.awe_deadalliednumber))
+			if(!isdefined(level.empire_deadalliednumber))
 			{
-				level.awe_deadalliednumber = newHudElem();	
-				level.awe_deadalliednumber.x = 608;
-				level.awe_deadalliednumber.y = 52;
-				level.awe_deadalliednumber.alignX = "center";
-				level.awe_deadalliednumber.alignY = "middle";
-				level.awe_deadalliednumber.alpha = 0.8;
-				level.awe_deadalliednumber.fontscale = 1.0;
-				level.awe_deadalliednumber.color = deadcolor;
-				level.awe_deadalliednumber setValue(0);
+				level.empire_deadalliednumber = newHudElem();	
+				level.empire_deadalliednumber.x = 608;
+				level.empire_deadalliednumber.y = 52;
+				level.empire_deadalliednumber.alignX = "center";
+				level.empire_deadalliednumber.alignY = "middle";
+				level.empire_deadalliednumber.alpha = 0.8;
+				level.empire_deadalliednumber.fontscale = 1.0;
+				level.empire_deadalliednumber.color = deadcolor;
+				level.empire_deadalliednumber setValue(0);
 			}
 		}
 		allies = [];
 		axis = [];
 		deadallies = [];
 		deadaxis = [];
-		for(i = 0; i < level.awe_allplayers.size; i++)
+		for(i = 0; i < level.empire_allplayers.size; i++)
 		{
-			if(level.awe_allplayers[i].sessionstate == "playing" && level.awe_allplayers[i].sessionteam == "allies")
-				allies[allies.size] = level.awe_allplayers[i];
-			if(level.awe_allplayers[i].sessionstate != "playing" && level.awe_allplayers[i].sessionteam == "allies")
-				deadallies[deadallies.size] = level.awe_allplayers[i];
-			if(level.awe_allplayers[i].sessionstate == "playing" && level.awe_allplayers[i].sessionteam == "axis")
-				axis[axis.size] = level.awe_allplayers[i];
-			if(level.awe_allplayers[i].sessionstate != "playing" && level.awe_allplayers[i].sessionteam == "axis")
-				deadaxis[deadaxis.size] = level.awe_allplayers[i];
+			if(level.empire_allplayers[i].sessionstate == "playing" && level.empire_allplayers[i].sessionteam == "allies")
+				allies[allies.size] = level.empire_allplayers[i];
+			if(level.empire_allplayers[i].sessionstate != "playing" && level.empire_allplayers[i].sessionteam == "allies")
+				deadallies[deadallies.size] = level.empire_allplayers[i];
+			if(level.empire_allplayers[i].sessionstate == "playing" && level.empire_allplayers[i].sessionteam == "axis")
+				axis[axis.size] = level.empire_allplayers[i];
+			if(level.empire_allplayers[i].sessionstate != "playing" && level.empire_allplayers[i].sessionteam == "axis")
+				deadaxis[deadaxis.size] = level.empire_allplayers[i];
 		}
-		level.awe_axisnumber setValue(axis.size);
-		level.awe_alliednumber setValue(allies.size);
-		level.awe_deadaxisnumber setValue(deadaxis.size);
-		level.awe_deadalliednumber setValue(deadallies.size);
+		level.empire_axisnumber setValue(axis.size);
+		level.empire_alliednumber setValue(allies.size);
+		level.empire_deadaxisnumber setValue(deadaxis.size);
+		level.empire_deadalliednumber setValue(deadallies.size);
 	}
 }
 
 overrideteams()
 {
-	if(isdefined(level.awe_classbased) || level.awe_uomap)
+	if(isdefined(level.empire_classbased) || level.empire_uomap)
 		return;
 
 	// It it's the same map and gametype, use old values to avoid non precached models
-	if( getcvar("mapname") == getcvar("awe_oldmap") && getcvar("g_gametype") == getcvar("awe_oldgt") )
+	if( getcvar("mapname") == getcvar("empire_oldmap") && getcvar("g_gametype") == getcvar("empire_oldgt") )
 	{
-		game["allies"] = getcvar("awe_allies");
-		game[game["allies"] + "_soldiertype"] 	= getcvar("awe_soldiertype");
-		game[game["allies"] + "_soldiervariation"]= getcvar("awe_soldiervariation");
+		game["allies"] = getcvar("empire_allies");
+		game[game["allies"] + "_soldiertype"] 	= getcvar("empire_soldiertype");
+		game[game["allies"] + "_soldiervariation"]= getcvar("empire_soldiervariation");
 		if(game["allies"] == "american" && game[game["allies"] + "_soldiervariation"] == "winter")
 		{
 			game["german_soldiertype"] = "wehrmacht";
@@ -6547,18 +6551,18 @@ overrideteams()
 	}
 
 	// Override allies team
-	switch(level.awe_teamallies)
+	switch(level.empire_teamallies)
 	{
 		case "american":
 		case "british":
 		case "german":
 		case "russian":
-			game["allies"] = level.awe_teamallies;
+			game["allies"] = level.empire_teamallies;
 			break;
 
 		case "random":
 			allies = [];
-			oldteam = getcvar("awe_allies");
+			oldteam = getcvar("empire_allies");
 			if(oldteam != "american")	allies[allies.size] = "american";
 			if(oldteam != "british")	allies[allies.size] = "british";
 			if(oldteam != "russian")	allies[allies.size] = "russian";
@@ -6574,7 +6578,7 @@ overrideteams()
 		switch(game["allies"])
 		{
 			case "american":
-				if(isdefined(level.awe_wintermap))
+				if(isdefined(level.empire_wintermap))
 				{
 					game["american_soldiertype"] = "airborne";
 					game["american_soldiervariation"] = "winter";
@@ -6589,7 +6593,7 @@ overrideteams()
 				break;
 
 			case "british":
-				if(isdefined(level.awe_wintermap))
+				if(isdefined(level.empire_wintermap))
 				{
 					game["british_soldiertype"] = "commando";
 					game["british_soldiervariation"] = "winter";
@@ -6612,7 +6616,7 @@ overrideteams()
 				break;
 
 			case "russian":
-				if(isdefined(level.awe_wintermap))
+				if(isdefined(level.empire_wintermap))
 				{
 					switch(randomInt(2))
 					{
@@ -6649,88 +6653,88 @@ overrideteams()
 	}
 
 	// Save stuff for reinitializing in roundbased gametypes
-	setcvar("awe_oldgt",	getcvar("g_gametype") );
-	setcvar("awe_oldmap",	getcvar("mapname") );
-	setcvar("awe_allies",			game["allies"] );
-	setcvar("awe_soldiertype", 		game[game["allies"] + "_soldiertype"] );
-	setcvar("awe_soldiervariation",	game[game["allies"] + "_soldiervariation"] );
+	setcvar("empire_oldgt",	getcvar("g_gametype") );
+	setcvar("empire_oldmap",	getcvar("mapname") );
+	setcvar("empire_allies",			game["allies"] );
+	setcvar("empire_soldiertype", 		game[game["allies"] + "_soldiertype"] );
+	setcvar("empire_soldiervariation",	game[game["allies"] + "_soldiervariation"] );
 }
 
 showlogo()
 {
-	if(level.awe_showserverlogo)
+	if(level.empire_showserverlogo)
 	{
-		if(isdefined(level.awe_serverlogo))
-			level.awe_serverlogo destroy();
+		if(isdefined(level.empire_serverlogo))
+			level.empire_serverlogo destroy();
 
-		level.awe_serverlogo = newHudElem();	
-		if(level.awe_showserverlogo == 1)
+		level.empire_serverlogo = newHudElem();	
+		if(level.empire_showserverlogo == 1)
 		{
-			level.awe_serverlogo.x = 3;
-			level.awe_serverlogo.alignX = "left";
+			level.empire_serverlogo.x = 3;
+			level.empire_serverlogo.alignX = "left";
 		}
 		else
 		{
-			level.awe_serverlogo.x = 320;
-			level.awe_serverlogo.alignX = "center";
+			level.empire_serverlogo.x = 320;
+			level.empire_serverlogo.alignX = "center";
 		}
-		if(isdefined(level.awe_uo))
-			level.awe_serverlogo.y = 474;
+		if(isdefined(level.empire_uo))
+			level.empire_serverlogo.y = 474;
 		else
-			level.awe_serverlogo.y = 475;
+			level.empire_serverlogo.y = 475;
 
-		level.awe_serverlogo.alignY = "middle";
-		level.awe_serverlogo.sort = -3;
-		level.awe_serverlogo.alpha = 1;
-		level.awe_serverlogo.fontScale = 0.7;
-		level.awe_serverlogo.archived = true;
-		level.awe_serverlogo setText(level.awe_serverlogotext);
+		level.empire_serverlogo.alignY = "middle";
+		level.empire_serverlogo.sort = -3;
+		level.empire_serverlogo.alpha = 1;
+		level.empire_serverlogo.fontScale = 0.7;
+		level.empire_serverlogo.archived = true;
+		level.empire_serverlogo setText(level.empire_serverlogotext);
 	}
 
-	if(level.awe_showlogo)
+	if(level.empire_showlogo)
 	{
-		if(isdefined(level.awe_logo))
-			level.awe_logo destroy();
+		if(isdefined(level.empire_logo))
+			level.empire_logo destroy();
 
-		level.awe_logo = newHudElem();	
-		level.awe_logo.x = 630;
-		if(isdefined(level.awe_uo))
-			level.awe_logo.y = 474;
+		level.empire_logo = newHudElem();	
+		level.empire_logo.x = 630;
+		if(isdefined(level.empire_uo))
+			level.empire_logo.y = 474;
 		else
-			level.awe_logo.y = 475;
-		level.awe_logo.alignX = "right";
-		level.awe_logo.alignY = "middle";
-		level.awe_logo.sort = -3;
-		level.awe_logo.alpha = 1;
-		level.awe_logo.fontScale = 0.7;
-		level.awe_logo.archived = true;
-		level.awe_logo setText(level.awe_logotext);
+			level.empire_logo.y = 475;
+		level.empire_logo.alignX = "right";
+		level.empire_logo.alignY = "middle";
+		level.empire_logo.sort = -3;
+		level.empire_logo.alpha = 1;
+		level.empire_logo.fontScale = 0.7;
+		level.empire_logo.archived = true;
+		level.empire_logo setText(level.empire_logotext);
 	}
 }
 
 overridefog()
 {
-	if(isdefined(level.awe_cfog) && randomInt(100) < level.awe_cfog)
+	if(isdefined(level.empire_cfog) && randomInt(100) < level.empire_cfog)
 	{
-		if(level.awe_cfogdistance2)
+		if(level.empire_cfogdistance2)
 			thread fadeCullFog();
 		else
-			setCullFog(0, level.awe_cfogdistance, level.awe_cfogred, level.awe_cfoggreen, level.awe_cfogblue, 0);
+			setCullFog(0, level.empire_cfogdistance, level.empire_cfogred, level.empire_cfoggreen, level.empire_cfogblue, 0);
 	}
-	else if(isdefined(level.awe_efog) && randomInt(100) < level.awe_efog)
+	else if(isdefined(level.empire_efog) && randomInt(100) < level.empire_efog)
 	{
-		if(level.awe_efogdensity2)
+		if(level.empire_efogdensity2)
 			thread fadeExpFog();
 		else
-			setExpFog(level.awe_efogdensity, level.awe_efogred, level.awe_efoggreen, level.awe_efogblue, 0);
+			setExpFog(level.empire_efogdensity, level.empire_efogred, level.empire_efoggreen, level.empire_efogblue, 0);
 	}
 }
 
 fadeCullFog()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
-	if(isdefined(level.awe_roundbased))
+	if(isdefined(level.empire_roundbased))
 	{
 		time = level.roundlength * 30;
 		if(!time) time = 5 * 30;
@@ -6742,19 +6746,19 @@ fadeCullFog()
 	}
 	if(randomInt(2))
 	{
-		start = level.awe_cfogdistance;
-		end = level.awe_cfogdistance2;
+		start = level.empire_cfogdistance;
+		end = level.empire_cfogdistance2;
 	}
 	else
 	{
-		start = level.awe_cfogdistance2;
-		end = level.awe_cfogdistance;
+		start = level.empire_cfogdistance2;
+		end = level.empire_cfogdistance;
 	}
 	distance = start;
 	delta = (end - start)/time;
 	for(i=0;i<time;i++)
 	{
-		setCullFog(0, distance, level.awe_cfogred, level.awe_cfoggreen, level.awe_cfogblue, 0);
+		setCullFog(0, distance, level.empire_cfogred, level.empire_cfoggreen, level.empire_cfogblue, 0);
 		distance = distance + delta;
 		wait 1;
 	}
@@ -6762,7 +6766,7 @@ fadeCullFog()
 	delta = 0 - delta;
 	for(i=0;i<time;i++)
 	{
-		setCullFog(0, distance, level.awe_cfogred, level.awe_cfoggreen, level.awe_cfogblue, 0);
+		setCullFog(0, distance, level.empire_cfogred, level.empire_cfoggreen, level.empire_cfogblue, 0);
 		distance = distance + delta;
 		wait 1;
 	}
@@ -6770,7 +6774,7 @@ fadeCullFog()
 	delta = 0 - delta;
 	for(i=0;i<time;i++)
 	{
-		setCullFog(0, distance, level.awe_cfogred, level.awe_cfoggreen, level.awe_cfogblue, 0);
+		setCullFog(0, distance, level.empire_cfogred, level.empire_cfoggreen, level.empire_cfogblue, 0);
 		distance = distance + delta;
 		wait 1;
 	}
@@ -6778,7 +6782,7 @@ fadeCullFog()
 	delta = 0 - delta;
 	for(i=0;i<time;i++)
 	{
-		setCullFog(0, distance, level.awe_cfogred, level.awe_cfoggreen, level.awe_cfogblue, 0);
+		setCullFog(0, distance, level.empire_cfogred, level.empire_cfoggreen, level.empire_cfogblue, 0);
 		distance = distance + delta;
 		wait 1;
 	}
@@ -6786,9 +6790,9 @@ fadeCullFog()
 
 fadeExpFog()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
-	if(isdefined(level.awe_roundbased))
+	if(isdefined(level.empire_roundbased))
 	{
 		time = level.roundlength * 30;
 		if(!time) time = 5 * 30;
@@ -6800,19 +6804,19 @@ fadeExpFog()
 	}
 	if(randomInt(2))
 	{
-		start = level.awe_efogdensity;
-		end = level.awe_efogdensity2;
+		start = level.empire_efogdensity;
+		end = level.empire_efogdensity2;
 	}
 	else
 	{
-		start = level.awe_efogdensity2;
-		end = level.awe_efogdensity;
+		start = level.empire_efogdensity2;
+		end = level.empire_efogdensity;
 	}
 	density = (float)start;
 	delta = (float)(end - start)/(float)time;
 	for(i=0;i<time;i++)
 	{
-		setExpFog(density, level.awe_efogred, level.awe_efoggreen, level.awe_efogblue, 0);
+		setExpFog(density, level.empire_efogred, level.empire_efoggreen, level.empire_efogblue, 0);
 		density = (float)density + (float)delta;
 		wait 1;
 	}
@@ -6820,7 +6824,7 @@ fadeExpFog()
 	delta = 0 - delta;
 	for(i=0;i<time;i++)
 	{
-		setExpFog(density, level.awe_efogred, level.awe_efoggreen, level.awe_efogblue, 0);
+		setExpFog(density, level.empire_efogred, level.empire_efoggreen, level.empire_efogblue, 0);
 		density = (float)density + (float)delta;
 		wait 1;
 	}
@@ -6828,7 +6832,7 @@ fadeExpFog()
 	delta = 0 - delta;
 	for(i=0;i<time;i++)
 	{
-		setExpFog(density, level.awe_efogred, level.awe_efoggreen, level.awe_efogblue, 0);
+		setExpFog(density, level.empire_efogred, level.empire_efoggreen, level.empire_efogblue, 0);
 		density = (float)density + (float)delta;
 		wait 1;
 	}
@@ -6836,7 +6840,7 @@ fadeExpFog()
 	delta = 0 - delta;
 	for(i=0;i<time;i++)
 	{
-		setExpFog(density, level.awe_efogred, level.awe_efoggreen, level.awe_efogblue, 0);
+		setExpFog(density, level.empire_efogred, level.empire_efoggreen, level.empire_efogblue, 0);
 		density = (float)density + (float)delta;
 		wait 1;
 	}
@@ -6844,20 +6848,20 @@ fadeExpFog()
 
 swapteams()
 {
-	if(level.awe_disable) return;
+	if(level.empire_disable) return;
 
 	if(game["roundsplayed"] == 0 || !game["matchstarted"])
 		return;
 
-	if(game["roundsplayed"] == 1 && level.awe_warmupround && !isdefined(game["awe_warmupdone"]) )
+	if(game["roundsplayed"] == 1 && level.empire_warmupround && !isdefined(game["empire_warmupdone"]) )
 	{
 		thread resetScores();
 		game["roundsplayed"] = 0;
-		game["awe_warmupdone"] = true;
+		game["empire_warmupdone"] = true;
 		return;
 	}
 
-	if(!level.awe_teamswap)
+	if(!level.empire_teamswap)
 		return;
 
 
@@ -6865,7 +6869,7 @@ swapteams()
 	players = getentarray("player", "classname");
 	for(i = 0; i < players.size; i++)
 	{
-		if(level.awe_debug)
+		if(level.empire_debug)
 			iprintlnbold("Player:" + i + " Team:" + players[i].pers["team"]);
 
 		// Only swap axis and allies, not spectators
@@ -6875,18 +6879,18 @@ swapteams()
 		if(players[i].pers["team"] == "axis")
 		{
 			newTeam = "allies";
-			if(isdefined(players[i].pers["weapon"]))	players[i].pers["awe_axisweapon"]	= players[i].pers["weapon"];
-			if(isdefined(players[i].pers["weapon1"]))	players[i].pers["awe_axisweapon1"]	= players[i].pers["weapon1"];
-			if(isdefined(players[i].pers["weapon2"]))	players[i].pers["awe_axisweapon2"]	= players[i].pers["weapon2"];
-			if(isdefined(players[i].pers["spawnweapon"])) players[i].pers["awe_axisspawnweapon"] = players[i].pers["spawnweapon"];
+			if(isdefined(players[i].pers["weapon"]))	players[i].pers["empire_axisweapon"]	= players[i].pers["weapon"];
+			if(isdefined(players[i].pers["weapon1"]))	players[i].pers["empire_axisweapon1"]	= players[i].pers["weapon1"];
+			if(isdefined(players[i].pers["weapon2"]))	players[i].pers["empire_axisweapon2"]	= players[i].pers["weapon2"];
+			if(isdefined(players[i].pers["spawnweapon"])) players[i].pers["empire_axisspawnweapon"] = players[i].pers["spawnweapon"];
 		}
 		if(players[i].pers["team"] == "allies")
 		{
 			newTeam = "axis";
-			if(isdefined(players[i].pers["weapon"]))	players[i].pers["awe_alliedweapon"]	= players[i].pers["weapon"];
-			if(isdefined(players[i].pers["weapon1"]))	players[i].pers["awe_alliedweapon1"]	= players[i].pers["weapon1"];
-			if(isdefined(players[i].pers["weapon2"]))	players[i].pers["awe_alliedweapon2"]	= players[i].pers["weapon2"];
-			if(isdefined(players[i].pers["spawnweapon"])) players[i].pers["awe_alliedspawnweapon"] = players[i].pers["spawnweapon"];
+			if(isdefined(players[i].pers["weapon"]))	players[i].pers["empire_alliedweapon"]	= players[i].pers["weapon"];
+			if(isdefined(players[i].pers["weapon1"]))	players[i].pers["empire_alliedweapon1"]	= players[i].pers["weapon1"];
+			if(isdefined(players[i].pers["weapon2"]))	players[i].pers["empire_alliedweapon2"]	= players[i].pers["weapon2"];
+			if(isdefined(players[i].pers["spawnweapon"])) players[i].pers["empire_alliedspawnweapon"] = players[i].pers["spawnweapon"];
 		}
 
 		players[i].pers["team"] = newTeam;
@@ -6902,19 +6906,19 @@ swapteams()
 		if(players[i].pers["team"] == "allies")
 		{
 			// Set old allied weapon if available
-			if(isdefined(players[i].pers["awe_alliedweapon"]))	players[i].pers["weapon"]	= players[i].pers["awe_alliedweapon"];
-			if(isdefined(players[i].pers["awe_alliedweapon1"]))	players[i].pers["weapon1"]	= players[i].pers["awe_alliedweapon1"];
-			if(isdefined(players[i].pers["awe_alliedweapon2"]))	players[i].pers["weapon2"]	= players[i].pers["awe_alliedweapon2"];
-			if(isdefined(players[i].pers["awe_alliedspawnweapon"])) players[i].pers["spawnweapon"] = players[i].pers["awe_alliedspawnweapon"];
+			if(isdefined(players[i].pers["empire_alliedweapon"]))	players[i].pers["weapon"]	= players[i].pers["empire_alliedweapon"];
+			if(isdefined(players[i].pers["empire_alliedweapon1"]))	players[i].pers["weapon1"]	= players[i].pers["empire_alliedweapon1"];
+			if(isdefined(players[i].pers["empire_alliedweapon2"]))	players[i].pers["weapon2"]	= players[i].pers["empire_alliedweapon2"];
+			if(isdefined(players[i].pers["empire_alliedspawnweapon"])) players[i].pers["spawnweapon"] = players[i].pers["empire_alliedspawnweapon"];
 
 		}
 		else
 		{
 			// Set old axis weapon if available
-			if(isdefined(players[i].pers["awe_axisweapon"]))	players[i].pers["weapon"]	= players[i].pers["awe_axisweapon"];
-			if(isdefined(players[i].pers["awe_axisweapon1"]))	players[i].pers["weapon1"]	= players[i].pers["awe_axisweapon1"];
-			if(isdefined(players[i].pers["awe_axisweapon2"]))	players[i].pers["weapon2"]	= players[i].pers["awe_axisweapon2"];
-			if(isdefined(players[i].pers["awe_axisspawnweapon"])) players[i].pers["spawnweapon"] = players[i].pers["awe_axisspawnweapon"];
+			if(isdefined(players[i].pers["empire_axisweapon"]))	players[i].pers["weapon"]	= players[i].pers["empire_axisweapon"];
+			if(isdefined(players[i].pers["empire_axisweapon1"]))	players[i].pers["weapon1"]	= players[i].pers["empire_axisweapon1"];
+			if(isdefined(players[i].pers["empire_axisweapon2"]))	players[i].pers["weapon2"]	= players[i].pers["empire_axisweapon2"];
+			if(isdefined(players[i].pers["empire_axisspawnweapon"])) players[i].pers["spawnweapon"] = players[i].pers["empire_axisspawnweapon"];
 		}
 
 	}
@@ -6926,30 +6930,30 @@ swapteams()
 	setTeamScore("allies", game["alliedscore"]);
 	setTeamScore("axis", game["axisscore"]);
 	
-	if(level.awe_debug)
+	if(level.empire_debug)
 		iprintlnbold("Teams has been swapped.");
 }
 
 warmupround()
 {
-	if(!isdefined(level.awe_roundbased))
+	if(!isdefined(level.empire_roundbased))
 		return;
 
-	if(isdefined(level.awe_warmupmsg))
-		level.awe_warmupmsg destroy();
+	if(isdefined(level.empire_warmupmsg))
+		level.empire_warmupmsg destroy();
 
-	if(game["roundsplayed"] == 0 && game["matchstarted"] && level.awe_warmupround && !isdefined(game["awe_warmupdone"]) )
+	if(game["roundsplayed"] == 0 && game["matchstarted"] && level.empire_warmupround && !isdefined(game["empire_warmupdone"]) )
 	{
-		if(!isdefined(level.awe_warmupmsg))
+		if(!isdefined(level.empire_warmupmsg))
 		{
-			level.awe_warmupmsg = newHudElem();
-			level.awe_warmupmsg.archived = false;
-			level.awe_warmupmsg.x = 320;
-			level.awe_warmupmsg.y = 80;
-			level.awe_warmupmsg.alignX = "center";
-			level.awe_warmupmsg.alignY = "middle";
-			level.awe_warmupmsg.fontScale = 2;
-			level.awe_warmupmsg setText(&"^1Warmup Round!!");
+			level.empire_warmupmsg = newHudElem();
+			level.empire_warmupmsg.archived = false;
+			level.empire_warmupmsg.x = 320;
+			level.empire_warmupmsg.y = 80;
+			level.empire_warmupmsg.alignX = "center";
+			level.empire_warmupmsg.alignY = "middle";
+			level.empire_warmupmsg.fontScale = 2;
+			level.empire_warmupmsg setText(&"^1Warmup Round!!");
 		}
 	}
 }
@@ -6962,9 +6966,9 @@ resetScores()
 		player = players[i];
 		player.pers["score"] = 0;
 		player.pers["deaths"] = 0;
-		player.pers["awe_teamkills"] = 0;
-		player.pers["awe_teamdamage"] = 0;
-		player.pers["awe_teamkiller"] = undefined;
+		player.pers["empire_teamkills"] = 0;
+		player.pers["empire_teamdamage"] = 0;
+		player.pers["empire_teamkiller"] = undefined;
 	}
 
 	game["alliedscore"] = 0;
@@ -6975,7 +6979,7 @@ resetScores()
 
 turretStuff()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
 	// Wait a servercycle to make sure unwanted entities has been removed
 	wait .05;
@@ -6994,7 +6998,7 @@ turretStuff()
 				switch(allent[i].weaponinfo)
 				{
 					case "mg42_bipod_prone_mp":
-						if(level.awe_debug)
+						if(level.empire_debug)
 							iprintln("Turret Angles: " + allent[i].angles[0] + " " + allent[i].angles[1] + " " + allent[i].angles[2]);
 					case "mg42_bipod_stand_mp":
 					case "mg42_bipod_duck_mp":
@@ -7010,7 +7014,7 @@ turretStuff()
 	}
 
 	// Disable all MG42:s on the map	
-	if(level.awe_mg42disable)
+	if(level.empire_mg42disable)
 	{
 		mgs=getEntArray("misc_mg42","classname");
 		for (i=0;i<mgs.size;i++)
@@ -7043,7 +7047,7 @@ turretStuff()
 	}
 
 	// Disable all PTRS41:s on the map	
-	if(level.awe_ptrs41disable)
+	if(level.empire_ptrs41disable)
 	{
 		mgs=getEntArray("misc_ptrs","classname");
 		for (i=0;i<mgs.size;i++)
@@ -7054,18 +7058,18 @@ turretStuff()
 			}
 	}	
 
-	if(level.awe_mg42disable || level.awe_ptrs41disable)
+	if(level.empire_mg42disable || level.empire_ptrs41disable)
 		wait 0.05;	// Allow changes to happen
 
 	// Spawn extra MG42s and/or PTRS41 at specific locations
 
 	// Get first turret
 	count = 0;
-	x = cvardef("awe_turret_x" + count, 0, -50000, 50000, "int");
-	y = cvardef("awe_turret_y" + count, 0, -50000, 50000, "int");
-	z = cvardef("awe_turret_z" + count, 0, -50000, 50000, "int");
-	a = cvardef("awe_turret_a" + count, 0, -50000, 50000, "int");
-	w = cvardef("awe_turret_w" + count, "", "", "", "string");
+	x = cvardef("empire_turret_x" + count, 0, -50000, 50000, "int");
+	y = cvardef("empire_turret_y" + count, 0, -50000, 50000, "int");
+	z = cvardef("empire_turret_z" + count, 0, -50000, 50000, "int");
+	a = cvardef("empire_turret_a" + count, 0, -50000, 50000, "int");
+	w = cvardef("empire_turret_w" + count, "", "", "", "string");
 
 	// spawn turrets
 	while(w != "" && numturrets < 32)
@@ -7096,18 +7100,18 @@ turretStuff()
 		numturrets++;		
 		count++;
 
-		x = cvardef("awe_turret_x" + count, 0, -50000, 50000, "int");
-		y = cvardef("awe_turret_y" + count, 0, -50000, 50000, "int");
-		z = cvardef("awe_turret_z" + count, 0, -50000, 50000, "int");
-		a = cvardef("awe_turret_a" + count, 0, -50000, 50000, "int");
-		w = cvardef("awe_turret_w" + count, "", "", "", "string");
+		x = cvardef("empire_turret_x" + count, 0, -50000, 50000, "int");
+		y = cvardef("empire_turret_y" + count, 0, -50000, 50000, "int");
+		z = cvardef("empire_turret_z" + count, 0, -50000, 50000, "int");
+		a = cvardef("empire_turret_a" + count, 0, -50000, 50000, "int");
+		w = cvardef("empire_turret_w" + count, "", "", "", "string");
 	}
 
 	// Spawn extra MG42s and/or PTRS41
-	if(level.awe_mg42spawnextra || level.awe_ptrs41spawnextra)
+	if(level.empire_mg42spawnextra || level.empire_ptrs41spawnextra)
 	{
-		spawnallied	= getentarray(level.awe_spawnalliedname, "classname");
-		spawnaxis	= getentarray(level.awe_spawnaxisname, "classname");
+		spawnallied	= getentarray(level.empire_spawnalliedname, "classname");
+		spawnaxis	= getentarray(level.empire_spawnaxisname, "classname");
 
 		// Fall back to deatchmatch spawns, just in case. (Needed for LTS on non SD maps)
 		if(!spawnallied.size)
@@ -7120,7 +7124,7 @@ turretStuff()
 			spawnaxis	= getentarray("mp_teamdeathmatch_spawn", "classname");
 
 		oddeven=randomInt(2);
-		for(i=0;i<level.awe_mg42spawnextra && numturrets<32;i++)
+		for(i=0;i<level.empire_mg42spawnextra && numturrets<32;i++)
 		{
 			// Get a random spawn point
 			if(oddeven)
@@ -7148,7 +7152,7 @@ turretStuff()
 		}
 	
 		oddeven=randomInt(2);
-		for(i=0;i<level.awe_ptrs41spawnextra && numturrets<32;i++)
+		for(i=0;i<level.empire_ptrs41spawnextra && numturrets<32;i++)
 		{
 			// Get a random spawn point
 			if(oddeven)
@@ -7179,7 +7183,7 @@ turretStuff()
 	wait 0.05;	// Allow changes to happen
 
 	// Build turret array
-	level.awe_turrets = [];
+	level.empire_turrets = [];
 
 	allent = getentarray();	// Get all entities
 
@@ -7194,23 +7198,23 @@ turretStuff()
 					case "mg42_bipod_stand_mp":
 					case "mg42_bipod_duck_mp":
 					case "mg42_bipod_prone_mp":
-						level.awe_turrets[level.awe_turrets.size]["turret"] = allent[i];
-						level.awe_turrets[level.awe_turrets.size - 1]["type"] = "misc_mg42";
-						level.awe_turrets[level.awe_turrets.size - 1]["original_position"] = allent[i].origin;
-						level.awe_turrets[level.awe_turrets.size - 1]["original_angles"] = allent[i].angles;
-						level.awe_turrets[level.awe_turrets.size - 1]["original_weaponinfo"]= allent[i].weaponinfo;
-						level.awe_turrets[level.awe_turrets.size - 1]["dropped"] = undefined;
-						level.awe_turrets[level.awe_turrets.size - 1]["carried"] = undefined;
+						level.empire_turrets[level.empire_turrets.size]["turret"] = allent[i];
+						level.empire_turrets[level.empire_turrets.size - 1]["type"] = "misc_mg42";
+						level.empire_turrets[level.empire_turrets.size - 1]["original_position"] = allent[i].origin;
+						level.empire_turrets[level.empire_turrets.size - 1]["original_angles"] = allent[i].angles;
+						level.empire_turrets[level.empire_turrets.size - 1]["original_weaponinfo"]= allent[i].weaponinfo;
+						level.empire_turrets[level.empire_turrets.size - 1]["dropped"] = undefined;
+						level.empire_turrets[level.empire_turrets.size - 1]["carried"] = undefined;
 						break;
 
 					case "PTRS41_Antitank_Rifle_mp":
-						level.awe_turrets[level.awe_turrets.size]["turret"] = allent[i];
-						level.awe_turrets[level.awe_turrets.size - 1]["type"] = "misc_ptrs";
-						level.awe_turrets[level.awe_turrets.size - 1]["original_position"] = allent[i].origin;
-						level.awe_turrets[level.awe_turrets.size - 1]["original_angles"]	= allent[i].angles;
-						level.awe_turrets[level.awe_turrets.size - 1]["original_weaponinfo"]=allent[i].weaponinfo;
-						level.awe_turrets[level.awe_turrets.size - 1]["dropped"] = undefined;
-						level.awe_turrets[level.awe_turrets.size - 1]["carried"] = undefined;
+						level.empire_turrets[level.empire_turrets.size]["turret"] = allent[i];
+						level.empire_turrets[level.empire_turrets.size - 1]["type"] = "misc_ptrs";
+						level.empire_turrets[level.empire_turrets.size - 1]["original_position"] = allent[i].origin;
+						level.empire_turrets[level.empire_turrets.size - 1]["original_angles"]	= allent[i].angles;
+						level.empire_turrets[level.empire_turrets.size - 1]["original_weaponinfo"]=allent[i].weaponinfo;
+						level.empire_turrets[level.empire_turrets.size - 1]["dropped"] = undefined;
+						level.empire_turrets[level.empire_turrets.size - 1]["carried"] = undefined;
 						break;
 
 					default:
@@ -7226,13 +7230,13 @@ turretStuff()
 	{
 		if(isdefined(mgs[i]))
 		{
-			level.awe_turrets[level.awe_turrets.size]["turret"] = mgs[i];
-			level.awe_turrets[level.awe_turrets.size - 1]["type"] = "misc_mg42";
-			level.awe_turrets[level.awe_turrets.size - 1]["original_position"] = mgs[i].origin;
-			level.awe_turrets[level.awe_turrets.size - 1]["original_angles"]	= mgs[i].angles;
-			level.awe_turrets[level.awe_turrets.size - 1]["original_weaponinfo"]= undefined;
-			level.awe_turrets[level.awe_turrets.size - 1]["dropped"] = true;
-			level.awe_turrets[level.awe_turrets.size - 1]["carried"] = undefined;
+			level.empire_turrets[level.empire_turrets.size]["turret"] = mgs[i];
+			level.empire_turrets[level.empire_turrets.size - 1]["type"] = "misc_mg42";
+			level.empire_turrets[level.empire_turrets.size - 1]["original_position"] = mgs[i].origin;
+			level.empire_turrets[level.empire_turrets.size - 1]["original_angles"]	= mgs[i].angles;
+			level.empire_turrets[level.empire_turrets.size - 1]["original_weaponinfo"]= undefined;
+			level.empire_turrets[level.empire_turrets.size - 1]["dropped"] = true;
+			level.empire_turrets[level.empire_turrets.size - 1]["carried"] = undefined;
 		}
 	}
 
@@ -7241,82 +7245,82 @@ turretStuff()
 	{
 		if(isdefined(mgs[i]))
 		{
-			level.awe_turrets[level.awe_turrets.size]["turret"] = mgs[i];
-			level.awe_turrets[level.awe_turrets.size - 1]["type"] = "misc_ptrs";
-			level.awe_turrets[level.awe_turrets.size - 1]["original_position"] = mgs[i].origin;
-			level.awe_turrets[level.awe_turrets.size - 1]["original_angles"]	= mgs[i].angles;
-			level.awe_turrets[level.awe_turrets.size - 1]["original_weaponinfo"]=undefined;
-			level.awe_turrets[level.awe_turrets.size - 1]["dropped"] = true;
-			level.awe_turrets[level.awe_turrets.size - 1]["carried"] = undefined;
+			level.empire_turrets[level.empire_turrets.size]["turret"] = mgs[i];
+			level.empire_turrets[level.empire_turrets.size - 1]["type"] = "misc_ptrs";
+			level.empire_turrets[level.empire_turrets.size - 1]["original_position"] = mgs[i].origin;
+			level.empire_turrets[level.empire_turrets.size - 1]["original_angles"]	= mgs[i].angles;
+			level.empire_turrets[level.empire_turrets.size - 1]["original_weaponinfo"]=undefined;
+			level.empire_turrets[level.empire_turrets.size - 1]["dropped"] = true;
+			level.empire_turrets[level.empire_turrets.size - 1]["carried"] = undefined;
 		}
 	}
 
 	// Kill original turret think threads
-	for(i=0;i<level.awe_turrets.size;i++)
-		if( !isdefined(level.awe_turrets[i]["dropped"]) && !isdefined(level.awe_turrets[i]["carried"]) )
-			level.awe_turrets[i]["turret"] notify("death");
+	for(i=0;i<level.empire_turrets.size;i++)
+		if( !isdefined(level.empire_turrets[i]["dropped"]) && !isdefined(level.empire_turrets[i]["carried"]) )
+			level.empire_turrets[i]["turret"] notify("death");
 
 	wait .05;
 
 	// Restore turret overheating threads
-	for(i=0;i<level.awe_turrets.size;i++)
-		if( !isdefined(level.awe_turrets[i]["dropped"]) && !isdefined(level.awe_turrets[i]["carried"]) )
-			level.awe_turrets[i]["turret"] thread maps\mp\_awe_turret::turret_think(i);
+	for(i=0;i<level.empire_turrets.size;i++)
+		if( !isdefined(level.empire_turrets[i]["dropped"]) && !isdefined(level.empire_turrets[i]["carried"]) )
+			level.empire_turrets[i]["turret"] thread maps\mp\_empire_turret::turret_think(i);
 }
 
 cookgrenade()
 {
-	if(isdefined(self.awe_cooking)) return;
-	self.awe_cooking = true;
+	if(isdefined(self.empire_cooking)) return;
+	self.empire_cooking = true;
 
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
-	if(!isdefined(level.awe_uo) && level.awe_showcooking)		// Cookable grenades?
+	if(!isdefined(level.empire_uo) && level.empire_showcooking)		// Cookable grenades?
 	{
-		if(isdefined(self.awe_cookbar))
+		if(isdefined(self.empire_cookbar))
 		{
-			self.awe_cookbarbackground destroy();
-			self.awe_cookbar destroy();
-			self.awe_cookbartext destroy();
+			self.empire_cookbarbackground destroy();
+			self.empire_cookbar destroy();
+			self.empire_cookbartext destroy();
 		}
 			
 		// Size of progressbar
 		barsize = 288;
 	
 		// Time for progressbar	
-		bartime = (float)level.awe_fusetime - 0.15;
+		bartime = (float)level.empire_fusetime - 0.15;
 
 		// Background
-		self.awe_cookbarbackground = newClientHudElem(self);				
-		self.awe_cookbarbackground.alignX = "center";
-		self.awe_cookbarbackground.alignY = "middle";
-		self.awe_cookbarbackground.x = 320;
-		self.awe_cookbarbackground.y = 385;
-		self.awe_cookbarbackground.alpha = 0.5;
-		self.awe_cookbarbackground.color = (0,0,0);
-		self.awe_cookbarbackground setShader("white", (barsize + 4), 12);			
+		self.empire_cookbarbackground = newClientHudElem(self);				
+		self.empire_cookbarbackground.alignX = "center";
+		self.empire_cookbarbackground.alignY = "middle";
+		self.empire_cookbarbackground.x = 320;
+		self.empire_cookbarbackground.y = 385;
+		self.empire_cookbarbackground.alpha = 0.5;
+		self.empire_cookbarbackground.color = (0,0,0);
+		self.empire_cookbarbackground setShader("white", (barsize + 4), 12);			
 
 		// Progress bar
-		self.awe_cookbar = newClientHudElem(self);				
-		self.awe_cookbar.alignX = "left";
-		self.awe_cookbar.alignY = "middle";
-		self.awe_cookbar.x = (320 - (barsize / 2.0));
-		self.awe_cookbar.y = 385;
-		self.awe_cookbar.color = (1,1,1);
-		self.awe_cookbar.alpha = 0.7;
-		self.awe_cookbar setShader("white", 0, 8);
-		self.awe_cookbar scaleOverTime(bartime , barsize, 8);
+		self.empire_cookbar = newClientHudElem(self);				
+		self.empire_cookbar.alignX = "left";
+		self.empire_cookbar.alignY = "middle";
+		self.empire_cookbar.x = (320 - (barsize / 2.0));
+		self.empire_cookbar.y = 385;
+		self.empire_cookbar.color = (1,1,1);
+		self.empire_cookbar.alpha = 0.7;
+		self.empire_cookbar setShader("white", 0, 8);
+		self.empire_cookbar scaleOverTime(bartime , barsize, 8);
 
 		// Text
-		self.awe_cookbartext = newClientHudElem(self);
-		self.awe_cookbartext.alignX = "center";
-		self.awe_cookbartext.alignY = "middle";
-		self.awe_cookbartext.x = 320;
-		self.awe_cookbartext.y = 384;
-		self.awe_cookbartext.fontscale = 0.8;
-		self.awe_cookbartext.color = (.5,.5,.5);
-		self.awe_cookbartext settext (&"Cooking grenade");
+		self.empire_cookbartext = newClientHudElem(self);
+		self.empire_cookbartext.alignX = "center";
+		self.empire_cookbartext.alignY = "middle";
+		self.empire_cookbartext.x = 320;
+		self.empire_cookbartext.y = 384;
+		self.empire_cookbartext.fontscale = 0.8;
+		self.empire_cookbartext.color = (.5,.5,.5);
+		self.empire_cookbartext settext (&"Cooking grenade");
 
 		// Init counter for tick sound
 		tickcounter=0;
@@ -7329,7 +7333,7 @@ cookgrenade()
 		for(i=0;i<cooktime;i++)
 		{
 			color = (float)i/(float)cooktime;
-			self.awe_cookbar.color = (1,1-color,1-color);
+			self.empire_cookbar.color = (1,1-color,1-color);
 
 			// Break if grenade is thrown
 			if(!self attackButtonPressed() || !isWeaponType("grenade", self getCurrentWeapon() ) )
@@ -7349,12 +7353,12 @@ cookgrenade()
 		}
 
 		// Remove hud elements
-		if(isdefined(self.awe_cookbarbackground))
-			self.awe_cookbarbackground destroy();
-		if(isdefined(self.awe_cookbar))
-			self.awe_cookbar destroy();
-		if(isdefined(self.awe_cookbartext))
-			self.awe_cookbartext destroy();
+		if(isdefined(self.empire_cookbarbackground))
+			self.empire_cookbarbackground destroy();
+		if(isdefined(self.empire_cookbar))
+			self.empire_cookbar destroy();
+		if(isdefined(self.empire_cookbartext))
+			self.empire_cookbartext destroy();
 
 		if(i>=cooktime)
 		{
@@ -7368,21 +7372,21 @@ cookgrenade()
 			// play the hit sound
 			self playsound("grenade_explode_default");
 			// explode 
-			playfxontag(level.awe_effect["bombexplosion"], self, "Bip01 R Hand");
+			playfxontag(level.empire_effect["bombexplosion"], self, "Bip01 R Hand");
 			wait .05;
 
 			iRange = 350;
 			iMaxdamage = 120;
 			iMindamage = 5;
-			if(isdefined(level.awe_dmgmod[sWeapon]))
+			if(isdefined(level.empire_dmgmod[sWeapon]))
 			{
-				iMaxdamage = iMaxdamage * level.awe_dmgmod[sWeapon];
-				iMindamage = iMindamage * level.awe_dmgmod[sWeapon];
+				iMaxdamage = iMaxdamage * level.empire_dmgmod[sWeapon];
+				iMindamage = iMindamage * level.empire_dmgmod[sWeapon];
 			}
 
 			self scriptedRadiusDamage(self, (0,0,32), sWeapon, iRange, iMaxdamage, iMindamage, false);
 
-			self.awe_cooking = undefined;
+			self.empire_cooking = undefined;
 			return;
 		}
 	}
@@ -7393,24 +7397,24 @@ cookgrenade()
 	// Thrown a grenade?
 	if(isWeaponType("grenade",self getCurrentWeapon()) && !self attackButtonPressed() &&  isAlive(self) && self.sessionstate == "playing")
 	{
-		if( (randomInt(100) < level.awe_grenadewarning) && self teamMateInRange(level.awe_grenadewarningrange) )
+		if( (randomInt(100) < level.empire_grenadewarning) && self teamMateInRange(level.empire_grenadewarningrange) )
 		{
 			// Yell "Grenade!"
-			soundalias = level.awe_grenadevoices[ game[ self.pers["team"] ] ][randomInt(level.awe_grenadevoices[ game[ self.pers["team"] ] ].size)];
+			soundalias = level.empire_grenadevoices[ game[ self.pers["team"] ] ][randomInt(level.empire_grenadevoices[ game[ self.pers["team"] ] ].size)];
 			self playsound(soundalias);
 		}
 	}
-	self.awe_cooking = undefined;
+	self.empire_cooking = undefined;
 }
 
 checkStickyPlacement(sWeapon)
 {
-	level endon("awe_boot");
-	self endon("awe_spawned");
-	self endon("awe_died");
+	level endon("empire_boot");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
-	if(isdefined(self.awe_checkstickyplacement)) return;
-	self.awe_checkstickyplacement = true;
+	if(isdefined(self.empire_checkstickyplacement)) return;
+	self.empire_checkstickyplacement = true;
 
 	//stay here until player lets go of melee button
 	while( isdefined(self) && isAlive( self ) && self.sessionstate=="playing" && self meleeButtonPressed() )
@@ -7419,7 +7423,7 @@ checkStickyPlacement(sWeapon)
 	// Check existance and life signs
 	if(!isdefined(self) || !isAlive(self) || self.sessionstate!="playing")
 	{
-		self.awe_checkstickyplacement = undefined;
+		self.empire_checkstickyplacement = undefined;
 		return;
 	}
 
@@ -7427,7 +7431,7 @@ checkStickyPlacement(sWeapon)
 	stance = self aweGetStance(false);
 	if(stance == 2)
 	{
-		self.awe_checkstickyplacement = undefined;
+		self.empire_checkstickyplacement = undefined;
 		return;
 	}
 
@@ -7449,7 +7453,7 @@ checkStickyPlacement(sWeapon)
 	iAmmo = self getWeaponSlotClipAmmo(slot);
 	if(!iAmmo)
 	{
-		self.awe_checkstickyplacement = undefined;
+		self.empire_checkstickyplacement = undefined;
 		return;
 	}
 
@@ -7478,14 +7482,14 @@ checkStickyPlacement(sWeapon)
 		trace=bulletTrace(position+offset, position + offset - (0,0,20),true,self);
 		if(trace["fraction"]==1 || (isdefined(trace["entity"]) && isdefined(trace["entity"].classname) && trace["entity"].classname == "player") )
 		{
-			self.awe_checkstickyplacement = undefined;
+			self.empire_checkstickyplacement = undefined;
 			return;
 		}
 		voffset = 0;
 	}
-	else if(level.awe_stickynades<2 && isdefined(trace["entity"]) && isdefined(trace["entity"].classname) && trace["entity"].classname == "player")
+	else if(level.empire_stickynades<2 && isdefined(trace["entity"]) && isdefined(trace["entity"].classname) && trace["entity"].classname == "player")
 	{
-		self.awe_checkstickyplacement = undefined;
+		self.empire_checkstickyplacement = undefined;
 		return;
 	}
 
@@ -7513,29 +7517,29 @@ checkStickyPlacement(sWeapon)
 	if(isdefined(trace["entity"]) && isdefined(trace["entity"].classname) && trace["entity"].classname == "script_vehicle")
 	{
 		stickybomb linkto(trace["entity"]);
-		stickybomb.awe_linked = true;
+		stickybomb.empire_linked = true;
 	}
-	else if(level.awe_stickynades==2 && isdefined(trace["entity"]) && isdefined(trace["entity"].classname) && trace["entity"].classname == "player")
+	else if(level.empire_stickynades==2 && isdefined(trace["entity"]) && isdefined(trace["entity"].classname) && trace["entity"].classname == "player")
 	{
 		stickybomb linkto(trace["entity"]);
-		stickybomb.awe_linked = true;
-		stickybomb.awe_linkedto = trace["entity"];
+		stickybomb.empire_linked = true;
+		stickybomb.empire_linkedto = trace["entity"];
 	}
 
 	stickybomb thread monitorSticky(self, sWeapon);
 
-	self.awe_checkstickyplacement = undefined;
+	self.empire_checkstickyplacement = undefined;
 }
 
 waitForStickyDamage(maxDamage)
 {
-	if(!isdefined(level.awe_uo))
+	if(!isdefined(level.empire_uo))
 		return;
 
-	level endon("awe_boot");
-	self endon("awe_waitforstickydamage");
+	level endon("empire_boot");
+	self endon("empire_waitforstickydamage");
 
-	self maps\mp\gametypes\_awe_uncommon::aweSetTakeDamage(true);
+	self maps\mp\gametypes\_empire_uncommon::aweSetTakeDamage(true);
 	self.damaged = undefined;
 
 	for(;;)
@@ -7548,16 +7552,16 @@ waitForStickyDamage(maxDamage)
 
 monitorSticky(owner, sWeapon)
 {
-	level endon("awe_boot");
-	self endon("awe_monitorsticky");
+	level endon("empire_boot");
+	self endon("empire_monitorsticky");
 
 	// Save old team if teamplay
-	if(isdefined(level.awe_teamplay))
+	if(isdefined(level.empire_teamplay))
 		oldteam = owner.sessionteam;
 
 	if(sWeapon == "satchelcharge_mp")
 	{
-		delay = level.awe_stickynadessatchelfuse;
+		delay = level.empire_stickynadessatchelfuse;
 		oDmg = 500;
 		iDmg = 20;
 		range = 450;
@@ -7565,17 +7569,17 @@ monitorSticky(owner, sWeapon)
 	}
 	else
 	{
-		delay = level.awe_stickynadesgrenadefuse;
+		delay = level.empire_stickynadesgrenadefuse;
 		oDmg = 120;
 		iDmg = 5;
 		range = 350;
 		self thread waitForStickyDamage(100);
 	}
 
-	if(isdefined(level.awe_dmgmod[sWeapon]))
+	if(isdefined(level.empire_dmgmod[sWeapon]))
 	{
-		oDmg = oDmg * level.awe_dmgmod[sWeapon];
-		iDmg = iDmg * level.awe_dmgmod[sWeapon];
+		oDmg = oDmg * level.empire_dmgmod[sWeapon];
+		iDmg = iDmg * level.empire_dmgmod[sWeapon];
 	}
 
 	wait 0.05;
@@ -7585,10 +7589,10 @@ monitorSticky(owner, sWeapon)
 	for(i=1;i<delay*20;i++)
 	{
 		// Check if linked player has died
-		if(isdefined(self.awe_linkedto) && !(isAlive(self.awe_linkedto) && self.awe_linkedto.sessionstate=="playing"))
+		if(isdefined(self.empire_linkedto) && !(isAlive(self.empire_linkedto) && self.empire_linkedto.sessionstate=="playing"))
 		{
-			self notify("awe_waitforstickydamage");
-			if(isdefined(self.awe_linked)) self unlink();
+			self notify("empire_waitforstickydamage");
+			if(isdefined(self.empire_linked)) self unlink();
 				wait .05;
 			self delete();
 			return;
@@ -7598,7 +7602,7 @@ monitorSticky(owner, sWeapon)
 		wait 0.05;
 	}
 
-	self notify("awe_waitforstickydamage");
+	self notify("empire_waitforstickydamage");
 
 	// Check that damage owner till exists
 	if(isDefined(owner) && isPlayer(owner))
@@ -7620,29 +7624,29 @@ monitorSticky(owner, sWeapon)
 	// play the hit sound
 	self playsound("grenade_explode_default");
 	// Blow number one
-	playfx(level.awe_effect["bombexplosion"], self.origin);
+	playfx(level.empire_effect["bombexplosion"], self.origin);
 	self scriptedRadiusDamage(eAttacker, (0,0,0), sWeapon, range, oDmg, iDmg, false);
-	if(isdefined(self.awe_linked)) self unlink();
+	if(isdefined(self.empire_linked)) self unlink();
 	wait .05;
 	self delete();
 }
 
 checkSatchelPlacement()
 {
-	self notify("awe_checksatchelplacement");
-	self endon("awe_checksatchelplacement");
-	level endon("awe_boot");
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self notify("empire_checksatchelplacement");
+	self endon("empire_checksatchelplacement");
+	level endon("empire_boot");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	//stay here until player lets go of melee button
 	//keeps mg from accidently being placed as soon as it is picked up
 	while( isAlive( self ) && self.sessionstate=="playing" && self meleeButtonPressed() )
 		wait( 0.1 );
 
-	showSatchelMessage(level.awe_satchelplacemessage);
+	showSatchelMessage(level.empire_satchelplacemessage);
 
-	while( isAlive( self ) && self.sessionstate=="playing" && !isdefined(self.awe_turretmessage) )
+	while( isAlive( self ) && self.sessionstate=="playing" && !isdefined(self.empire_turretmessage) )
 	{
 		sWeapon = self getCurrentWeapon();
 		if(sWeapon != "satchelcharge_mp") break;
@@ -7668,29 +7672,29 @@ checkSatchelPlacement()
 		if( isAlive( self ) && self.sessionstate == "playing" && self meleeButtonPressed() )
 		{
 			// Check satchel limit
-			if(isdefined(level.awe_teamplay))
+			if(isdefined(level.empire_teamplay))
 			{
-				if(level.awe_satchels[self.sessionteam]>=level.awe_satchellimit)
+				if(level.empire_satchels[self.sessionteam]>=level.empire_satchellimit)
 				{
 					self iprintlnbold("Sorry, the maximum number of remote detonables for your team has been reached.");
 					// Remove hud elements
-					if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-					if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-					if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-					if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+					if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+					if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+					if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+					if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 					return false;
 				}
 			}
 			else
 			{
-				if(level.awe_satchels>=level.awe_satchellimit*2)
+				if(level.empire_satchels>=level.empire_satchellimit*2)
 				{
 					self iprintlnbold("Sorry, the maximum number of remote detonables has been reached.");
 					// Remove hud elements
-					if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-					if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-					if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-					if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+					if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+					if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+					if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+					if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 					return false;
 				}
 			}
@@ -7699,42 +7703,42 @@ checkSatchelPlacement()
 			origin = self.origin;
 			angles = self.angles;
 
-			if(level.awe_satchelplanttime)
-				planttime = level.awe_satchelplanttime;
+			if(level.empire_satchelplanttime)
+				planttime = level.empire_satchelplanttime;
 			else
 				planttime = undefined;
 
 			if(isdefined(planttime))
 			{
 				self disableWeapon();
-				if(!isdefined(self.awe_plantbar))
+				if(!isdefined(self.empire_plantbar))
 				{
 					barsize = 288;
 					// Time for progressbar	
 					bartime = (float)planttime;
 
-					if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-					if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+					if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+					if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 
 					// Background
-					self.awe_plantbarbackground = newClientHudElem(self);				
-					self.awe_plantbarbackground.alignX = "center";
-					self.awe_plantbarbackground.alignY = "middle";
-					self.awe_plantbarbackground.x = 320;
-					self.awe_plantbarbackground.y = 405;
-					self.awe_plantbarbackground.alpha = 0.5;
-					self.awe_plantbarbackground.color = (0,0,0);
-					self.awe_plantbarbackground setShader("white", (barsize + 4), 12);			
+					self.empire_plantbarbackground = newClientHudElem(self);				
+					self.empire_plantbarbackground.alignX = "center";
+					self.empire_plantbarbackground.alignY = "middle";
+					self.empire_plantbarbackground.x = 320;
+					self.empire_plantbarbackground.y = 405;
+					self.empire_plantbarbackground.alpha = 0.5;
+					self.empire_plantbarbackground.color = (0,0,0);
+					self.empire_plantbarbackground setShader("white", (barsize + 4), 12);			
 					// Progress bar
-					self.awe_plantbar = newClientHudElem(self);				
-					self.awe_plantbar.alignX = "left";
-					self.awe_plantbar.alignY = "middle";
-					self.awe_plantbar.x = (320 - (barsize / 2.0));
-					self.awe_plantbar.y = 405;
-					self.awe_plantbar setShader("white", 0, 8);
-					self.awe_plantbar scaleOverTime(bartime , barsize, 8);
+					self.empire_plantbar = newClientHudElem(self);				
+					self.empire_plantbar.alignX = "left";
+					self.empire_plantbar.alignY = "middle";
+					self.empire_plantbar.x = (320 - (barsize / 2.0));
+					self.empire_plantbar.y = 405;
+					self.empire_plantbar setShader("white", 0, 8);
+					self.empire_plantbar scaleOverTime(bartime , barsize, 8);
 
-					showSatchelMessage(level.awe_turretplacingmessage);
+					showSatchelMessage(level.empire_turretplacingmessage);
 
 					// Play plant sound
 					self playsound("moody_plant");
@@ -7745,16 +7749,16 @@ checkSatchelPlacement()
 				{
 					if( !(self meleeButtonPressed() && origin == self.origin && isAlive(self) && self.sessionstate=="playing") )
 						break;
-					self.awe_plantbar.color = (1,color,color);
+					self.empire_plantbar.color = (1,color,color);
 					color -= 0.05 / planttime;
 					wait 0.05;
 				}
 
 				// Remove hud elements
-				if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-				if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-				if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-				if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+				if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+				if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+				if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+				if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 		
 				self enableWeapon();
 				if(i<planttime*20)
@@ -7762,9 +7766,9 @@ checkSatchelPlacement()
 			}
 
 			// Check tripwire limit
-			if(isdefined(level.awe_teamplay))
+			if(isdefined(level.empire_teamplay))
 			{
-				if(level.awe_satchels[self.sessionteam]>=level.awe_satchellimit)
+				if(level.empire_satchels[self.sessionteam]>=level.empire_satchellimit)
 				{
 					self iprintlnbold("Sorry, the maximum number of remote detonables for your team has been reached.");
 					return false;
@@ -7772,17 +7776,17 @@ checkSatchelPlacement()
 			}
 			else
 			{
-				if(level.awe_satchels>=level.awe_satchellimit*2)
+				if(level.empire_satchels>=level.empire_satchellimit*2)
 				{
 					self iprintlnbold("Sorry, the maximum number of tripwires has been reached.");
 					return false;
 				}
 			}
 
-			if(isdefined(level.awe_teamplay))
-				level.awe_satchels[self.sessionteam]++;
+			if(isdefined(level.empire_teamplay))
+				level.empire_satchels[self.sessionteam]++;
 			else
-				level.awe_satchels++;
+				level.empire_satchels++;
 
 			// Decrease grenade ammo
 			iAmmo--;
@@ -7806,7 +7810,7 @@ checkSatchelPlacement()
 			if(isdefined(trace["entity"]) && isdefined(trace["entity"].classname) && trace["entity"].classname == "script_vehicle")
 			{
 				satchel linkto(trace["entity"]);
-				satchel.awe_linked = true;
+				satchel.empire_linked = true;
 			}
 
 			satchel thread monitorSatchel(self);
@@ -7814,26 +7818,26 @@ checkSatchelPlacement()
 		}
 		wait( 0.2 );
 	}
-	if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-	if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+	if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+	if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 }
 
 waitForSatchelDamage(maxDamage)
 {
-	level endon("awe_boot");
-	self endon("awe_waitforsatcheldamage");
+	level endon("empire_boot");
+	self endon("empire_waitforsatcheldamage");
 
-	self maps\mp\gametypes\_awe_uncommon::aweSetTakeDamage(true);
+	self maps\mp\gametypes\_empire_uncommon::aweSetTakeDamage(true);
 	self.damaged = undefined;
 
 	for(;;)
 	{
 		self waittill ("damage", dmg, who, dir, point, mod);
 
-		if(level.awe_debug && isdefined(mod))
+		if(level.empire_debug && isdefined(mod))
 			iprintlnbold("MOD: " + mod);
 
-		if(isdefined(who) && isdefined(who.awe_checkdefusesatchel))
+		if(isdefined(who) && isdefined(who.empire_checkdefusesatchel))
 			continue;
 
 		if(dmg>=maxDamage || isdefined(self.damaged)  )
@@ -7844,10 +7848,10 @@ waitForSatchelDamage(maxDamage)
 
 waitForSatchelDetonation(satchel)
 {
-	level endon("awe_boot");
-	self endon("awe_spawned");
-	self endon("awe_died");
-	satchel endon("awe_waitforsatcheldamage");
+	level endon("empire_boot");
+	self endon("empire_spawned");
+	self endon("empire_died");
+	satchel endon("empire_waitforsatcheldamage");
 
 	while(isdefined(satchel) && !isdefined(satchel.damaged) && isdefined(self) && isAlive(self) && isPlayer(self))
 	{
@@ -7859,26 +7863,26 @@ waitForSatchelDetonation(satchel)
 	
 	while(isdefined(satchel) && !isdefined(satchel.damaged) && isdefined(self) && isAlive(self) && isPlayer(self))
 	{
-		if(self meleeButtonPressed() && self useButtonPressed() && !isdefined(self.awe_checkdefusesatchel)) break;
+		if(self meleeButtonPressed() && self useButtonPressed() && !isdefined(self.empire_checkdefusesatchel)) break;
 		wait 0.05;
 	}
 	
 	if(isdefined(satchel))
 	{
 		satchel.damaged = true;
-		satchel notify("awe_waitforsatcheldamage");
+		satchel notify("empire_waitforsatcheldamage");
 	}
 }
 
 monitorSatchel(owner)
 {
-	level endon("awe_boot");
-	self endon("awe_monitorsatchel");
+	level endon("empire_boot");
+	self endon("empire_monitorsatchel");
 
 	wait .05;
 
 	// Save old team if teamplay
-	if(isdefined(level.awe_teamplay))
+	if(isdefined(level.empire_teamplay))
 		self.oldteam = owner.sessionteam;
 
 	self thread waitForSatchelDamage(150);
@@ -7896,11 +7900,11 @@ monitorSatchel(owner)
 			blow = true;
 
 		// Loop through players to find out if one has triggered the wire
-		for(i=0;i<level.awe_allplayers.size && !isdefined(blow);i++)
+		for(i=0;i<level.empire_allplayers.size && !isdefined(blow);i++)
 		{
 			// Check that player still exist
-			if(isDefined(level.awe_allplayers[i]))
-				player = level.awe_allplayers[i];
+			if(isDefined(level.empire_allplayers[i]))
+				player = level.empire_allplayers[i];
 			else
 				continue;
 
@@ -7914,7 +7918,7 @@ monitorSatchel(owner)
 				continue;
 
 			// Check for defusal
-			if(!isdefined(player.awe_checkdefusetripwire) && !player meleeButtonPressed())
+			if(!isdefined(player.empire_checkdefusetripwire) && !player meleeButtonPressed())
 				player thread checkDefuseSatchel(self);
 
 			break;
@@ -7924,12 +7928,12 @@ monitorSatchel(owner)
 		wait .05;
 	}
 
-	if(isdefined(level.awe_teamplay))
-		level.awe_satchels[self.oldteam]--;
+	if(isdefined(level.empire_teamplay))
+		level.empire_satchels[self.oldteam]--;
 	else
-		level.awe_satchels--;
+		level.empire_satchels--;
 
-	self notify("awe_waitforsatcheldamage");
+	self notify("empire_waitforsatcheldamage");
 
 	if(isDefined(owner) && isAlive(owner) && owner.sessionstate=="playing")
 	{
@@ -7952,23 +7956,23 @@ monitorSatchel(owner)
 		// play the hit sound
 		self playsound("grenade_explode_default");
 		// Blow number one
-		playfx(level.awe_effect["bombexplosion"], self.origin);
+		playfx(level.empire_effect["bombexplosion"], self.origin);
 		self scriptedRadiusDamage(eAttacker, (0,0,0), "satchelcharge_mp", 450, 500, 20, false);
 	}
 
-	if(isdefined(self.awe_linked)) self unlink();
+	if(isdefined(self.empire_linked)) self unlink();
 	wait .05;
 	self delete();
 }
 
 checkDefuseSatchel(satchel)
 {
-	level endon("awe_boot");
-	self endon("awe_spawned");
-	self endon("awe_died");
+	level endon("empire_boot");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	// Make sure to only run one instance
-	if(isdefined(self.awe_checkdefusesatchel))
+	if(isdefined(self.empire_checkdefusesatchel))
 		return;
 
 	range = 20;
@@ -7978,19 +7982,19 @@ checkDefuseSatchel(satchel)
 	if(distance>=range) return;
 
 	// Ok to defuse, kill checkTripwirePlacement and set up new hud message
-	self notify("awe_checktripwireplacement");
-	self notify("awe_checksatchelplacement");
+	self notify("empire_checktripwireplacement");
+	self notify("empire_checksatchelplacement");
 
-	self.awe_checkdefusesatchel = true;
+	self.empire_checkdefusesatchel = true;
 
 	// Remove hud elements
-	if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-	if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-	if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-	if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+	if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+	if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+	if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+	if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 
 	// Set up new
-	showSatchelMessage(level.awe_satchelpickupmessage);
+	showSatchelMessage(level.empire_satchelpickupmessage);
 
 	// Loop
 	for(;;)
@@ -8001,42 +8005,42 @@ checkDefuseSatchel(satchel)
 			origin = self.origin;
 			angles = self.angles;
 
-			if(level.awe_satchelpicktime)
-				planttime = level.awe_satchelpicktime;
+			if(level.empire_satchelpicktime)
+				planttime = level.empire_satchelpicktime;
 			else
 				planttime = undefined;
 
 			if(isdefined(planttime))
 			{
 				self disableWeapon();
-				if(!isdefined(self.awe_plantbar))
+				if(!isdefined(self.empire_plantbar))
 				{
 					barsize = 288;
 					// Time for progressbar	
 					bartime = (float)planttime;
 
-					if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-					if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+					if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+					if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 
 					// Background
-					self.awe_plantbarbackground = newClientHudElem(self);				
-					self.awe_plantbarbackground.alignX = "center";
-					self.awe_plantbarbackground.alignY = "middle";
-					self.awe_plantbarbackground.x = 320;
-					self.awe_plantbarbackground.y = 405;
-					self.awe_plantbarbackground.alpha = 0.5;
-					self.awe_plantbarbackground.color = (0,0,0);
-					self.awe_plantbarbackground setShader("white", (barsize + 4), 12);			
+					self.empire_plantbarbackground = newClientHudElem(self);				
+					self.empire_plantbarbackground.alignX = "center";
+					self.empire_plantbarbackground.alignY = "middle";
+					self.empire_plantbarbackground.x = 320;
+					self.empire_plantbarbackground.y = 405;
+					self.empire_plantbarbackground.alpha = 0.5;
+					self.empire_plantbarbackground.color = (0,0,0);
+					self.empire_plantbarbackground setShader("white", (barsize + 4), 12);			
 					// Progress bar
-					self.awe_plantbar = newClientHudElem(self);				
-					self.awe_plantbar.alignX = "left";
-					self.awe_plantbar.alignY = "middle";
-					self.awe_plantbar.x = (320 - (barsize / 2.0));
-					self.awe_plantbar.y = 405;
-					self.awe_plantbar setShader("white", 0, 8);
-					self.awe_plantbar scaleOverTime(bartime , barsize, 8);
+					self.empire_plantbar = newClientHudElem(self);				
+					self.empire_plantbar.alignX = "left";
+					self.empire_plantbar.alignY = "middle";
+					self.empire_plantbar.x = (320 - (barsize / 2.0));
+					self.empire_plantbar.y = 405;
+					self.empire_plantbar setShader("white", 0, 8);
+					self.empire_plantbar scaleOverTime(bartime , barsize, 8);
 
-					showSatchelMessage(level.awe_turretpickingmessage);
+					showSatchelMessage(level.empire_turretpickingmessage);
 
 					// Play plant sound
 					self playsound("moody_plant");
@@ -8048,34 +8052,34 @@ checkDefuseSatchel(satchel)
 					if( !(self meleeButtonPressed() && origin == self.origin && isAlive(self) && self.sessionstate=="playing") )
 						break;
 
-					if(isdefined(self.awe_plantbar))
-						self.awe_plantbar.color = (color,1,color);
+					if(isdefined(self.empire_plantbar))
+						self.empire_plantbar.color = (color,1,color);
 
 					color -= 0.05 / planttime;
 					wait 0.05;
 				}
 
 				// Remove hud elements
-				if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-				if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-				if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-				if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+				if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+				if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+				if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+				if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 		
 				self enableWeapon();
 				if(i<planttime*20)
 				{
-					self.awe_checkdefusesatchel = undefined;
+					self.empire_checkdefusesatchel = undefined;
 					return;
 				}
 			}
 
-			if(isdefined(level.awe_teamplay))
-				level.awe_satchels[satchel.oldteam]--;
+			if(isdefined(level.empire_teamplay))
+				level.empire_satchels[satchel.oldteam]--;
 			else
-				level.awe_satchels--;
+				level.empire_satchels--;
 
 			// Remove satchel
-			satchel notify("awe_monitorsatchel");
+			satchel notify("empire_monitorsatchel");
 			wait .05;
 			if(isdefined(satchel))
 				satchel delete();
@@ -8103,32 +8107,32 @@ checkDefuseSatchel(satchel)
 	}
 
 	// Clean up
-	if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-	if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-	if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-	if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+	if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+	if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+	if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+	if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 
-	self.awe_checkdefusesatchel = undefined;
+	self.empire_checkdefusesatchel = undefined;
 }
 
 
 //Thread to determine if a player can place grenades
 checkTripwirePlacement()
 {
-	self notify("awe_checktripwireplacement");
-	self endon("awe_checktripwireplacement");
-	level endon("awe_boot");
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self notify("empire_checktripwireplacement");
+	self endon("empire_checktripwireplacement");
+	level endon("empire_boot");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	//stay here until player lets go of melee button
 	//keeps mg from accidently being placed as soon as it is picked up
 	while( isAlive( self ) && self.sessionstate=="playing" && self meleeButtonPressed() )
 		wait( 0.1 );
 
-	showTripwireMessage(self getWeaponSlotWeapon("grenade"), level.awe_tripwireplacemessage);
+	showTripwireMessage(self getWeaponSlotWeapon("grenade"), level.empire_tripwireplacemessage);
 
-	while( isAlive( self ) && self.sessionstate=="playing" && !isdefined(self.awe_turretmessage) )
+	while( isAlive( self ) && self.sessionstate=="playing" && !isdefined(self.empire_turretmessage) )
 	{
 		sWeapon = self getCurrentWeapon();
 		if(!isWeaponType("grenade",sWeapon)) break;
@@ -8190,29 +8194,29 @@ checkTripwirePlacement()
 		if( isAlive( self ) && self.sessionstate == "playing" && self meleeButtonPressed() )
 		{
 			// Check tripwire limit
-			if(isdefined(level.awe_teamplay))
+			if(isdefined(level.empire_teamplay))
 			{
-				if(level.awe_tripwires[self.sessionteam]>=level.awe_tripwirelimit)
+				if(level.empire_tripwires[self.sessionteam]>=level.empire_tripwirelimit)
 				{
 					self iprintlnbold("Sorry, the maximum number of tripwires for your team has been reached.");
 					// Remove hud elements
-					if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-					if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-					if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-					if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+					if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+					if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+					if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+					if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 					return false;
 				}
 			}
 			else
 			{
-				if(level.awe_tripwires>=level.awe_tripwirelimit*2)
+				if(level.empire_tripwires>=level.empire_tripwirelimit*2)
 				{
 					self iprintlnbold("Sorry, the maximum number of tripwires has been reached.");
 					// Remove hud elements
-					if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-					if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-					if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-					if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+					if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+					if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+					if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+					if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 					return false;
 				}
 			}
@@ -8221,42 +8225,42 @@ checkTripwirePlacement()
 			origin = self.origin;
 			angles = self.angles;
 
-			if(level.awe_tripwireplanttime)
-				planttime = level.awe_tripwireplanttime;
+			if(level.empire_tripwireplanttime)
+				planttime = level.empire_tripwireplanttime;
 			else
 				planttime = undefined;
 
 			if(isdefined(planttime))
 			{
 				self disableWeapon();
-				if(!isdefined(self.awe_plantbar))
+				if(!isdefined(self.empire_plantbar))
 				{
 					barsize = 288;
 					// Time for progressbar	
 					bartime = (float)planttime;
 
-					if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-					if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+					if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+					if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 
 					// Background
-					self.awe_plantbarbackground = newClientHudElem(self);				
-					self.awe_plantbarbackground.alignX = "center";
-					self.awe_plantbarbackground.alignY = "middle";
-					self.awe_plantbarbackground.x = 320;
-					self.awe_plantbarbackground.y = 405;
-					self.awe_plantbarbackground.alpha = 0.5;
-					self.awe_plantbarbackground.color = (0,0,0);
-					self.awe_plantbarbackground setShader("white", (barsize + 4), 12);			
+					self.empire_plantbarbackground = newClientHudElem(self);				
+					self.empire_plantbarbackground.alignX = "center";
+					self.empire_plantbarbackground.alignY = "middle";
+					self.empire_plantbarbackground.x = 320;
+					self.empire_plantbarbackground.y = 405;
+					self.empire_plantbarbackground.alpha = 0.5;
+					self.empire_plantbarbackground.color = (0,0,0);
+					self.empire_plantbarbackground setShader("white", (barsize + 4), 12);			
 					// Progress bar
-					self.awe_plantbar = newClientHudElem(self);				
-					self.awe_plantbar.alignX = "left";
-					self.awe_plantbar.alignY = "middle";
-					self.awe_plantbar.x = (320 - (barsize / 2.0));
-					self.awe_plantbar.y = 405;
-					self.awe_plantbar setShader("white", 0, 8);
-					self.awe_plantbar scaleOverTime(bartime , barsize, 8);
+					self.empire_plantbar = newClientHudElem(self);				
+					self.empire_plantbar.alignX = "left";
+					self.empire_plantbar.alignY = "middle";
+					self.empire_plantbar.x = (320 - (barsize / 2.0));
+					self.empire_plantbar.y = 405;
+					self.empire_plantbar setShader("white", 0, 8);
+					self.empire_plantbar scaleOverTime(bartime , barsize, 8);
 
-					showTripwireMessage(self getWeaponSlotWeapon("grenade"), level.awe_turretplacingmessage);
+					showTripwireMessage(self getWeaponSlotWeapon("grenade"), level.empire_turretplacingmessage);
 
 					// Play plant sound
 					self playsound("moody_plant");
@@ -8267,16 +8271,16 @@ checkTripwirePlacement()
 				{
 					if( !(self meleeButtonPressed() && origin == self.origin && isAlive(self) && self.sessionstate=="playing") )
 						break;
-					self.awe_plantbar.color = (1,color,color);
+					self.empire_plantbar.color = (1,color,color);
 					color -= 0.05 / planttime;
 					wait 0.05;
 				}
 
 				// Remove hud elements
-				if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-				if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-				if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-				if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+				if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+				if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+				if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+				if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 		
 				self enableWeapon();
 				if(i<planttime*20)
@@ -8284,9 +8288,9 @@ checkTripwirePlacement()
 			}
 
 			// Check tripwire limit
-			if(isdefined(level.awe_teamplay))
+			if(isdefined(level.empire_teamplay))
 			{
-				if(level.awe_tripwires[self.sessionteam]>=level.awe_tripwirelimit)
+				if(level.empire_tripwires[self.sessionteam]>=level.empire_tripwirelimit)
 				{
 					self iprintlnbold("Sorry, the maximum number of tripwires for your team has been reached.");
 					return false;
@@ -8294,17 +8298,17 @@ checkTripwirePlacement()
 			}
 			else
 			{
-				if(level.awe_tripwires>=level.awe_tripwirelimit*2)
+				if(level.empire_tripwires>=level.empire_tripwirelimit*2)
 				{
 					self iprintlnbold("Sorry, the maximum number of tripwires has been reached.");
 					return false;
 				}
 			}
 
-			if(isdefined(level.awe_teamplay))
-				level.awe_tripwires[self.sessionteam]++;
+			if(isdefined(level.empire_teamplay))
+				level.empire_tripwires[self.sessionteam]++;
 			else
-				level.awe_tripwires++;
+				level.empire_tripwires++;
 
 			// Calc new center
 			x = (vPos1[0] + vPos2[0])/2;
@@ -8335,58 +8339,58 @@ checkTripwirePlacement()
 		}
 		wait( 0.2 );
 	}
-	if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-	if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+	if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+	if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 }
 
 showSatchelMessage(which_message )
 {
-	if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-	if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+	if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+	if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 
-	self.awe_tripwiremessage = newClientHudElem( self );
-	self.awe_tripwiremessage.alignX = "center";
-	self.awe_tripwiremessage.alignY = "middle";
-	self.awe_tripwiremessage.x = 320;
-	self.awe_tripwiremessage.y = 404;
-	self.awe_tripwiremessage.alpha = 1;
-	self.awe_tripwiremessage.fontScale = 0.80;
-	if( 	(isdefined(level.awe_turretpickingmessage) && which_message == level.awe_turretpickingmessage) ||
-		(isdefined(level.awe_turretplacingmessage) && which_message == level.awe_turretplacingmessage) )
-		self.awe_tripwiremessage.color = (.5,.5,.5);
-	self.awe_tripwiremessage setText( which_message );
+	self.empire_tripwiremessage = newClientHudElem( self );
+	self.empire_tripwiremessage.alignX = "center";
+	self.empire_tripwiremessage.alignY = "middle";
+	self.empire_tripwiremessage.x = 320;
+	self.empire_tripwiremessage.y = 404;
+	self.empire_tripwiremessage.alpha = 1;
+	self.empire_tripwiremessage.fontScale = 0.80;
+	if( 	(isdefined(level.empire_turretpickingmessage) && which_message == level.empire_turretpickingmessage) ||
+		(isdefined(level.empire_turretplacingmessage) && which_message == level.empire_turretplacingmessage) )
+		self.empire_tripwiremessage.color = (.5,.5,.5);
+	self.empire_tripwiremessage setText( which_message );
 
-	self.awe_tripwiremessage2 = newClientHudElem(self);
-	self.awe_tripwiremessage2.alignX = "center";
-	self.awe_tripwiremessage2.alignY = "top";
-	self.awe_tripwiremessage2.x = 320;
-	self.awe_tripwiremessage2.y = 415;
-	self.awe_tripwiremessage2 setShader("gfx/icons/hud@satchel.dds",40,40);
+	self.empire_tripwiremessage2 = newClientHudElem(self);
+	self.empire_tripwiremessage2.alignX = "center";
+	self.empire_tripwiremessage2.alignY = "top";
+	self.empire_tripwiremessage2.x = 320;
+	self.empire_tripwiremessage2.y = 415;
+	self.empire_tripwiremessage2 setShader("gfx/icons/hud@satchel.dds",40,40);
 }
 
 showTripwireMessage(sWeapon, which_message )
 {
-	if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-	if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+	if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+	if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 
-	self.awe_tripwiremessage = newClientHudElem( self );
-	self.awe_tripwiremessage.alignX = "center";
-	self.awe_tripwiremessage.alignY = "middle";
-	self.awe_tripwiremessage.x = 320;
-	self.awe_tripwiremessage.y = 404;
-	self.awe_tripwiremessage.alpha = 1;
-	self.awe_tripwiremessage.fontScale = 0.80;
-	if( 	(isdefined(level.awe_turretpickingmessage) && which_message == level.awe_turretpickingmessage) ||
-		(isdefined(level.awe_turretplacingmessage) && which_message == level.awe_turretplacingmessage) )
-		self.awe_tripwiremessage.color = (.5,.5,.5);
-	self.awe_tripwiremessage setText( which_message );
+	self.empire_tripwiremessage = newClientHudElem( self );
+	self.empire_tripwiremessage.alignX = "center";
+	self.empire_tripwiremessage.alignY = "middle";
+	self.empire_tripwiremessage.x = 320;
+	self.empire_tripwiremessage.y = 404;
+	self.empire_tripwiremessage.alpha = 1;
+	self.empire_tripwiremessage.fontScale = 0.80;
+	if( 	(isdefined(level.empire_turretpickingmessage) && which_message == level.empire_turretpickingmessage) ||
+		(isdefined(level.empire_turretplacingmessage) && which_message == level.empire_turretplacingmessage) )
+		self.empire_tripwiremessage.color = (.5,.5,.5);
+	self.empire_tripwiremessage setText( which_message );
 
-	self.awe_tripwiremessage2 = newClientHudElem(self);
-	self.awe_tripwiremessage2.alignX = "center";
-	self.awe_tripwiremessage2.alignY = "top";
-	self.awe_tripwiremessage2.x = 320;
-	self.awe_tripwiremessage2.y = 415;
-	self.awe_tripwiremessage2 setShader(getGrenadeHud(sWeapon),40,40);
+	self.empire_tripwiremessage2 = newClientHudElem(self);
+	self.empire_tripwiremessage2.alignX = "center";
+	self.empire_tripwiremessage2.alignY = "top";
+	self.empire_tripwiremessage2.x = 320;
+	self.empire_tripwiremessage2.y = 415;
+	self.empire_tripwiremessage2 setShader(getGrenadeHud(sWeapon),40,40);
 }
 
 getGrenadeHud(sWeapon)
@@ -8414,30 +8418,30 @@ getGrenadeHud(sWeapon)
 
 tripwireWarning()
 {
-	if(isdefined(self.awe_tripwirewarning))
+	if(isdefined(self.empire_tripwirewarning))
 		return;
-	self.awe_tripwirewarning = true;
+	self.empire_tripwirewarning = true;
 	self iprintlnbold("^1WARNING! ^7Tripwire!");
 	wait 5;
-	self.awe_tripwirewarning = undefined;
+	self.empire_tripwirewarning = undefined;
 }
 
 waitForTripwireDamage(maxDamage)
 {
-	if(!isdefined(level.awe_uo))
+	if(!isdefined(level.empire_uo))
 		return;
 
-	level endon("awe_boot");
-	self endon("awe_waitfortripwiredamage");
+	level endon("empire_boot");
+	self endon("empire_waitfortripwiredamage");
 
-	self maps\mp\gametypes\_awe_uncommon::aweSetTakeDamage(true);
+	self maps\mp\gametypes\_empire_uncommon::aweSetTakeDamage(true);
 	self.damaged = undefined;
 
 	for(;;)
 	{
 		self waittill ("damage", dmg, who, dir, point, mod);
 
-		if(level.awe_debug && isdefined(mod))
+		if(level.empire_debug && isdefined(mod))
 			iprintlnbold("MOD: " + mod);
 
 		if(dmg>=maxDamage) break;
@@ -8448,11 +8452,11 @@ waitForTripwireDamage(maxDamage)
 
 monitorTripwire(owner, sWeapon, vPos1, vPos2)
 {
-	level endon("awe_boot");
-	self endon("awe_monitortripwire");
+	level endon("empire_boot");
+	self endon("empire_monitortripwire");
 
 	// Save old team if teamplay
-	if(isdefined(level.awe_teamplay))
+	if(isdefined(level.empire_teamplay))
 		self.oldteam = owner.sessionteam;
 
 	wait .05;
@@ -8491,11 +8495,11 @@ monitorTripwire(owner, sWeapon, vPos1, vPos2)
 			blow = true;
 
 		// Loop through players to find out if one has triggered the wire
-		for(i=0;i<level.awe_allplayers.size && !isdefined(blow);i++)
+		for(i=0;i<level.empire_allplayers.size && !isdefined(blow);i++)
 		{
 			// Check that player still exist
-			if(isDefined(level.awe_allplayers[i]))
-				player = level.awe_allplayers[i];
+			if(isDefined(level.empire_allplayers[i]))
+				player = level.empire_allplayers[i];
 			else
 				continue;
 
@@ -8509,16 +8513,16 @@ monitorTripwire(owner, sWeapon, vPos1, vPos2)
 				continue;
 
 			// Check for defusal
-			if(!isdefined(player.awe_checkdefusetripwire))
+			if(!isdefined(player.empire_checkdefusetripwire))
 				player thread checkDefuseTripwire(self, sWeapon);
 
 			// Warm if same team?
-			if(isDefined(self.oldteam) && self.oldteam == player.sessionteam && !isDefined(player.awe_tripwirewarning))
+			if(isDefined(self.oldteam) && self.oldteam == player.sessionteam && !isDefined(player.empire_tripwirewarning))
 			{
 				// Stop check if tripwire is safe for teammates.
-				if(level.awe_tripwire==3)
+				if(level.empire_tripwire==3)
 					continue;
-				else if(level.awe_tripwirewarning)
+				else if(level.empire_tripwirewarning)
 					player thread tripwireWarning();
 			}
 
@@ -8541,13 +8545,13 @@ monitorTripwire(owner, sWeapon, vPos1, vPos2)
 		wait .05;
 	}
 
-	if(isdefined(level.awe_teamplay))
-		level.awe_tripwires[self.oldteam]--;
+	if(isdefined(level.empire_teamplay))
+		level.empire_tripwires[self.oldteam]--;
 	else
-		level.awe_tripwires--;
+		level.empire_tripwires--;
 
-	self.nade1 notify("awe_waitfortripwiredamage");
-	self.nade2 notify("awe_waitfortripwiredamage");
+	self.nade1 notify("empire_waitfortripwiredamage");
+	self.nade2 notify("empire_waitfortripwiredamage");
 
 	if(isdefined(self.nade2.damaged))
 	{
@@ -8582,10 +8586,10 @@ monitorTripwire(owner, sWeapon, vPos1, vPos2)
 	iMaxdamage = 120;
 	iMindamage = 5;
 
-	if(isdefined(level.awe_dmgmod[sWeapon]))
+	if(isdefined(level.empire_dmgmod[sWeapon]))
 	{
-		iMaxdamage = iMaxdamage * level.awe_dmgmod[sWeapon];
-		iMindamage = iMindamage * level.awe_dmgmod[sWeapon];
+		iMaxdamage = iMaxdamage * level.empire_dmgmod[sWeapon];
+		iMindamage = iMindamage * level.empire_dmgmod[sWeapon];
 	}
 
 	if(isdefined(self.nade2.damaged))
@@ -8593,8 +8597,8 @@ monitorTripwire(owner, sWeapon, vPos1, vPos2)
 		// play the hit sound
 		self.nade2 playsound("grenade_explode_default");
 		// Blow number two
-		playfx(level.awe_effect["bombexplosion"], self.nade2.origin);
-		self.nade2 scriptedRadiusDamage(eAttacker, (0,0,0), sWeapon, 350, iMaxdamage, iMindamage, (level.awe_tripwire>1) );
+		playfx(level.empire_effect["bombexplosion"], self.nade2.origin);
+		self.nade2 scriptedRadiusDamage(eAttacker, (0,0,0), sWeapon, 350, iMaxdamage, iMindamage, (level.empire_tripwire>1) );
 		wait .05;
 		self.nade2 delete();
 
@@ -8604,8 +8608,8 @@ monitorTripwire(owner, sWeapon, vPos1, vPos2)
 		// play the hit sound
 		self.nade1 playsound("grenade_explode_default");
 		// Blow number one
-		playfx(level.awe_effect["bombexplosion"], self.nade1.origin);
-		self.nade1 scriptedRadiusDamage(eAttacker, (0,0,0), sWeapon, 350, iMaxdamage, iMindamage, (level.awe_tripwire>1) );
+		playfx(level.empire_effect["bombexplosion"], self.nade1.origin);
+		self.nade1 scriptedRadiusDamage(eAttacker, (0,0,0), sWeapon, 350, iMaxdamage, iMindamage, (level.empire_tripwire>1) );
 		wait .05;
 		self.nade1 delete();
 	}
@@ -8614,8 +8618,8 @@ monitorTripwire(owner, sWeapon, vPos1, vPos2)
 		// play the hit sound
 		self.nade1 playsound("grenade_explode_default");
 		// Blow number one
-		playfx(level.awe_effect["bombexplosion"], self.nade1.origin);
-		self.nade1 scriptedRadiusDamage(eAttacker, (0,0,0), sWeapon, 350, iMaxdamage, iMindamage, (level.awe_tripwire>1) );
+		playfx(level.empire_effect["bombexplosion"], self.nade1.origin);
+		self.nade1 scriptedRadiusDamage(eAttacker, (0,0,0), sWeapon, 350, iMaxdamage, iMindamage, (level.empire_tripwire>1) );
 		wait .05;
 		self.nade1 delete();
 
@@ -8625,8 +8629,8 @@ monitorTripwire(owner, sWeapon, vPos1, vPos2)
 		// play the hit sound
 		self.nade2 playsound("grenade_explode_default");
 		// Blow number two
-		playfx(level.awe_effect["bombexplosion"], self.nade2.origin);
-		self.nade2 scriptedRadiusDamage(eAttacker, (0,0,0), sWeapon, 350, iMaxdamage, iMindamage, (level.awe_tripwire>1) );
+		playfx(level.empire_effect["bombexplosion"], self.nade2.origin);
+		self.nade2 scriptedRadiusDamage(eAttacker, (0,0,0), sWeapon, 350, iMaxdamage, iMindamage, (level.empire_tripwire>1) );
 		wait .05;
 		self.nade2 delete();
 	}
@@ -8635,12 +8639,12 @@ monitorTripwire(owner, sWeapon, vPos1, vPos2)
 
 checkDefuseTripwire(tripwire, sWeapon)
 {
-	level endon("awe_boot");
-	self endon("awe_spawned");
-	self endon("awe_died");
+	level endon("empire_boot");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	// Make sure to only run one instance
-	if(isdefined(self.awe_checkdefusetripwire))
+	if(isdefined(self.empire_checkdefusetripwire))
 		return;
 
 	range = 20;
@@ -8653,19 +8657,19 @@ checkDefuseTripwire(tripwire, sWeapon)
 	if(distance1>=range && distance2>=range) return;
 
 	// Ok to defuse, kill checkTripwirePlacement and set up new hud message
-	self notify("awe_checktripwireplacement");
-	self notify("awe_checksatchelplacement");
+	self notify("empire_checktripwireplacement");
+	self notify("empire_checksatchelplacement");
 
-	self.awe_checkdefusetripwire = true;
+	self.empire_checkdefusetripwire = true;
 
 	// Remove hud elements
-	if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-	if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-	if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-	if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+	if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+	if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+	if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+	if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 
 	// Set up new
-	showTripwireMessage(sWeapon, level.awe_tripwirepickupmessage);
+	showTripwireMessage(sWeapon, level.empire_tripwirepickupmessage);
 
 	// Loop
 	for(;;)
@@ -8676,42 +8680,42 @@ checkDefuseTripwire(tripwire, sWeapon)
 			origin = self.origin;
 			angles = self.angles;
 
-			if(level.awe_tripwirepicktime)
-				planttime = level.awe_tripwirepicktime;
+			if(level.empire_tripwirepicktime)
+				planttime = level.empire_tripwirepicktime;
 			else
 				planttime = undefined;
 
 			if(isdefined(planttime))
 			{
 				self disableWeapon();
-				if(!isdefined(self.awe_plantbar))
+				if(!isdefined(self.empire_plantbar))
 				{
 					barsize = 288;
 					// Time for progressbar	
 					bartime = (float)planttime;
 
-					if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-					if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+					if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+					if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 
 					// Background
-					self.awe_plantbarbackground = newClientHudElem(self);				
-					self.awe_plantbarbackground.alignX = "center";
-					self.awe_plantbarbackground.alignY = "middle";
-					self.awe_plantbarbackground.x = 320;
-					self.awe_plantbarbackground.y = 405;
-					self.awe_plantbarbackground.alpha = 0.5;
-					self.awe_plantbarbackground.color = (0,0,0);
-					self.awe_plantbarbackground setShader("white", (barsize + 4), 12);			
+					self.empire_plantbarbackground = newClientHudElem(self);				
+					self.empire_plantbarbackground.alignX = "center";
+					self.empire_plantbarbackground.alignY = "middle";
+					self.empire_plantbarbackground.x = 320;
+					self.empire_plantbarbackground.y = 405;
+					self.empire_plantbarbackground.alpha = 0.5;
+					self.empire_plantbarbackground.color = (0,0,0);
+					self.empire_plantbarbackground setShader("white", (barsize + 4), 12);			
 					// Progress bar
-					self.awe_plantbar = newClientHudElem(self);				
-					self.awe_plantbar.alignX = "left";
-					self.awe_plantbar.alignY = "middle";
-					self.awe_plantbar.x = (320 - (barsize / 2.0));
-					self.awe_plantbar.y = 405;
-					self.awe_plantbar setShader("white", 0, 8);
-					self.awe_plantbar scaleOverTime(bartime , barsize, 8);
+					self.empire_plantbar = newClientHudElem(self);				
+					self.empire_plantbar.alignX = "left";
+					self.empire_plantbar.alignY = "middle";
+					self.empire_plantbar.x = (320 - (barsize / 2.0));
+					self.empire_plantbar.y = 405;
+					self.empire_plantbar setShader("white", 0, 8);
+					self.empire_plantbar scaleOverTime(bartime , barsize, 8);
 
-					showTripwireMessage(sWeapon, level.awe_turretpickingmessage);
+					showTripwireMessage(sWeapon, level.empire_turretpickingmessage);
 
 					// Play plant sound
 					self playsound("moody_plant");
@@ -8723,33 +8727,33 @@ checkDefuseTripwire(tripwire, sWeapon)
 					if( !(self meleeButtonPressed() && origin == self.origin && isAlive(self) && self.sessionstate=="playing") )
 						break;
 
-					if(isdefined(self.awe_plantbar))
-						self.awe_plantbar.color = (color,1,color);
+					if(isdefined(self.empire_plantbar))
+						self.empire_plantbar.color = (color,1,color);
 
 					color -= 0.05 / planttime;
 					wait 0.05;
 				}
 
 				// Remove hud elements
-				if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-				if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-				if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-				if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+				if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+				if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+				if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+				if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 		
 				self enableWeapon();
 				if(i<planttime*20 || !isdefined(tripwire))
 				{
-					self.awe_checkdefusetripwire = undefined;
+					self.empire_checkdefusetripwire = undefined;
 					return;
 				}
 			}
 
-			if(isdefined(level.awe_teamplay))
-				level.awe_tripwires[tripwire.oldteam]--;
+			if(isdefined(level.empire_teamplay))
+				level.empire_tripwires[tripwire.oldteam]--;
 			else
-				level.awe_tripwires--;
+				level.empire_tripwires--;
 			// Remove tripwire
-			tripwire notify("awe_monitortripwire");
+			tripwire notify("empire_monitortripwire");
 			wait .05;
 			if(isdefined(tripwire.nade1))
 				tripwire.nade1 delete();
@@ -8788,12 +8792,12 @@ checkDefuseTripwire(tripwire, sWeapon)
 	}
 
 	// Clean up
-	if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-	if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-	if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-	if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+	if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+	if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+	if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+	if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 
-	self.awe_checkdefusetripwire = undefined;
+	self.empire_checkdefusetripwire = undefined;
 }
 
 getGrenadeModel(sWeapon)
@@ -8836,22 +8840,22 @@ scriptedRadiusDamage(eAttacker, vOffset, sWeapon, iRange, iMaxDamage, iMinDamage
 	}
 
 	// Loop through players
-	for(i=0;i<level.awe_allplayers.size;i++)
+	for(i=0;i<level.empire_allplayers.size;i++)
 	{
-		if(!isdefined(level.awe_allplayers[i]))
+		if(!isdefined(level.empire_allplayers[i]))
 			continue;
 
 		// Check that player is in range
-		distance = distance((self.origin + vOffset), level.awe_allplayers[i].origin);
-		if(distance>=iRange || level.awe_allplayers[i].sessionstate != "playing" || !isAlive(level.awe_allplayers[i]) )
+		distance = distance((self.origin + vOffset), level.empire_allplayers[i].origin);
+		if(distance>=iRange || level.empire_allplayers[i].sessionstate != "playing" || !isAlive(level.empire_allplayers[i]) )
 			continue;
 
-		if(level.awe_allplayers[i] != self && !(isdefined(self.awe_linkedto) && self.awe_linkedto == level.awe_allplayers[i]))
+		if(level.empire_allplayers[i] != self && !(isdefined(self.empire_linkedto) && self.empire_linkedto == level.empire_allplayers[i]))
 		{
 			percent = (iRange-distance)/iRange;
 			iDamage = iMinDamage + (iMaxDamage - iMinDamage)*percent;
 
-			stance = level.awe_allplayers[i] aweGetStance(false);
+			stance = level.empire_allplayers[i] aweGetStance(false);
 			switch(stance)
 			{
 				case 2:
@@ -8865,18 +8869,18 @@ scriptedRadiusDamage(eAttacker, vOffset, sWeapon, iRange, iMaxDamage, iMinDamage
 					break;
 			}
 
-			traceorigin = level.awe_allplayers[i].origin + offset;
+			traceorigin = level.empire_allplayers[i].origin + offset;
 
 			trace = bullettrace(self.origin + vOffset, traceorigin, true, self);
 			// Damage blocked by entity, remove 40%
-			if(isdefined(trace["entity"]) && trace["entity"] != level.awe_allplayers[i])
+			if(isdefined(trace["entity"]) && trace["entity"] != level.empire_allplayers[i])
 				iDamage = iDamage * .6;
 			// Damage blocked by other stuff(walls etc...), remove 80%
 			else if(!isdefined(trace["entity"]))
 				iDamage = iDamage * .2;
 
 			// Reduce damage with 80% if in a vehicle
-			if(level.awe_allplayers[i] maps\mp\gametypes\_awe_uncommon::aweIsInVehicle())
+			if(level.empire_allplayers[i] maps\mp\gametypes\_empire_uncommon::aweIsInVehicle())
 				iDamage = iDamage * .2;
 
 			vDir = vectorNormalize(traceorigin - (self.origin + vOffset));
@@ -8886,10 +8890,10 @@ scriptedRadiusDamage(eAttacker, vOffset, sWeapon, iRange, iMaxDamage, iMinDamage
 			iDamage = iMaxDamage;
 			vDir=(0,0,1);
 		}
-		if(ignoreTK && isPlayer(eAttacker) && isdefined(level.awe_teamplay) && isdefined(eAttacker.sessionteam) && isdefined(level.awe_allplayers[i].sessionteam) && eAttacker.sessionteam == level.awe_allplayers[i].sessionteam)
-			level.awe_allplayers[i] thread [[level.callbackPlayerDamage]](self, self, iDamage, iDFlags, sMeansOfDeath, sWeapon, undefined, vDir, "none");
+		if(ignoreTK && isPlayer(eAttacker) && isdefined(level.empire_teamplay) && isdefined(eAttacker.sessionteam) && isdefined(level.empire_allplayers[i].sessionteam) && eAttacker.sessionteam == level.empire_allplayers[i].sessionteam)
+			level.empire_allplayers[i] thread [[level.callbackPlayerDamage]](self, self, iDamage, iDFlags, sMeansOfDeath, sWeapon, undefined, vDir, "none");
 		else
-			level.awe_allplayers[i] thread [[level.callbackPlayerDamage]](self, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, undefined, vDir, "none");
+			level.empire_allplayers[i] thread [[level.callbackPlayerDamage]](self, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, undefined, vDir, "none");
 	}
 
 	// Loop through all entities and cause damage
@@ -8971,50 +8975,50 @@ scriptedRadiusDamage(eAttacker, vOffset, sWeapon, iRange, iMaxDamage, iMinDamage
 
 pickupTurret()
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
-	if(isdefined(self.awe_pickingturret)) return;
-	self.awe_pickingturret = self.awe_touchingturret;
+	if(isdefined(self.empire_pickingturret)) return;
+	self.empire_pickingturret = self.empire_touchingturret;
 
 
 	// Time for progressbar		
-	if(!isdefined(level.awe_turrets[self.awe_pickingturret]["dropped"]))
-		picktime = level.awe_turretpicktime;
+	if(!isdefined(level.empire_turrets[self.empire_pickingturret]["dropped"]))
+		picktime = level.empire_turretpicktime;
 	else
 		picktime = 0;
 	
 
 	// Show progress bar
-	if(!isdefined(self.awe_pickbar) && picktime)
+	if(!isdefined(self.empire_pickbar) && picktime)
 	{
 		barsize = 288;
 		pickingtime = 0;
 		bartime = (float)picktime;
 
-		if(isdefined(self.awe_turretmessage))	self.awe_turretmessage destroy();
-		if(isdefined(self.awe_turretmessage2))	self.awe_turretmessage2 destroy();
+		if(isdefined(self.empire_turretmessage))	self.empire_turretmessage destroy();
+		if(isdefined(self.empire_turretmessage2))	self.empire_turretmessage2 destroy();
 
 		// Background
-		self.awe_pickbarbackground = newClientHudElem(self);				
-		self.awe_pickbarbackground.alignX = "center";
-		self.awe_pickbarbackground.alignY = "middle";
-		self.awe_pickbarbackground.x = 320;
-		self.awe_pickbarbackground.y = 405;
-		self.awe_pickbarbackground.alpha = 0.5;
-		self.awe_pickbarbackground.color = (0,0,0);
-		self.awe_pickbarbackground setShader("white", (barsize + 4), 12);			
+		self.empire_pickbarbackground = newClientHudElem(self);				
+		self.empire_pickbarbackground.alignX = "center";
+		self.empire_pickbarbackground.alignY = "middle";
+		self.empire_pickbarbackground.x = 320;
+		self.empire_pickbarbackground.y = 405;
+		self.empire_pickbarbackground.alpha = 0.5;
+		self.empire_pickbarbackground.color = (0,0,0);
+		self.empire_pickbarbackground setShader("white", (barsize + 4), 12);			
 
 		// Progress bar
-		self.awe_pickbar = newClientHudElem(self);				
-		self.awe_pickbar.alignX = "left";
-		self.awe_pickbar.alignY = "middle";
-		self.awe_pickbar.x = (320 - (barsize / 2.0));
-		self.awe_pickbar.y = 405;
-		self.awe_pickbar setShader("white", 0, 8);
-		self.awe_pickbar scaleOverTime(bartime , barsize, 8);
+		self.empire_pickbar = newClientHudElem(self);				
+		self.empire_pickbar.alignX = "left";
+		self.empire_pickbar.alignY = "middle";
+		self.empire_pickbar.x = (320 - (barsize / 2.0));
+		self.empire_pickbar.y = 405;
+		self.empire_pickbar setShader("white", 0, 8);
+		self.empire_pickbar scaleOverTime(bartime , barsize, 8);
 	
-		self showTurretMessage(self.awe_pickingturret, level.awe_turretpickingmessage );
+		self showTurretMessage(self.empire_pickingturret, level.empire_turretpickingmessage );
 
 		// Play plant sound
 		self playsound("moody_plant");
@@ -9022,132 +9026,132 @@ pickupTurret()
 		for(i=0;i<picktime*20;i++)
 		{
 			if( !(	self meleeButtonPressed() && isAlive(self) && self.sessionstate=="playing" && 
-					isdefined(self.awe_touchingturret) && self.awe_touchingturret == self.awe_pickingturret &&
-					!isdefined(level.awe_turrets[self.awe_pickingturret]["carried"]) &&
-					isdefined(level.awe_turrets[self.awe_pickingturret]["turret"])
+					isdefined(self.empire_touchingturret) && self.empire_touchingturret == self.empire_pickingturret &&
+					!isdefined(level.empire_turrets[self.empire_pickingturret]["carried"]) &&
+					isdefined(level.empire_turrets[self.empire_pickingturret]["turret"])
 				) )
 				break;
 			wait 0.05;
 		}
 
 		// Remove hud elements
-		if(isdefined(self.awe_pickbarbackground))	self.awe_pickbarbackground destroy();
-		if(isdefined(self.awe_pickbar))		self.awe_pickbar destroy();
-		if(isdefined(self.awe_turretmessage))	self.awe_turretmessage destroy();
-		if(isdefined(self.awe_turretmessage2))	self.awe_turretmessage2 destroy();
+		if(isdefined(self.empire_pickbarbackground))	self.empire_pickbarbackground destroy();
+		if(isdefined(self.empire_pickbar))		self.empire_pickbar destroy();
+		if(isdefined(self.empire_turretmessage))	self.empire_turretmessage destroy();
+		if(isdefined(self.empire_turretmessage2))	self.empire_turretmessage2 destroy();
 
 		self enableWeapon();
 		if(i<picktime*20)
 		{
-			self.awe_pickingturret = undefined;
+			self.empire_pickingturret = undefined;
 			return false;
 		}
 	}
 
 	// Make sure turret is not carried(=just picked up) and that it still exist.
-	if(!isdefined(level.awe_turrets[self.awe_pickingturret]["carried"]) && isdefined(level.awe_turrets[self.awe_pickingturret]["turret"]))
+	if(!isdefined(level.empire_turrets[self.empire_pickingturret]["carried"]) && isdefined(level.empire_turrets[self.empire_pickingturret]["turret"]))
 	{
-		level.awe_turrets[self.awe_pickingturret]["carried"] = true;
-		if(!isdefined(level.awe_turrets[self.awe_pickingturret]["dropped"]))
+		level.empire_turrets[self.empire_pickingturret]["carried"] = true;
+		if(!isdefined(level.empire_turrets[self.empire_pickingturret]["dropped"]))
 		{
-			level.awe_turrets[self.awe_pickingturret]["turret"] notify("awe_turret_think");
+			level.empire_turrets[self.empire_pickingturret]["turret"] notify("empire_turret_think");
 			self notify("stop_turret_hud");
-			self.awe_usingturret = undefined;
+			self.empire_usingturret = undefined;
 		}
-		level.awe_turrets[self.awe_pickingturret]["turret"] delete();
-		level.awe_turrets[self.awe_pickingturret]["dropped"] = undefined;
-		self.awe_carryingturret = self.awe_pickingturret;
-		self.awe_pickingturret = undefined;
-		if(isdefined(self.awe_turretmessage))	self.awe_turretmessage destroy();
-		if(isdefined(self.awe_turretmessage2))	self.awe_turretmessage2 destroy();
+		level.empire_turrets[self.empire_pickingturret]["turret"] delete();
+		level.empire_turrets[self.empire_pickingturret]["dropped"] = undefined;
+		self.empire_carryingturret = self.empire_pickingturret;
+		self.empire_pickingturret = undefined;
+		if(isdefined(self.empire_turretmessage))	self.empire_turretmessage destroy();
+		if(isdefined(self.empire_turretmessage2))	self.empire_turretmessage2 destroy();
 
 //		self notify("stop_turret_hud");
-//		self.awe_usingturret = undefined;
+//		self.empire_usingturret = undefined;
 
 		self showTurretIndicator();
 		self thread checkTurretPlacement();
 	}
 
-	self.awe_pickingturret = undefined;
+	self.empire_pickingturret = undefined;
 }
 
 monitorsprinting()
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
-	self.awe_sprinttime = level.awe_sprinttime;
+	self.empire_sprinttime = level.empire_sprinttime;
 	recovertime = 0;
 
-	if(isdefined(level.awe_uo))
+	if(isdefined(level.empire_uo))
 		maxwidth = 126;
 	else
 		maxwidth = 128;
 
-	if(level.awe_sprinthud == 1)
+	if(level.empire_sprinthud == 1)
 	{
-		self.awe_sprinthud_back = newClientHudElem( self );
-		self.awe_sprinthud_back setShader("gfx/hud/hud@health_back.dds", maxwidth + 2, 5);
-		self.awe_sprinthud_back.alignX = "left";
-		self.awe_sprinthud_back.alignY = "top";
-		self.awe_sprinthud_back.x = 488+13;
-		self.awe_sprinthud_back.y = 454;
+		self.empire_sprinthud_back = newClientHudElem( self );
+		self.empire_sprinthud_back setShader("gfx/hud/hud@health_back.dds", maxwidth + 2, 5);
+		self.empire_sprinthud_back.alignX = "left";
+		self.empire_sprinthud_back.alignY = "top";
+		self.empire_sprinthud_back.x = 488+13;
+		self.empire_sprinthud_back.y = 454;
 
-		self.awe_sprinthud = newClientHudElem( self );
-		self.awe_sprinthud setShader("gfx/hud/hud@health_bar.dds", maxwidth, 3);
-		self.awe_sprinthud.color = ( 0, 0, 1);
-		self.awe_sprinthud.alignX = "left";
-		self.awe_sprinthud.alignY = "top";
-		self.awe_sprinthud.x = 488+14;
-		self.awe_sprinthud.y = 455;
+		self.empire_sprinthud = newClientHudElem( self );
+		self.empire_sprinthud setShader("gfx/hud/hud@health_bar.dds", maxwidth, 3);
+		self.empire_sprinthud.color = ( 0, 0, 1);
+		self.empire_sprinthud.alignX = "left";
+		self.empire_sprinthud.alignY = "top";
+		self.empire_sprinthud.x = 488+14;
+		self.empire_sprinthud.y = 455;
 	}
 
-	if(level.awe_sprinthud == 2)
+	if(level.empire_sprinthud == 2)
 	{
-		self.awe_sprinthud_back = newClientHudElem( self );
-		self.awe_sprinthud_back setShader("white", maxwidth + 2, 5);
-		self.awe_sprinthud_back.color = (0.85,0.85,0.85);
-		self.awe_sprinthud_back.alignX = "left";
-		self.awe_sprinthud_back.alignY = "top";
-		self.awe_sprinthud_back.alpha = 0.95;
-		self.awe_sprinthud_back.x = 488+13;
-		self.awe_sprinthud_back.y = 454;
+		self.empire_sprinthud_back = newClientHudElem( self );
+		self.empire_sprinthud_back setShader("white", maxwidth + 2, 5);
+		self.empire_sprinthud_back.color = (0.85,0.85,0.85);
+		self.empire_sprinthud_back.alignX = "left";
+		self.empire_sprinthud_back.alignY = "top";
+		self.empire_sprinthud_back.alpha = 0.95;
+		self.empire_sprinthud_back.x = 488+13;
+		self.empire_sprinthud_back.y = 454;
 
-		self.awe_sprinthud = newClientHudElem( self );
-		self.awe_sprinthud setShader("white", maxwidth, 3);
-		self.awe_sprinthud.color = ( 0, 0, 1);
-		self.awe_sprinthud.alignX = "left";
-		self.awe_sprinthud.alignY = "top";
-		self.awe_sprinthud.alpha = 0.65;
-		self.awe_sprinthud.x = 488+14;
-		self.awe_sprinthud.y = 455;
+		self.empire_sprinthud = newClientHudElem( self );
+		self.empire_sprinthud setShader("white", maxwidth, 3);
+		self.empire_sprinthud.color = ( 0, 0, 1);
+		self.empire_sprinthud.alignX = "left";
+		self.empire_sprinthud.alignY = "top";
+		self.empire_sprinthud.alpha = 0.65;
+		self.empire_sprinthud.x = 488+14;
+		self.empire_sprinthud.y = 455;
 	}
 
-	if(level.awe_sprinthudhint)
+	if(level.empire_sprinthudhint)
 	{
-		self.awe_sprinthud_hint = newClientHudElem( self );
-		self.awe_sprinthud_hint setText(&"^7Hold USE [{+activate}] to sprint");
-		self.awe_sprinthud_hint.alignX = "right";
-		self.awe_sprinthud_hint.alignY = "top";
-		self.awe_sprinthud_hint.fontScale = 0.8;
-		self.awe_sprinthud_hint.x = 488+10;
-		self.awe_sprinthud_hint.y = 450;
-		self.awe_sprinthud_hint.alpha = 0;
+		self.empire_sprinthud_hint = newClientHudElem( self );
+		self.empire_sprinthud_hint setText(&"^7Hold USE [{+activate}] to sprint");
+		self.empire_sprinthud_hint.alignX = "right";
+		self.empire_sprinthud_hint.alignY = "top";
+		self.empire_sprinthud_hint.fontScale = 0.8;
+		self.empire_sprinthud_hint.x = 488+10;
+		self.empire_sprinthud_hint.y = 450;
+		self.empire_sprinthud_hint.alpha = 0;
 	}
 
 	while (isAlive(self) && self.sessionstate == "playing")
 	{
-		sprint = (float)(level.awe_sprinttime-self.awe_sprinttime)/(float)level.awe_sprinttime;
+		sprint = (float)(level.empire_sprinttime-self.empire_sprinttime)/(float)level.empire_sprinttime;
 		
-		if(level.awe_sprinthud)
+		if(level.empire_sprinthud)
 		{
-			if(!self.awe_sprinttime)
+			if(!self.empire_sprinttime)
 			{
-				self.awe_sprinthud.color = ( 1.0, 0.0, 0.0);
+				self.empire_sprinthud.color = ( 1.0, 0.0, 0.0);
 			}
 			else	
 			{
-				self.awe_sprinthud.color = ( sprint, 0, 1.0-sprint);
+				self.empire_sprinthud.color = ( sprint, 0, 1.0-sprint);
 			}
 		
 			hud_width = (1.0 - sprint) * maxwidth;
@@ -9155,10 +9159,10 @@ monitorsprinting()
 			if ( hud_width < 1 )
 				hud_width = 1;
 			
-			if(level.awe_sprinthud == 1)
-				self.awe_sprinthud setShader("gfx/hud/hud@health_bar.dds", hud_width, 3);
+			if(level.empire_sprinthud == 1)
+				self.empire_sprinthud setShader("gfx/hud/hud@health_bar.dds", hud_width, 3);
 			else
-				self.awe_sprinthud setShader("white", hud_width, 3);
+				self.empire_sprinthud setShader("white", hud_width, 3);
 		}
 
 		oldorigin = self.origin;
@@ -9166,87 +9170,87 @@ monitorsprinting()
 		wait .05;
 
 		// No sprinting if parchuting or under spawnprotection (with disabled weapon)
-		if( (isdefined(self.awe_invulnerable) && level.awe_spawnprotectiondisableweapon) || isdefined(self.awe_isparachuting))
+		if( (isdefined(self.empire_invulnerable) && level.empire_spawnprotectiondisableweapon) || isdefined(self.empire_isparachuting))
 			continue;
 
-		if((oldorigin != self.origin || self.awe_pace) && self.awe_sprinttime>0 && self useButtonPressed() && level.awe_sprint>self aweGetStance(false))
+		if((oldorigin != self.origin || self.empire_pace) && self.empire_sprinttime>0 && self useButtonPressed() && level.empire_sprint>self aweGetStance(false))
 		{
-			if(!isdefined(self.awe_sprinting))
+			if(!isdefined(self.empire_sprinting))
 			{
-				self.maxspeed = 1.9 * level.awe_sprintspeed * level.awe_playerspeed;
+				self.maxspeed = 1.9 * level.empire_sprintspeed * level.empire_playerspeed;
 				self disableWeapon();
-				self.awe_sprinting = true;
+				self.empire_sprinting = true;
 			}
-			self.awe_sprinttime--;
+			self.empire_sprinttime--;
 		}
 		else
 		{
-			if(isdefined(self.awe_sprinting))
+			if(isdefined(self.empire_sprinting))
 			{
-				self.maxspeed = 1.9 * level.awe_playerspeed;
+				self.maxspeed = 1.9 * level.empire_playerspeed;
 				self enableWeapon();
-				self.awe_sprinting = undefined;
-				recovertime = level.awe_sprintrecovertime;
-				if(self.awe_sprinttime>0)
+				self.empire_sprinting = undefined;
+				recovertime = level.empire_sprintrecovertime;
+				if(self.empire_sprinttime>0)
 					recovertime = (int)(recovertime * sprint + 0.5);
 			}
-			if(self.awe_sprinttime<(level.awe_sprinttime) && !self useButtonPressed())
+			if(self.empire_sprinttime<(level.empire_sprinttime) && !self useButtonPressed())
 			{
 				if(recovertime>0)
 					recovertime--;
 				else
-					self.awe_sprinttime++;
+					self.empire_sprinttime++;
 			}
 		}
 	}
-	if(isdefined(self.awe_sprinthud)) self.awe_sprinthud destroy();
-	if(isdefined(self.awe_sprinthud_back)) self.awe_sprinthud_back destroy();
-	if(isdefined(self.awe_sprinthud_hint)) self.awe_sprinthud_hint destroy();
+	if(isdefined(self.empire_sprinthud)) self.empire_sprinthud destroy();
+	if(isdefined(self.empire_sprinthud_back)) self.empire_sprinthud_back destroy();
+	if(isdefined(self.empire_sprinthud_hint)) self.empire_sprinthud_hint destroy();
 }
 
 monitoruosprinting()
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
-	oldfat = self maps\mp\gametypes\_awe_uncommon::aweGetFatigue();
+	oldfat = self maps\mp\gametypes\_empire_uncommon::aweGetFatigue();
 
 	while (isAlive(self) && self.sessionstate == "playing")
 	{
 		wait .05;		// Wait
-		newfat = self maps\mp\gametypes\_awe_uncommon::aweGetFatigue();
+		newfat = self maps\mp\gametypes\_empire_uncommon::aweGetFatigue();
 		deltafat = newfat - oldfat;
 
 		if(deltafat<0) // Sprinting
 		{
-			if(!isdefined(self.awe_sprinting))
+			if(!isdefined(self.empire_sprinting))
 			{
-				self.maxspeed = 1.9 * level.awe_uosprintspeed * level.awe_playerspeed;
-				self.awe_sprinting = true;
+				self.maxspeed = 1.9 * level.empire_uosprintspeed * level.empire_playerspeed;
+				self.empire_sprinting = true;
 			}
 
-			newfat = oldfat + deltafat * level.awe_uosprinttime;
+			newfat = oldfat + deltafat * level.empire_uosprinttime;
 
 			if(newfat<0) newfat = 0;
 
-			self maps\mp\gametypes\_awe_uncommon::aweSetFatigue(newfat);
+			self maps\mp\gametypes\_empire_uncommon::aweSetFatigue(newfat);
 		}
 
 		if(deltafat>0) // Recovering
 		{
-			newfat = oldfat + deltafat * level.awe_uosprintrecovertime;
+			newfat = oldfat + deltafat * level.empire_uosprintrecovertime;
 
 			if(newfat>1) newfat = 1;
 
-			self maps\mp\gametypes\_awe_uncommon::aweSetFatigue(newfat);
+			self maps\mp\gametypes\_empire_uncommon::aweSetFatigue(newfat);
 		}
 
 		if(deltafat>=0) // Recovering and/or not sprinting
 		{
-			if(isdefined(self.awe_sprinting))
+			if(isdefined(self.empire_sprinting))
 			{
-				self.maxspeed = 1.9 * level.awe_playerspeed;
-				self.awe_sprinting = undefined;
+				self.maxspeed = 1.9 * level.empire_playerspeed;
+				self.empire_sprinting = undefined;
 			}
 		}
 
@@ -9256,8 +9260,8 @@ monitoruosprinting()
 
 whatscooking()
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	// Loop as long as the cooktimer has not reached zero	
 	while (isAlive(self) && self.sessionstate == "playing")
@@ -9266,16 +9270,16 @@ whatscooking()
 		wait .05;
 
 		// Remove laserdot in ADS mode
-		if(isdefined(self.awe_laserdot))
+		if(isdefined(self.empire_laserdot))
 		{
-			if(self maps\mp\gametypes\_awe_uncommon::aweIsAds() || self maps\mp\gametypes\_awe_uncommon::aweIsInVehicle())
-				self.awe_laserdot.alpha = 0;
+			if(self maps\mp\gametypes\_empire_uncommon::aweIsAds() || self maps\mp\gametypes\_empire_uncommon::aweIsInVehicle())
+				self.empire_laserdot.alpha = 0;
 			else
-				self.awe_laserdot.alpha = level.awe_laserdot;
+				self.empire_laserdot.alpha = level.empire_laserdot;
 		}
 
 		// No need to check a lot of stuff if player is in a vehicle
-		if(self maps\mp\gametypes\_awe_uncommon::aweIsInVehicle())
+		if(self maps\mp\gametypes\_empire_uncommon::aweIsInVehicle())
 			continue;
 
 		// get current weapon
@@ -9284,171 +9288,171 @@ whatscooking()
 		stance = self aweGetStance(true);
 
 		// Is the current weapon a grenade and is it being cooked?
-		if(level.awe_grenadewarning && !isdefined(self.awe_cooking) && !isdefined(self.awe_usingturret) && attackButton && isWeaponType("grenade",cw))
+		if(level.empire_grenadewarning && !isdefined(self.empire_cooking) && !isdefined(self.empire_usingturret) && attackButton && isWeaponType("grenade",cw))
 			self thread cookgrenade();
 
 		meleeButton = self meleeButtonPressed();
 
-		if( level.awe_tripwire && isWeaponType("grenade",cw) && stance==2 && !isDefined(self.awe_turretmessage) && !isDefined(self.awe_tripwiremessage))
+		if( level.empire_tripwire && isWeaponType("grenade",cw) && stance==2 && !isDefined(self.empire_turretmessage) && !isDefined(self.empire_tripwiremessage))
 			self thread checkTripwirePlacement();
 
-		if( isdefined(level.awe_uo) && level.awe_satchel && cw == "satchelcharge_mp" && stance==2 && !isDefined(self.awe_turretmessage) && !isDefined(self.awe_tripwiremessage))
+		if( isdefined(level.empire_uo) && level.empire_satchel && cw == "satchelcharge_mp" && stance==2 && !isDefined(self.empire_turretmessage) && !isDefined(self.empire_tripwiremessage))
 			self thread checkSatchelPlacement();
 
-		if( level.awe_stickynades && meleeButton && !isdefined(self.awe_checkstickyplacement) && !isDefined(self.awe_turretmessage) && !isDefined(self.awe_tripwiremessage) && (isWeaponType("grenade",cw) || cw == "satchelcharge_mp") && stance!=2)
+		if( level.empire_stickynades && meleeButton && !isdefined(self.empire_checkstickyplacement) && !isDefined(self.empire_turretmessage) && !isDefined(self.empire_tripwiremessage) && (isWeaponType("grenade",cw) || cw == "satchelcharge_mp") && stance!=2)
 			self thread checkStickyPlacement(cw);
 
 		// Can I carry a turret?
-		if(!level.awe_turretmobile || isdefined(self.cannotcarryturret))
+		if(!level.empire_turretmobile || isdefined(self.cannotcarryturret))
 			continue;
 
-		if(isdefined(self.awe_touchingturret))
+		if(isdefined(self.empire_touchingturret))
 		{
 			// Check for turrets to pick up
 			// Make sure we have not placing a turret and is still holding meleebutton and that we are touching turret
-			if(!isdefined(self.awe_carryingturret) && meleeButton && !isdefined(self.awe_placingturret) && !isdefined(self.pickingturret))
+			if(!isdefined(self.empire_carryingturret) && meleeButton && !isdefined(self.empire_placingturret) && !isdefined(self.pickingturret))
 			{
 				self thread pickupTurret();
 				continue;
 			}
 
 			// Still using the same turret?
-			if(isdefined(self.awe_usingturret) && self.awe_usingturret == self.awe_touchingturret)
+			if(isdefined(self.empire_usingturret) && self.empire_usingturret == self.empire_touchingturret)
 			{
-				if(!isdefined(self.awe_turretmessage) && !isdefined(self.awe_carryingturret) && !isdefined(self.awe_pickingturret) && !isdefined(self.awe_placingturret))
-					self showTurretMessage(self.awe_touchingturret,level.awe_turretpickupmessage);
+				if(!isdefined(self.empire_turretmessage) && !isdefined(self.empire_carryingturret) && !isdefined(self.empire_pickingturret) && !isdefined(self.empire_placingturret))
+					self showTurretMessage(self.empire_touchingturret,level.empire_turretpickupmessage);
 				continue;
 			}
 
 			// Do not recheck if we are still touching the same turret
 			// Is it dropped?
-			if( isdefined(level.awe_turrets[self.awe_touchingturret]["dropped"]) )
+			if( isdefined(level.empire_turrets[self.empire_touchingturret]["dropped"]) )
 			{
 				// Check so it has not been picked up
-				if( isdefined(level.awe_turrets[self.awe_touchingturret]["turret"]) && !isdefined(level.awe_turrets[self.awe_touchingturret]["carried"]) )
+				if( isdefined(level.empire_turrets[self.empire_touchingturret]["turret"]) && !isdefined(level.empire_turrets[self.empire_touchingturret]["carried"]) )
 				{
-					if( distance(self.origin,level.awe_turrets[self.awe_touchingturret]["turret"].origin) < 50) // Within range?
+					if( distance(self.origin,level.empire_turrets[self.empire_touchingturret]["turret"].origin) < 50) // Within range?
 					{
-						if(!isdefined(self.awe_turretmessage) && !isdefined(self.awe_carryingturret) && !isdefined(self.awe_pickingturret) && !isdefined(self.awe_placingturret))
-							self showTurretMessage(self.awe_touchingturret,level.awe_turretpickupmessage);
+						if(!isdefined(self.empire_turretmessage) && !isdefined(self.empire_carryingturret) && !isdefined(self.empire_pickingturret) && !isdefined(self.empire_placingturret))
+							self showTurretMessage(self.empire_touchingturret,level.empire_turretpickupmessage);
 						continue;
 					}
 				}
 			}
 		}
 
-		if(isdefined(self.awe_usingturret))
+		if(isdefined(self.empire_usingturret))
 		{
-			self.awe_touchingturret = self.awe_usingturret;
-			if(!isdefined(self.awe_turretmessage) && !isdefined(self.awe_carryingturret) && !isdefined(self.awe_pickingturret) && !isdefined(self.awe_placingturret))
+			self.empire_touchingturret = self.empire_usingturret;
+			if(!isdefined(self.empire_turretmessage) && !isdefined(self.empire_carryingturret) && !isdefined(self.empire_pickingturret) && !isdefined(self.empire_placingturret))
 			{
-				self showTurretMessage(self.awe_touchingturret,level.awe_turretpickupmessage);
-				if(level.awe_debug)
+				self showTurretMessage(self.empire_touchingturret,level.empire_turretpickupmessage);
+				if(level.empire_debug)
 				{
-					self iprintlnbold("x:" + (int)(level.awe_turrets[self.awe_touchingturret]["turret"].origin[0] + 0.5) + 
-								" y:" + (int)(level.awe_turrets[self.awe_touchingturret]["turret"].origin[1] + 0.5) +
-								" z:" + (int)(level.awe_turrets[self.awe_touchingturret]["turret"].origin[2] + 0.5) +
-//								" a0:" + (int)(level.awe_turrets[self.awe_touchingturret]["turret"].angles[0] + 0.5) +
-								" a:" + (int)(level.awe_turrets[self.awe_touchingturret]["turret"].angles[1] + 0.5) +
-//								" a2:" + (int)(level.awe_turrets[self.awe_touchingturret]["turret"].angles[2] + 0.5) +
-								" w:" + level.awe_turrets[self.awe_touchingturret]["turret"].weaponinfo);
+					self iprintlnbold("x:" + (int)(level.empire_turrets[self.empire_touchingturret]["turret"].origin[0] + 0.5) + 
+								" y:" + (int)(level.empire_turrets[self.empire_touchingturret]["turret"].origin[1] + 0.5) +
+								" z:" + (int)(level.empire_turrets[self.empire_touchingturret]["turret"].origin[2] + 0.5) +
+//								" a0:" + (int)(level.empire_turrets[self.empire_touchingturret]["turret"].angles[0] + 0.5) +
+								" a:" + (int)(level.empire_turrets[self.empire_touchingturret]["turret"].angles[1] + 0.5) +
+//								" a2:" + (int)(level.empire_turrets[self.empire_touchingturret]["turret"].angles[2] + 0.5) +
+								" w:" + level.empire_turrets[self.empire_touchingturret]["turret"].weaponinfo);
 				}
 			}
 		}
 		else
 		{	
 			// Check if we are touching any dropped turrets
-			self.awe_touchingturret = undefined;
-			for (i=0;i<level.awe_turrets.size;i++)
+			self.empire_touchingturret = undefined;
+			for (i=0;i<level.empire_turrets.size;i++)
 			{
 				// Is it not a dropped one?
-				if(!isdefined(level.awe_turrets[i]["dropped"])) continue;
+				if(!isdefined(level.empire_turrets[i]["dropped"])) continue;
 				// Is it carried by someone?
-				if(isdefined(level.awe_turrets[i]["carried"])) continue;
+				if(isdefined(level.empire_turrets[i]["carried"])) continue;
 				// Make sure it exist
-				if(!isdefined(level.awe_turrets[i]["turret"])) continue;					
+				if(!isdefined(level.empire_turrets[i]["turret"])) continue;					
 				// Within range?
-				if( distance(self.origin,level.awe_turrets[i]["turret"].origin) < 50)
+				if( distance(self.origin,level.empire_turrets[i]["turret"].origin) < 50)
 				{
-					self.awe_touchingturret = i;
-					if(!isdefined(self.awe_turretmessage) && !isdefined(self.awe_carryingturret) && !isdefined(self.awe_pickingturret) && !isdefined(self.awe_placingturret))
-						self showTurretMessage(i,level.awe_turretpickupmessage);
+					self.empire_touchingturret = i;
+					if(!isdefined(self.empire_turretmessage) && !isdefined(self.empire_carryingturret) && !isdefined(self.empire_pickingturret) && !isdefined(self.empire_placingturret))
+						self showTurretMessage(i,level.empire_turretpickupmessage);
 					break;	// don't check any more turrets.
 				}
 			}
 		}
-		if(!isdefined(self.awe_touchingturret) && !isdefined(self.awe_carryingturret) && !isdefined(self.awe_pickingturret))
+		if(!isdefined(self.empire_touchingturret) && !isdefined(self.empire_carryingturret) && !isdefined(self.empire_pickingturret))
 		{
-			if(isdefined(self.awe_turretmessage))	self.awe_turretmessage destroy();
-			if(isdefined(self.awe_turretmessage2))	self.awe_turretmessage2 destroy();
+			if(isdefined(self.empire_turretmessage))	self.empire_turretmessage destroy();
+			if(isdefined(self.empire_turretmessage2))	self.empire_turretmessage2 destroy();
 		}
 	}
-	if(isdefined(self.awe_turretmessage))	self.awe_turretmessage destroy();
-	if(isdefined(self.awe_turretmessage2))	self.awe_turretmessage2 destroy();
+	if(isdefined(self.empire_turretmessage))	self.empire_turretmessage destroy();
+	if(isdefined(self.empire_turretmessage2))	self.empire_turretmessage2 destroy();
 }
 
 //Method to show the turret message passed by parameter
 showTurretMessage( turret, which_message )
 {
-	if(isdefined(self.awe_turretmessage))	self.awe_turretmessage destroy();
-	if(isdefined(self.awe_turretmessage2))	self.awe_turretmessage2 destroy();
+	if(isdefined(self.empire_turretmessage))	self.empire_turretmessage destroy();
+	if(isdefined(self.empire_turretmessage2))	self.empire_turretmessage2 destroy();
 
-	self.awe_turretmessage = newClientHudElem( self );
-	self.awe_turretmessage.alignX = "center";
-	self.awe_turretmessage.alignY = "middle";
-	self.awe_turretmessage.x = 320;
-	self.awe_turretmessage.y = 404;
-	self.awe_turretmessage.alpha = 1;
-	self.awe_turretmessage.fontScale = 0.80;
-	if( 	(isdefined(level.awe_turretpickingmessage) && which_message == level.awe_turretpickingmessage) ||
-		(isdefined(level.awe_turretplacingmessage) && which_message == level.awe_turretplacingmessage) )
-		self.awe_turretmessage.color = (.5,.5,.5);
-	self.awe_turretmessage setText( which_message );
+	self.empire_turretmessage = newClientHudElem( self );
+	self.empire_turretmessage.alignX = "center";
+	self.empire_turretmessage.alignY = "middle";
+	self.empire_turretmessage.x = 320;
+	self.empire_turretmessage.y = 404;
+	self.empire_turretmessage.alpha = 1;
+	self.empire_turretmessage.fontScale = 0.80;
+	if( 	(isdefined(level.empire_turretpickingmessage) && which_message == level.empire_turretpickingmessage) ||
+		(isdefined(level.empire_turretplacingmessage) && which_message == level.empire_turretplacingmessage) )
+		self.empire_turretmessage.color = (.5,.5,.5);
+	self.empire_turretmessage setText( which_message );
 
-	self.awe_turretmessage2 = newClientHudElem(self);
-	self.awe_turretmessage2.alignX = "center";
-	self.awe_turretmessage2.alignY = "top";
-	self.awe_turretmessage2.x = 320;
-	self.awe_turretmessage2.y = 415;
-	if(level.awe_turrets[turret]["type"]=="misc_mg42")
-		self.awe_turretmessage2 setShader("gfx/hud/hud@death_mg42.tga",90,30);
+	self.empire_turretmessage2 = newClientHudElem(self);
+	self.empire_turretmessage2.alignX = "center";
+	self.empire_turretmessage2.alignY = "top";
+	self.empire_turretmessage2.x = 320;
+	self.empire_turretmessage2.y = 415;
+	if(level.empire_turrets[turret]["type"]=="misc_mg42")
+		self.empire_turretmessage2 setShader("gfx/hud/hud@death_mg42.tga",90,30);
 	else
-		self.awe_turretmessage2 setShader("gfx/hud/hud@death_antitank.tga",90,30);
+		self.empire_turretmessage2 setShader("gfx/hud/hud@death_antitank.tga",90,30);
 }
 
 showTurretIndicator()
 {
-	if (!isdefined(self.awe_turretindicator)) {
-		self.awe_turretindicator = newClientHudElem(self);
-		self.awe_turretindicator.alignX = "left";
-		self.awe_turretindicator.alignY = "top";
-		self.awe_turretindicator.x = 570;
-		self.awe_turretindicator.y = 350;
-		if(level.awe_turrets[self.awe_carryingturret]["type"]=="misc_mg42")
-			self.awe_turretindicator setShader("gfx/hud/hud@death_mg42.tga",60,20);
+	if (!isdefined(self.empire_turretindicator)) {
+		self.empire_turretindicator = newClientHudElem(self);
+		self.empire_turretindicator.alignX = "left";
+		self.empire_turretindicator.alignY = "top";
+		self.empire_turretindicator.x = 570;
+		self.empire_turretindicator.y = 350;
+		if(level.empire_turrets[self.empire_carryingturret]["type"]=="misc_mg42")
+			self.empire_turretindicator setShader("gfx/hud/hud@death_mg42.tga",60,20);
 		else
-			self.awe_turretindicator setShader("gfx/hud/hud@death_antitank.tga",60,20);
+			self.empire_turretindicator setShader("gfx/hud/hud@death_antitank.tga",60,20);
 	}
 }
 
 removeTurretIndicator()
 {
-	if (isdefined(self.awe_turretindicator)) self.awe_turretindicator destroy();
+	if (isdefined(self.empire_turretindicator)) self.empire_turretindicator destroy();
 }
 
 //Drops a turret at player's feet if player had one. Called when player bites the dust.
 dropTurret(position, sMeansOfDeath)
 {
-	if ( !isdefined(self.awe_carryingturret) ) return;
+	if ( !isdefined(self.empire_carryingturret) ) return;
 
 	if(!isdefined(position))
 		position = self.origin;
 
-	t 	= self.awe_carryingturret;
-	type	= level.awe_turrets[t]["type"];
+	t 	= self.empire_carryingturret;
+	type	= level.empire_turrets[t]["type"];
 
 	// Harry Potter was here...
-	if(level.awe_turretrecover)
+	if(level.empire_turretrecover)
 	{
 		// Check if player died in a minefield
 		minefields = getentarray( "minefield", "targetname" );
@@ -9468,11 +9472,11 @@ dropTurret(position, sMeansOfDeath)
 		if( isdefined(touching) || (isdefined(sMeansOfDeath) && sMeansOfDeath == "MOD_TRIGGER_HURT") )
 		{
 			// If original position was a placed one, place a real turret
-			if(isdefined(level.awe_turrets[t]["original_weaponinfo"]))
+			if(isdefined(level.empire_turrets[t]["original_weaponinfo"]))
 			{
-				position	= level.awe_turrets[t]["original_position"];
-				angles	= level.awe_turrets[t]["original_angles"];
-				weaponinfo	= level.awe_turrets[t]["original_weaponinfo"];
+				position	= level.empire_turrets[t]["original_position"];
+				angles	= level.empire_turrets[t]["original_angles"];
+				weaponinfo	= level.empire_turrets[t]["original_weaponinfo"];
 
 				if(type == "misc_ptrs")
 					model = "xmodel/weapon_antitankrifle";
@@ -9481,31 +9485,31 @@ dropTurret(position, sMeansOfDeath)
 
 //				if(type == "misc_ptrs") type = "misc_turret";
 
-				if(level.awe_turretmobile==2)		//the -10000 z offset is to spawn the MG off the map.   
-					level.awe_turrets[t]["turret"] = spawnTurret( type, position + (0,0,-10000), weaponinfo );
+				if(level.empire_turretmobile==2)		//the -10000 z offset is to spawn the MG off the map.   
+					level.empire_turrets[t]["turret"] = spawnTurret( type, position + (0,0,-10000), weaponinfo );
 				else
-					level.awe_turrets[t]["turret"] = spawnTurret( type, position, weaponinfo );
-				level.awe_turrets[t]["turret"] setmodel( model );
-				level.awe_turrets[t]["turret"].weaponinfo = weaponinfo;
-				level.awe_turrets[t]["turret"].angles = angles;
-				if(level.awe_turretmobile==2) wait 0.2;
-				level.awe_turrets[t]["turret"].origin = position;//do this LAST. It'll move the MG into a usable position
-				level.awe_turrets[t]["dropped"] = undefined;
-				level.awe_turrets[t]["carried"] = undefined;
+					level.empire_turrets[t]["turret"] = spawnTurret( type, position, weaponinfo );
+				level.empire_turrets[t]["turret"] setmodel( model );
+				level.empire_turrets[t]["turret"].weaponinfo = weaponinfo;
+				level.empire_turrets[t]["turret"].angles = angles;
+				if(level.empire_turretmobile==2) wait 0.2;
+				level.empire_turrets[t]["turret"].origin = position;//do this LAST. It'll move the MG into a usable position
+				level.empire_turrets[t]["dropped"] = undefined;
+				level.empire_turrets[t]["carried"] = undefined;
 
-				self.awe_carryingturret=undefined;
+				self.empire_carryingturret=undefined;
 				removeTurretIndicator();
 				return;	// Don't go further
 			}
 			else		// If it was a dropped one, just get the position and continue
-				position = level.awe_turrets[self.awe_carryingturret]["original_position"];
+				position = level.empire_turrets[self.empire_carryingturret]["original_position"];
 		}
 	}
 
 	trace=bulletTrace(position+(0,0,10),position+(0,0,-1200),false,undefined); 
 	ground=trace["position"];
 
-	if(level.awe_turrets[self.awe_carryingturret]["type"] == "misc_ptrs")
+	if(level.empire_turrets[self.empire_carryingturret]["type"] == "misc_ptrs")
 	{
 		angles = (0,randomInt(360),112);
 		model = "xmodel/weapon_antitankrifle";
@@ -9520,38 +9524,38 @@ dropTurret(position, sMeansOfDeath)
 
 	ground += (0,0,11);
 
-	level.awe_turrets[self.awe_carryingturret]["turret"] = spawn ("script_model", ground);
-	level.awe_turrets[self.awe_carryingturret]["turret"] . targetname = type;
- 	level.awe_turrets[self.awe_carryingturret]["turret"] setmodel ( model );
-	level.awe_turrets[self.awe_carryingturret]["turret"] . angles = angles;
-	level.awe_turrets[self.awe_carryingturret]["turret"] . origin = ground;
-	level.awe_turrets[self.awe_carryingturret]["dropped"] = true;
-	level.awe_turrets[self.awe_carryingturret]["carried"] = undefined;
+	level.empire_turrets[self.empire_carryingturret]["turret"] = spawn ("script_model", ground);
+	level.empire_turrets[self.empire_carryingturret]["turret"] . targetname = type;
+ 	level.empire_turrets[self.empire_carryingturret]["turret"] setmodel ( model );
+	level.empire_turrets[self.empire_carryingturret]["turret"] . angles = angles;
+	level.empire_turrets[self.empire_carryingturret]["turret"] . origin = ground;
+	level.empire_turrets[self.empire_carryingturret]["dropped"] = true;
+	level.empire_turrets[self.empire_carryingturret]["carried"] = undefined;
  
-	self.awe_carryingturret=undefined;
+	self.empire_carryingturret=undefined;
 	removeTurretIndicator();
 }
 
 //Thread to determine if a player can place a carried turret
 checkTurretPlacement()
 {
-	level endon("awe_boot");
-	self endon("awe_spawned");
-	self endon("awe_died");
+	level endon("empire_boot");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	//stay here until player lets go of melee button
 	//keeps mg from accidently being placed as soon as it is picked up
 	while( isAlive( self ) && self meleeButtonPressed() )
 		wait( 0.1 );
 
-	while( isAlive( self ) && isDefined( self.awe_carryingturret )  && self.sessionstate=="playing")
+	while( isAlive( self ) && isDefined( self.empire_carryingturret )  && self.sessionstate=="playing")
 	{
 		//previous position and angles, in case player goes spec or changes team
 		oldposition = self.origin;
 		oldangles = self.angles;
 
 		// Don't check placement if in a vehicle
-		if(self maps\mp\gametypes\_awe_uncommon::aweIsInVehicle())
+		if(self maps\mp\gametypes\_empire_uncommon::aweIsInVehicle())
 		{
 			wait 0.2;
 			continue;
@@ -9562,7 +9566,7 @@ checkTurretPlacement()
 		//check if player can put down carried mg
 		if( isdefined(pos) )
 		{
-			self showTurretMessage(self.awe_carryingturret, level.awe_turretplacemessage );
+			self showTurretMessage(self.empire_carryingturret, level.empire_turretplacemessage );
 
 			//wait for melee button, death, or player movement
 			while( isAlive( self ) && !self meleeButtonPressed() && isdefined(pos) )
@@ -9574,8 +9578,8 @@ checkTurretPlacement()
 				pos = getTurretPlacement(stance);
 			}
 
-			if(isdefined(self.awe_turretmessage))	self.awe_turretmessage destroy();
-			if(isdefined(self.awe_turretmessage2))	self.awe_turretmessage2 destroy();
+			if(isdefined(self.empire_turretmessage))	self.empire_turretmessage destroy();
+			if(isdefined(self.empire_turretmessage2))	self.empire_turretmessage2 destroy();
 
 			if( isAlive( self ) && self.sessionstate == "playing" && self meleeButtonPressed() && isdefined(pos) )
 				if(self placeTurret(pos,stance)) return;	// End thread if placing was a success
@@ -9584,7 +9588,7 @@ checkTurretPlacement()
 	}
 
 	//execution gets here if player died or went spectator
-	if( isdefined( self.awe_carryingturret ) && self.sessionstate!="playing" )
+	if( isdefined( self.empire_carryingturret ) && self.sessionstate!="playing" )
 	{
 		dropTurret(oldposition, undefined);
 	}
@@ -9610,7 +9614,7 @@ getTurretPlacement(stance)
 	else
 		return undefined;//jumping! Don't allow placement. This leads to abuse.
 
-	type = level.awe_turrets[self.awe_carryingturret]["type"];
+	type = level.empire_turrets[self.empire_carryingturret]["type"];
 
 	// PTRS41 can only be mounted in prone.
 	if(type == "misc_ptrs" && stance != 2)
@@ -9805,17 +9809,17 @@ getMax( a, b, c, d )
 
 placeTurret(pos, stance)
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	// If not carrying a turret, return and end thread
-	if( !isDefined( self.awe_carryingturret ) )
+	if( !isDefined( self.empire_carryingturret ) )
 		return true;
 
 	if(!isdefined(stance)) stance = self aweGetStance(true);   
 	
 
-	type = level.awe_turrets[self.awe_carryingturret]["type"];
+	type = level.empire_turrets[self.empire_carryingturret]["type"];
 
 	// PTRS41 can only be mounted in prone.
 	if(type == "misc_ptrs" && stance != 2)
@@ -9837,39 +9841,39 @@ placeTurret(pos, stance)
 	angles = self.angles;
 
 	// Ok to plant, show progress bar
-	if(level.awe_turretplanttime)
-		planttime = level.awe_turretplanttime;
+	if(level.empire_turretplanttime)
+		planttime = level.empire_turretplanttime;
 	else
 		planttime = undefined;
 
 	if(isdefined(planttime))
 	{
 		self disableWeapon();
-		if(!isdefined(self.awe_plantbar))
+		if(!isdefined(self.empire_plantbar))
 		{
 			barsize = 288;
 			// Time for progressbar	
 			bartime = (float)planttime;
 
 			// Background
-			self.awe_plantbarbackground = newClientHudElem(self);				
-			self.awe_plantbarbackground.alignX = "center";
-			self.awe_plantbarbackground.alignY = "middle";
-			self.awe_plantbarbackground.x = 320;
-			self.awe_plantbarbackground.y = 405;
-			self.awe_plantbarbackground.alpha = 0.5;
-			self.awe_plantbarbackground.color = (0,0,0);
-			self.awe_plantbarbackground setShader("white", (barsize + 4), 12);			
+			self.empire_plantbarbackground = newClientHudElem(self);				
+			self.empire_plantbarbackground.alignX = "center";
+			self.empire_plantbarbackground.alignY = "middle";
+			self.empire_plantbarbackground.x = 320;
+			self.empire_plantbarbackground.y = 405;
+			self.empire_plantbarbackground.alpha = 0.5;
+			self.empire_plantbarbackground.color = (0,0,0);
+			self.empire_plantbarbackground setShader("white", (barsize + 4), 12);			
 			// Progress bar
-			self.awe_plantbar = newClientHudElem(self);				
-			self.awe_plantbar.alignX = "left";
-			self.awe_plantbar.alignY = "middle";
-			self.awe_plantbar.x = (320 - (barsize / 2.0));
-			self.awe_plantbar.y = 405;
-			self.awe_plantbar setShader("white", 0, 8);
-			self.awe_plantbar scaleOverTime(bartime , barsize, 8);
+			self.empire_plantbar = newClientHudElem(self);				
+			self.empire_plantbar.alignX = "left";
+			self.empire_plantbar.alignY = "middle";
+			self.empire_plantbar.x = (320 - (barsize / 2.0));
+			self.empire_plantbar.y = 405;
+			self.empire_plantbar setShader("white", 0, 8);
+			self.empire_plantbar scaleOverTime(bartime , barsize, 8);
 
-			self showTurretMessage(self.awe_carryingturret, level.awe_turretplacingmessage );
+			self showTurretMessage(self.empire_carryingturret, level.empire_turretplacingmessage );
 
 			// Play plant sound
 			self playsound("moody_plant");
@@ -9883,10 +9887,10 @@ placeTurret(pos, stance)
 		}
 
 		// Remove hud elements
-		if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-		if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-		if(isdefined(self.awe_turretmessage))	 self.awe_turretmessage destroy();
-		if(isdefined(self.awe_turretmessage2))	 self.awe_turretmessage2 destroy();
+		if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+		if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+		if(isdefined(self.empire_turretmessage))	 self.empire_turretmessage destroy();
+		if(isdefined(self.empire_turretmessage2))	 self.empire_turretmessage2 destroy();
 
 		self enableWeapon();
 		if(i<planttime*20)
@@ -9894,19 +9898,19 @@ placeTurret(pos, stance)
 	}
 
 	self removeTurretIndicator();
-	self.awe_placingturret = true;
+	self.empire_placingturret = true;
 
-	if(level.awe_debug)
+	if(level.empire_debug)
 		iprintln("selfz:" + self.origin[2] + " posz:" + pos[2]);
 
 //	placeTurretAt( pos + ( 0, 0, -1 ), angles, stance );
 	placeTurretAt( pos + ( 0, 0, 0.5 ), angles, stance );
-	self.awe_carryingturret = undefined;
-	if(isdefined(self.awe_turretmessage))	 self.awe_turretmessage destroy();
-	if(isdefined(self.awe_turretmessage2))	 self.awe_turretmessage2 destroy();
+	self.empire_carryingturret = undefined;
+	if(isdefined(self.empire_turretmessage))	 self.empire_turretmessage destroy();
+	if(isdefined(self.empire_turretmessage2))	 self.empire_turretmessage2 destroy();
 	while(self meleeButtonPressed())
 		wait(0.05);
-	self.awe_placingturret = undefined;
+	self.empire_placingturret = undefined;
 	return true;	// return and end thread
 }
 
@@ -9914,7 +9918,7 @@ placeTurretAt( position, angles, stance )
 {
 //	iprintlnbold("Stance:" + stance);
 
-	type = level.awe_turrets[self.awe_carryingturret]["type"];
+	type = level.empire_turrets[self.empire_carryingturret]["type"];
 
 	if(type == "misc_ptrs")
 		model = "xmodel/weapon_antitankrifle";
@@ -9931,37 +9935,37 @@ placeTurretAt( position, angles, stance )
 		weaponinfo = "mg42_bipod_stand_mp";
 
 //	if(type == "misc_ptrs")	type = "misc_turret";
-	if(level.awe_turretmobile == 2)		//the -10000 z offset is to spawn the MG off the map.   
-		level.awe_turrets[self.awe_carryingturret]["turret"] = spawnTurret( type, position + ( 0, 0, -10000 ), weaponinfo );
+	if(level.empire_turretmobile == 2)		//the -10000 z offset is to spawn the MG off the map.   
+		level.empire_turrets[self.empire_carryingturret]["turret"] = spawnTurret( type, position + ( 0, 0, -10000 ), weaponinfo );
 	else
-		level.awe_turrets[self.awe_carryingturret]["turret"] = spawnTurret( type, position , weaponinfo );
-	level.awe_turrets[self.awe_carryingturret]["turret"] setmodel( model );
-	level.awe_turrets[self.awe_carryingturret]["turret"].weaponinfo = weaponinfo;
-//	level.awe_turrets[self.awe_carryingturret]["turret"].angles = (359.987,angles[1],-0.329132);
-	level.awe_turrets[self.awe_carryingturret]["turret"].angles = (0,angles[1],0);
-	if(level.awe_turretmobile == 2)
+		level.empire_turrets[self.empire_carryingturret]["turret"] = spawnTurret( type, position , weaponinfo );
+	level.empire_turrets[self.empire_carryingturret]["turret"] setmodel( model );
+	level.empire_turrets[self.empire_carryingturret]["turret"].weaponinfo = weaponinfo;
+//	level.empire_turrets[self.empire_carryingturret]["turret"].angles = (359.987,angles[1],-0.329132);
+	level.empire_turrets[self.empire_carryingturret]["turret"].angles = (0,angles[1],0);
+	if(level.empire_turretmobile == 2)
 		wait .2;	// Give turret time to initialize
-	level.awe_turrets[self.awe_carryingturret]["turret"].origin = position;//do this LAST. It'll move the MG into a usable position
-	level.awe_turrets[self.awe_carryingturret]["dropped"] = undefined;
-	level.awe_turrets[self.awe_carryingturret]["carried"] = undefined;
-	level.awe_turrets[self.awe_carryingturret]["turret"] thread maps\mp\_awe_turret::turret_think(self.awe_carryingturret);
+	level.empire_turrets[self.empire_carryingturret]["turret"].origin = position;//do this LAST. It'll move the MG into a usable position
+	level.empire_turrets[self.empire_carryingturret]["dropped"] = undefined;
+	level.empire_turrets[self.empire_carryingturret]["carried"] = undefined;
+	level.empire_turrets[self.empire_carryingturret]["turret"] thread maps\mp\_empire_turret::turret_think(self.empire_carryingturret);
 }
 
 popHead( damageDir, damage)
 {
-	self.awe_headpopped = true;
+	self.empire_headpopped = true;
 
-	if(isdefined(level.awe_merciless))
+	if(isdefined(level.empire_merciless))
 		return;
 
-	if(!isdefined(self.awe_helmetpopped))
+	if(!isdefined(self.empire_helmetpopped))
 		self popHelmet( damageDir, damage );
 
-	if(!isdefined(self.awe_headmodel))
+	if(!isdefined(self.empire_headmodel))
 		return;
 
-	self detach( self.awe_headmodel , "");
-	playfxontag (level.awe_popheadfx,self,"Bip01 Head");
+	self detach( self.empire_headmodel , "");
+	playfxontag (level.empire_popheadfx,self,"Bip01 Head");
 
 	if(isPlayer(self))
 	{
@@ -9987,14 +9991,14 @@ popHead( damageDir, damage)
 	velocity = maps\mp\_utility::vectorScale(damageDir, (damage/20 + randomFloat(5)) ) + (0,0,(damage/20 + randomFloat(5)) );
 
 	head = spawn("script_model", self.origin + headoffset );
-	head setmodel( self.awe_headmodel );
+	head setmodel( self.empire_headmodel );
 	head.angles = self.angles;
-	head thread bounceObject(rotation, velocity, offset, (-90,0,-90), radius, 0.75, "bodyfall_flesh_large", level.awe_popheadfx, "head");
+	head thread bounceObject(rotation, velocity, offset, (-90,0,-90), radius, 0.75, "bodyfall_flesh_large", level.empire_popheadfx, "head");
 }
 
 popHelmet( damageDir, damage)
 {
-	self.awe_helmetpopped = true;
+	self.empire_helmetpopped = true;
 
 	if(!isdefined(self.hatModel))
 		return;
@@ -10059,8 +10063,8 @@ popHelmet( damageDir, damage)
 //
 bounceObject(vRotation, vVelocity, vOffset, angles, radius, falloff, bouncesound, bouncefx, objecttype)
 {
-	level endon("awe_boot");
-	self endon("awe_bounceobject");
+	level endon("empire_boot");
+	self endon("empire_bounceobject");
 
 	self thread putinQ(objecttype);
 
@@ -10085,12 +10089,12 @@ bounceObject(vRotation, vVelocity, vOffset, angles, radius, falloff, bouncesound
 	// Link to anchor
 	self linkto( self.anchor, "", vOffset, angles );
 	self show();
-	self maps\mp\gametypes\_awe_uncommon::aweSetTakeDamage(true);
+	self maps\mp\gametypes\_empire_uncommon::aweSetTakeDamage(true);
 
 	wait .05;	// Let it happen
 
-	if(isdefined(level.awe_gravity))
-		gravity = level.awe_gravity;
+	if(isdefined(level.empire_gravity))
+		gravity = level.empire_gravity;
 	else
 		gravity = 100;
 
@@ -10182,70 +10186,70 @@ bounceObject(vRotation, vVelocity, vOffset, angles, radius, falloff, bouncesound
 
 putinQ(type)
 {
-	index = level.awe_objectQcurrent[type];
+	index = level.empire_objectQcurrent[type];
 
-	level.awe_objectQcurrent[type]++;
-	if(level.awe_objectQcurrent[type] >= level.awe_objectQsize[type])
-		level.awe_objectQcurrent[type] = 0;
+	level.empire_objectQcurrent[type]++;
+	if(level.empire_objectQcurrent[type] >= level.empire_objectQsize[type])
+		level.empire_objectQcurrent[type] = 0;
 
-	if(isDefined(level.awe_objectQ[type][index]))
+	if(isDefined(level.empire_objectQ[type][index]))
 	{
-		level.awe_objectQ[type][index] notify("awe_bounceobject");
+		level.empire_objectQ[type][index] notify("empire_bounceobject");
 		wait .05; //Let thread die
-		if(isDefined(level.awe_objectQ[type][index].anchor))
+		if(isDefined(level.empire_objectQ[type][index].anchor))
 		{
-			level.awe_objectQ[type][index] unlink();
-			level.awe_objectQ[type][index].anchor delete();
+			level.empire_objectQ[type][index] unlink();
+			level.empire_objectQ[type][index].anchor delete();
 		}
-		level.awe_objectQ[type][index] delete();
+		level.empire_objectQ[type][index] delete();
 	}
 	
-	level.awe_objectQ[type][index] = self;
+	level.empire_objectQ[type][index] = self;
 }
 /*
 letItRain()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
-	if(isdefined(level.awe_raining)) return;
-	level.awe_raining = true;
+	if(isdefined(level.empire_raining)) return;
+	level.empire_raining = true;
 		
 	while(getcvar("let_it_all_pour_down")=="1")
 	{
 //		allplayers = getentarray("player", "classname");
-		for(i = 0; i < level.awe_allplayers.size; i++)
+		for(i = 0; i < level.empire_allplayers.size; i++)
 		{
-			if(!isdefined(level.awe_allplayers[i]))
+			if(!isdefined(level.empire_allplayers[i]))
 				continue;
 			else
-				player = level.awe_allplayers[i];
+				player = level.empire_allplayers[i];
 			if( isDefined(player) && isAlive(player) && player.sessionstate == "playing" )
 			{
 				offset = (-500 + randomInt(1000),-500 + randomInt(1000),700 + randomInt(100) );
 
-				if(isdefined(level.awe_merciless))
+				if(isdefined(level.empire_merciless))
 				{
 					if(isdefined(player.headshotModel))
-						player.awe_headmodel = player.headshotModel;
+						player.empire_headmodel = player.headshotModel;
 					else if(isdefined(player.head_damage3))
-						player.awe_headmodel = player.head_damage3;
+						player.empire_headmodel = player.head_damage3;
 					else if(isdefined(player.head_damage2))
-						player.awe_headmodel = player.head_damage2;
+						player.empire_headmodel = player.head_damage2;
 					else if(isdefined(player.head_damage1))
-						player.awe_headmodel = player.head_damage1;
+						player.empire_headmodel = player.head_damage1;
 					else if(isdefined(player.headmodel))
-						player.awe_headmodel = player.headmodel;
+						player.empire_headmodel = player.headmodel;
 				}
 
-				if(level.awe_pophead && isdefined(player.awe_headmodel))
+				if(level.empire_pophead && isdefined(player.empire_headmodel))
 				{
 					model = spawn("script_model", player.origin + offset );
 					model.angles = ( 0, player.angles[1], 0 );
 					rotation = ( randomFloat(540), randomFloat(540), randomFloat(540));
-					model setmodel( player.awe_headmodel);
+					model setmodel( player.empire_headmodel);
 					offset = (0,-2.5,-18);
 					radius = 6;
-					model thread bounceObject( rotation, (0,0,0), offset, (-90,0,0), radius, 0.7, "bodyfall_flesh_large", level.awe_popheadfx, "head" );
+					model thread bounceObject( rotation, (0,0,0), offset, (-90,0,0), radius, 0.7, "bodyfall_flesh_large", level.empire_popheadfx, "head" );
 				}
 				else if(isdefined(player.hatmodel))
 				{
@@ -10267,7 +10271,7 @@ letItRain()
 		}
 		wait .05;
 	}
-	level.awe_raining = undefined;
+	level.empire_raining = undefined;
 }
 */
 
@@ -10739,8 +10743,8 @@ isWeaponType(type,weapon)
 
 rotateIfEmpty()
 {
-	level endon("awe_boot");
-	while(game["awe_emptytime"]<level.awe_rotateifempty)
+	level endon("empire_boot");
+	while(game["empire_emptytime"]<level.empire_rotateifempty)
 	{
 		wait 60;
 
@@ -10748,22 +10752,22 @@ rotateIfEmpty()
 		num = 0;
 
 		// Count clients that are playing
-		for(i=0;i<level.awe_allplayers.size;i++)
-			if(isdefined(level.awe_allplayers[i]) && isPlayer(level.awe_allplayers[i]) && level.awe_allplayers[i].sessionstate=="playing")
+		for(i=0;i<level.empire_allplayers.size;i++)
+			if(isdefined(level.empire_allplayers[i]) && isPlayer(level.empire_allplayers[i]) && level.empire_allplayers[i].sessionstate=="playing")
 				num++; 
 
 		// Need at least 2 playing clients			
 		if(num>1)
-			game["awe_emptytime"] = 0;
+			game["empire_emptytime"] = 0;
 		else
-			game["awe_emptytime"]++;
+			game["empire_emptytime"]++;
 	}
 	exitLevel(false);
 }
 
 delayedbloodfx()
 {
-	if(isdefined(level.awe_merciless))
+	if(isdefined(level.empire_merciless))
 		return;
 
 	x = 2 + randomint(4);
@@ -10771,11 +10775,11 @@ delayedbloodfx()
 	{
 		wait 0.25 + randomfloat(i);
 		if(isdefined(self))
-			playfxontag (level.awe_popheadfx,self,"Bip01 Head");
+			playfxontag (level.empire_popheadfx,self,"Bip01 Head");
 	}
 
 	x = 15 + randomint(10);
-	if(isdefined(level.awe_bleedingfx))
+	if(isdefined(level.empire_bleedingfx))
 	{
 		for(i=0;i<x && isdefined(self);i++)
 		{
@@ -10784,7 +10788,7 @@ delayedbloodfx()
 			{
 				p = (randomInt(2) *.1) + (randomInt(5) * .01);
 				if(isdefined(self))
-					playfxontag(level.awe_bleedingfx, self ,"Bip01 Head" );
+					playfxontag(level.empire_bleedingfx, self ,"Bip01 Head" );
 				wait p;
 				s = s + p;
 			}
@@ -10800,25 +10804,25 @@ handleBody(owner, sMod)
 	body setModel(owner.model);
 
 	// Do an extra bloodfx for headpopped players
-	if(isdefined(owner.awe_headpopped))
+	if(isdefined(owner.empire_headpopped))
 		body thread delayedbloodfx();
 
 	// Make Merciless aware of the body
-	if(isdefined(level.awe_merciless))
-		owner.awe_body = body;
+	if(isdefined(level.empire_merciless))
+		owner.empire_body = body;
 
 	// Burned bodies should burn & smoke
-	if(sMod == "MOD_FLAME" && level.awe_burningbodies) 
+	if(sMod == "MOD_FLAME" && level.empire_burningbodies) 
 		body thread burningBody();
 
 
 	// Only meaningsful to search bodies if there is anything to search for
-	if(!level.awe_searchablebodies || (level.awe_dropondeath == 2 && getcvar("scr_drophealth")==1) )
+	if(!level.empire_searchablebodies || (level.empire_dropondeath == 2 && getcvar("scr_drophealth")==1) )
 		return;
 
 	// Build inventory
 	body.inventory = [];
-	if( level.awe_searchablebodieshealth && (!(isdefined(owner.awe_nohealthpack) || getcvar("scr_drophealth") == "1") || (isdefined(level.awe_merciless) && owner.hashealth>0)) )
+	if( level.empire_searchablebodieshealth && (!(isdefined(owner.empire_nohealthpack) || getcvar("scr_drophealth") == "1") || (isdefined(level.empire_merciless) && owner.hashealth>0)) )
 	{
 		body.inventory[body.inventory.size]["item"] = "health";
 		body.inventory[body.inventory.size - 1]["slot"] = "none";
@@ -10835,7 +10839,7 @@ handleBody(owner, sMod)
 	if(owner getWeaponSlotWeapon("grenade") != "none")
 		body.inventory[body.inventory.size] = owner saveWeaponSlot("grenade");
 
-	if(isdefined(level.awe_uo))
+	if(isdefined(level.empire_uo))
 	{
 		if(owner getWeaponSlotWeapon("smokegrenade") != "none")
 			body.inventory[body.inventory.size] = owner saveWeaponSlot("smokegrenade");
@@ -10851,11 +10855,11 @@ handleBody(owner, sMod)
 	while(isdefined(body))
 	{
 		// Loop through players to check if anyone is close enough to serach
-		for(i=0;i<level.awe_allplayers.size;i++)
+		for(i=0;i<level.empire_allplayers.size;i++)
 		{
 			// Check that player still exist
-			if(isDefined(level.awe_allplayers[i]))
-				player = level.awe_allplayers[i];
+			if(isDefined(level.empire_allplayers[i]))
+				player = level.empire_allplayers[i];
 			else
 				continue;
 
@@ -10869,7 +10873,7 @@ handleBody(owner, sMod)
 				continue;
 
 			// Check for body search
-			if(!isdefined(player.awe_checkbodysearch))
+			if(!isdefined(player.empire_checkbodysearch))
 				player thread checkBodySearch(body);
 		}
 		wait 0.5;
@@ -10895,22 +10899,22 @@ restoreWeaponSlot(savedslot)
 
 burningBody()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
 	timeElapsed = (float)0;
 
 	self playloopsound("smallfire");
 
-	while(isdefined(self) && timeElapsed<level.awe_burningbodies)
+	while(isdefined(self) && timeElapsed<level.empire_burningbodies)
 	{
-		playfx(level.awe_burningbodies_burnfx,self.origin + (-10 + randomInt(21),-10 + randomInt(21),-27) );
+		playfx(level.empire_burningbodies_burnfx,self.origin + (-10 + randomInt(21),-10 + randomInt(21),-27) );
 		delay = 0.1 + randomFloat(0.15);
 		timeElapsed += delay;
 		wait delay;
 	}
 	for(i=0;i<2 && isdefined(self);i++)
 	{
-		playfx(level.awe_burningbodies_smokefx,self.origin);
+		playfx(level.empire_burningbodies_smokefx,self.origin);
 		wait (0.35 + randomFloat(0.4));
 	}
 	self stoploopsound();
@@ -10918,36 +10922,36 @@ burningBody()
 
 checkBodySearch(body)
 {
-	level endon("awe_boot");
-	self endon("awe_spawned");
-	self endon("awe_died");
+	level endon("empire_boot");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	// Make sure to only run one instance
-	if(isdefined(self.awe_checkbodysearch))
+	if(isdefined(self.empire_checkbodysearch))
 		return;
 
 	// Make sure we are not in defuse position of a tripwire
-	if(isdefined(self.awe_checkdefusetripwire))
+	if(isdefined(self.empire_checkdefusetripwire))
 		return;
 
 	range = 30;
 
 	// Ok to search, kill checkTripwirePlacement and set up new hud message
-	self notify("awe_checktripwireplacement");
+	self notify("empire_checktripwireplacement");
 
 	// Ok to search, kill checkSatchelPlacement and set up new hud message
-	self notify("awe_checksatchelplacement");
+	self notify("empire_checksatchelplacement");
 
-	self.awe_checkbodysearch = true;
+	self.empire_checkbodysearch = true;
 
 	// Remove hud elements
-	if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-	if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-	if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-	if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+	if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+	if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+	if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+	if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 
 	// Set up new
-	showBodysearchMessage(level.awe_bodysearchmessage);
+	showBodysearchMessage(level.empire_bodysearchmessage);
 
 	// Loop
 	for(;;)
@@ -10958,34 +10962,34 @@ checkBodySearch(body)
 			origin = self.origin;
 			angles = self.angles;
 
-			planttime = level.awe_searchablebodies + randomFloat(1);
+			planttime = level.empire_searchablebodies + randomFloat(1);
 
 			self disableWeapon();
-			if(!isdefined(self.awe_plantbar))
+			if(!isdefined(self.empire_plantbar))
 			{
 				barsize = 288;
 				// Time for progressbar	
 				bartime = (float)planttime;
-				if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-				if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+				if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+				if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 				// Background
-				self.awe_plantbarbackground = newClientHudElem(self);				
-				self.awe_plantbarbackground.alignX = "center";
-				self.awe_plantbarbackground.alignY = "middle";
-				self.awe_plantbarbackground.x = 320;
-				self.awe_plantbarbackground.y = 405;
-				self.awe_plantbarbackground.alpha = 0.5;
-				self.awe_plantbarbackground.color = (0,0,0);
-				self.awe_plantbarbackground setShader("white", (barsize + 4), 12);			
+				self.empire_plantbarbackground = newClientHudElem(self);				
+				self.empire_plantbarbackground.alignX = "center";
+				self.empire_plantbarbackground.alignY = "middle";
+				self.empire_plantbarbackground.x = 320;
+				self.empire_plantbarbackground.y = 405;
+				self.empire_plantbarbackground.alpha = 0.5;
+				self.empire_plantbarbackground.color = (0,0,0);
+				self.empire_plantbarbackground setShader("white", (barsize + 4), 12);			
 				// Progress bar
-				self.awe_plantbar = newClientHudElem(self);				
-				self.awe_plantbar.alignX = "left";
-				self.awe_plantbar.alignY = "middle";
-				self.awe_plantbar.x = (320 - (barsize / 2.0));
-				self.awe_plantbar.y = 405;
-				self.awe_plantbar setShader("white", 0, 8);
-				self.awe_plantbar scaleOverTime(bartime , barsize, 8);
-				showBodysearchMessage(level.awe_bodysearchingmessage);
+				self.empire_plantbar = newClientHudElem(self);				
+				self.empire_plantbar.alignX = "left";
+				self.empire_plantbar.alignY = "middle";
+				self.empire_plantbar.x = (320 - (barsize / 2.0));
+				self.empire_plantbar.y = 405;
+				self.empire_plantbar setShader("white", 0, 8);
+				self.empire_plantbar scaleOverTime(bartime , barsize, 8);
+				showBodysearchMessage(level.empire_bodysearchingmessage);
 				// Play plant sound
 				self playsound("moody_plant");
 			}
@@ -11002,20 +11006,20 @@ checkBodySearch(body)
 					if(!(stance == "2" || stance == "1")) self setClientCvar("cl_stance","1");
 				}
 
-				self.awe_plantbar.color = (color,color,1);
+				self.empire_plantbar.color = (color,color,1);
 				color -= 0.05 / planttime;
 
 				wait 0.05;
 			}
 			// Remove hud elements
-			if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-			if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-			if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-			if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+			if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+			if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+			if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+			if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 	
 			if(i<planttime*20 || !isdefined(body))
 			{
-				self.awe_checkbodysearch = undefined;
+				self.empire_checkbodysearch = undefined;
 				self enableWeapon();
 				return;
 			}
@@ -11102,39 +11106,39 @@ checkBodySearch(body)
 	}
 
 	// Clean up
-	if(isdefined(self.awe_plantbarbackground)) self.awe_plantbarbackground destroy();
-	if(isdefined(self.awe_plantbar))		 self.awe_plantbar destroy();
-	if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-	if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+	if(isdefined(self.empire_plantbarbackground)) self.empire_plantbarbackground destroy();
+	if(isdefined(self.empire_plantbar))		 self.empire_plantbar destroy();
+	if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+	if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 
 	while(self meleeButtonPressed() && isAlive(self) && self.sessionstate=="playing")
 		wait .05;
 
-	self.awe_checkbodysearch = undefined;
+	self.empire_checkbodysearch = undefined;
 }
 
 showBodysearchMessage(which_message )
 {
-	if(isdefined(self.awe_tripwiremessage))	self.awe_tripwiremessage destroy();
-	if(isdefined(self.awe_tripwiremessage2))	self.awe_tripwiremessage2 destroy();
+	if(isdefined(self.empire_tripwiremessage))	self.empire_tripwiremessage destroy();
+	if(isdefined(self.empire_tripwiremessage2))	self.empire_tripwiremessage2 destroy();
 
-	self.awe_tripwiremessage = newClientHudElem( self );
-	self.awe_tripwiremessage.alignX = "center";
-	self.awe_tripwiremessage.alignY = "middle";
-	self.awe_tripwiremessage.x = 320;
-	self.awe_tripwiremessage.y = 404;
-	self.awe_tripwiremessage.alpha = 1;
-	self.awe_tripwiremessage.fontScale = 0.80;
-	if( (isdefined(level.awe_bodysearchingmessage) && which_message == level.awe_bodysearchingmessage) )
-		self.awe_tripwiremessage.color = (.5,.5,.5);
-	self.awe_tripwiremessage setText( which_message );
+	self.empire_tripwiremessage = newClientHudElem( self );
+	self.empire_tripwiremessage.alignX = "center";
+	self.empire_tripwiremessage.alignY = "middle";
+	self.empire_tripwiremessage.x = 320;
+	self.empire_tripwiremessage.y = 404;
+	self.empire_tripwiremessage.alpha = 1;
+	self.empire_tripwiremessage.fontScale = 0.80;
+	if( (isdefined(level.empire_bodysearchingmessage) && which_message == level.empire_bodysearchingmessage) )
+		self.empire_tripwiremessage.color = (.5,.5,.5);
+	self.empire_tripwiremessage setText( which_message );
 
-	self.awe_tripwiremessage2 = newClientHudElem(self);
-	self.awe_tripwiremessage2.alignX = "center";
-	self.awe_tripwiremessage2.alignY = "top";
-	self.awe_tripwiremessage2.x = 320;
-	self.awe_tripwiremessage2.y = 415;
-	self.awe_tripwiremessage2 setShader("gfx/hud/death_suicide.dds",40,40);
+	self.empire_tripwiremessage2 = newClientHudElem(self);
+	self.empire_tripwiremessage2.alignX = "center";
+	self.empire_tripwiremessage2.alignY = "top";
+	self.empire_tripwiremessage2.x = 320;
+	self.empire_tripwiremessage2.y = 415;
+	self.empire_tripwiremessage2 setShader("gfx/hud/death_suicide.dds",40,40);
 }
 
 // ----------------------------------------------------------------------------------
@@ -11142,9 +11146,9 @@ showBodysearchMessage(which_message )
 // ----------------------------------------------------------------------------------
 dropHealth(alive)
 {
-	if(isdefined(self.awe_nohealthpack))
+	if(isdefined(self.empire_nohealthpack))
 		return;
-	self.awe_nohealthpack = true;
+	self.empire_nohealthpack = true;
 
 	if(isDefined(level.healthqueue[level.healthqueuecurrent]))
 		level.healthqueue[level.healthqueuecurrent] delete();
@@ -11187,7 +11191,7 @@ removeArrayIndex(array, index)
 
 limitWeapons(team)
 {
-	if(level.awe_disable) return;
+	if(level.empire_disable) return;
 
 	rifle = 0;
 	boltrifle = 0;
@@ -11200,12 +11204,12 @@ limitWeapons(team)
 	rl = 0;
 	fg42 = 0;
 
-	for(i = 0; i < level.awe_allplayers.size; i++)
+	for(i = 0; i < level.empire_allplayers.size; i++)
 	{
-		if(isdefined(level.awe_allplayers[i]))
+		if(isdefined(level.empire_allplayers[i]))
 		{
-			player = level.awe_allplayers[i];
-			if( (isdefined(level.awe_teamplay) && team == player.sessionteam) || (!isdefined(level.awe_teamplay) && team == player.pers["team"]) )
+			player = level.empire_allplayers[i];
+			if( (isdefined(level.empire_teamplay) && team == player.sessionteam) || (!isdefined(level.empire_teamplay) && team == player.pers["team"]) )
 			{
 				if(player.sessionstate == "playing")
 				{
@@ -11243,7 +11247,7 @@ limitWeapons(team)
 					assault ++;
 				if(isWeaponType("sniper",primary) || isWeaponType("sniper",primaryb) || isWeaponType("sniper",spawn))
 					sniper ++;
-				if(isdefined(level.awe_uo))
+				if(isdefined(level.empire_uo))
 				{
 					if(isWeaponType("lmg",primary) || isWeaponType("lmg",primaryb) || isWeaponType("lmg",spawn))
 						lmg ++;
@@ -11258,84 +11262,84 @@ limitWeapons(team)
 		}
 	}
 
-	if(level.awe_riflelimit && !(level.awe_boltriflelimit || level.awe_semiriflelimit))
+	if(level.empire_riflelimit && !(level.empire_boltriflelimit || level.empire_semiriflelimit))
 	{
-		if(level.awe_riflelimit>rifle)
+		if(level.empire_riflelimit>rifle)
 			enableDisableWeaponType(team, "rifle", 1);
 		else
 			enableDisableWeaponType(team, "rifle", 0);
 	}
 
-	if(level.awe_boltriflelimit)
+	if(level.empire_boltriflelimit)
 	{
-		if(level.awe_boltriflelimit>boltrifle)
+		if(level.empire_boltriflelimit>boltrifle)
 			enableDisableWeaponType(team, "boltrifle", 1);
 		else
 			enableDisableWeaponType(team, "boltrifle", 0);
 	}
 
-	if(level.awe_semiriflelimit)
+	if(level.empire_semiriflelimit)
 	{
-		if(level.awe_semiriflelimit>semirifle)
+		if(level.empire_semiriflelimit>semirifle)
 			enableDisableWeaponType(team, "semirifle", 1);
 		else
 			enableDisableWeaponType(team, "semirifle", 0);
 	}
 
-	if(level.awe_smglimit)
+	if(level.empire_smglimit)
 	{
-		if(level.awe_smglimit>smg)
+		if(level.empire_smglimit>smg)
 			enableDisableWeaponType(team, "smg", 1);
 		else
 			enableDisableWeaponType(team, "smg", 0);
 	}
 
-	if(level.awe_assaultlimit)
+	if(level.empire_assaultlimit)
 	{
-		if(level.awe_assaultlimit>assault)
+		if(level.empire_assaultlimit>assault)
 			enableDisableWeaponType(team, "assault", 1);
 		else
 			enableDisableWeaponType(team, "assault", 0);
 	}
 
-	if(level.awe_sniperlimit)
+	if(level.empire_sniperlimit)
 	{
-		if(level.awe_sniperlimit>sniper)
+		if(level.empire_sniperlimit>sniper)
 			enableDisableWeaponType(team, "sniper", 1);
 		else
 			enableDisableWeaponType(team, "sniper", 0);
 	}
 
-	if(isdefined(level.awe_uo))
+	if(isdefined(level.empire_uo))
 	{
-		if(level.awe_lmglimit)
+		if(level.empire_lmglimit)
 		{
-			if(level.awe_lmglimit>lmg)
+			if(level.empire_lmglimit>lmg)
 				enableDisableWeaponType(team, "lmg", 1);
 			else
 				enableDisableWeaponType(team, "lmg", 0);
 		}
 
-		if(level.awe_ftlimit)
+		if(level.empire_ftlimit)
 		{
-			if(level.awe_ftlimit>ft)
+			if(level.empire_ftlimit>ft)
 				enableDisableWeaponType(team, "ft", 1);
 			else
 				enableDisableWeaponType(team, "ft", 0);
 		}
 
-		if(level.awe_rllimit)
+		if(level.empire_rllimit)
 		{
-			if(level.awe_rllimit>rl)
+			if(level.empire_rllimit>rl)
 				enableDisableWeaponType(team, "rl", 1);
 			else
 				enableDisableWeaponType(team, "rl", 0);
 		}
 	}
 
-	if(level.awe_fg42limit)
+	if(level.empire_fg42limit)
 	{
-		if(level.awe_fg42limit>fg42)
+		if(level.empire_fg42limit>fg42)
 			enableDisableWeaponType(team, "fg42", 1);
 		else
 			enableDisableWeaponType(team, "fg42", 0);
@@ -11442,7 +11446,7 @@ enableDisableWeaponType(team, type, value)
 					if(!value)
 					{
 						maps\mp\gametypes\_teams::deletePlacedEntity("mpweapon_sten");
-						if(isdefined(level.awe_uo))
+						if(isdefined(level.empire_uo))
 							maps\mp\gametypes\_teams::deletePlacedEntity("mpweapon_sten_silenced");
 					}
 					break;
@@ -11502,7 +11506,7 @@ enableDisableWeaponType(team, type, value)
 					if(!value)
 					{
 						maps\mp\gametypes\_teams::deletePlacedEntity("mpweapon_mosinnagant");
-						if(isdefined(level.awe_uo))
+						if(isdefined(level.empire_uo))
 							maps\mp\gametypes\_teams::deletePlacedEntity("mpweapon_svt40");
 					}
 					break;
@@ -11517,7 +11521,7 @@ enableDisableWeaponType(team, type, value)
 					aweSetCvar("scr_allow_svt40", value);
 					if(!value)
 					{
-						if(isdefined(level.awe_uo))
+						if(isdefined(level.empire_uo))
 							maps\mp\gametypes\_teams::deletePlacedEntity("mpweapon_svt40");
 					}
 					break;
@@ -11577,7 +11581,7 @@ enableDisableWeaponType(team, type, value)
 					if(!value)
 					{
 						maps\mp\gametypes\_teams::deletePlacedEntity("mpweapon_kar98k");
-						if(isdefined(level.awe_uo))
+						if(isdefined(level.empire_uo))
 							maps\mp\gametypes\_teams::deletePlacedEntity("mpweapon_gewehr43");
 					}
 					break;
@@ -11592,7 +11596,7 @@ enableDisableWeaponType(team, type, value)
 					aweSetCvar("scr_allow_gewehr43", value);
 					if(!value)
 					{
-						if(isdefined(level.awe_uo))
+						if(isdefined(level.empire_uo))
 							maps\mp\gametypes\_teams::deletePlacedEntity("mpweapon_gewehr43");
 					}
 					break;
@@ -11659,7 +11663,7 @@ aweSetCvar(cvar, value)
 
 checkLimitedWeapons()
 {
-	level endon("awe_boot");
+	level endon("empire_boot");
 
 	for(;;)
 	{
@@ -11672,15 +11676,15 @@ checkLimitedWeapons()
 
 breath_fx()
 {
-	self endon("awe_spawned");
-	self endon("awe_died");
+	self endon("empire_spawned");
+	self endon("empire_died");
 
 	wait (2 + randomint(3));
 
 	while(isalive(self) && self.sessionstate == "playing")
 	{
-		if(!self maps\mp\gametypes\_awe_uncommon::aweIsInVehicle())
-			playfxontag (level.awe_breathfx, self, "Bip01 Head");
+		if(!self maps\mp\gametypes\_empire_uncommon::aweIsInVehicle())
+			playfxontag (level.empire_breathfx, self, "Bip01 Head");
 		wait randomfloatrange(1.5,3.5);
 	}
 }
@@ -11701,13 +11705,13 @@ limitBases()
 		if(bases[i].script_team == "axis")
 		{
 			axis_bases++;
-			if(axis_bases<=level.awe_limitbases)
+			if(axis_bases<=level.empire_limitbases)
 				continue;
 		}
 		else
 		{
 			allied_bases++;
-			if(allied_bases<=level.awe_limitbases)
+			if(allied_bases<=level.empire_limitbases)
 				continue;
 		}
 
@@ -11795,10 +11799,10 @@ GetMapRotation(random, current, number)
 		maprot = strip(getcvar("sv_maprotationcurrent"));	
 
 	// Get maprotation if current empty or not the one we want
-	if(level.awe_debug) iprintln("(cvar)maprot: " + getcvar("sv_maprotation").size);
+	if(level.empire_debug) iprintln("(cvar)maprot: " + getcvar("sv_maprotation").size);
 	if(maprot == "")
 		maprot = strip(getcvar("sv_maprotation"));	
-	if(level.awe_debug) iprintln("(var)maprot: " + maprot.size);
+	if(level.empire_debug) iprintln("(var)maprot: " + maprot.size);
 
 	// No map rotation setup!
 	if(maprot == "")
@@ -11826,7 +11830,7 @@ GetMapRotation(random, current, number)
 		element = strip(temparr2[i]);
 		if(element != "")
 		{
-			if(level.awe_debug) iprintln("maprot" + temparr.size + ":" + element);
+			if(level.empire_debug) iprintln("maprot" + temparr.size + ":" + element);
 			temparr[temparr.size] = element;
 		}
 	}
@@ -12034,7 +12038,7 @@ ParseGametypeRotationWeights()
 	parsed = [];
 	parsed["enabled"] = false;
 
-	weightsraw = cvardef("awe_random_gametype_weights", "", "", "", "string");
+	weightsraw = cvardef("empire_random_gametype_weights", "", "", "", "string");
 	weightsraw = strip(weightsraw);
 	if(weightsraw == "")
 		return parsed;
@@ -12152,7 +12156,7 @@ spawnSpectator(origin, angles)
 	else
 	{
 		spawnpointnames = [];
-		spawnpointnames[spawnpointnames.size] = level.awe_spawnspectatorname;
+		spawnpointnames[spawnpointnames.size] = level.empire_spawnspectatorname;
 		spawnpointnames[spawnpointnames.size] = "mp_teamdeathmatch_intermission";
 		spawnpointnames[spawnpointnames.size] = "mp_deathmatch_intermission";
 		spawnpointnames[spawnpointnames.size] = "mp_searchanddestroy_intermission";
@@ -12178,24 +12182,24 @@ spawnSpectator(origin, angles)
 			spawnpoint = maps\mp\gametypes\_spawnlogic::getSpawnpoint_Random(spawnpoints);
 			if(isDefined(spawnpoint))
 			{
-				if(spawnpointname != level.awe_spawnspectatorname)
-					iprintln("^3AWE warning:^7 Missing spectator spawn classname '^1" + level.awe_spawnspectatorname + "^7', using fallback '^2" + spawnpointname + "^7'.");
+				if(spawnpointname != level.empire_spawnspectatorname)
+					iprintln("^3empire_mod warning:^7 Missing spectator spawn classname '^1" + level.empire_spawnspectatorname + "^7', using fallback '^2" + spawnpointname + "^7'.");
 
 				self spawn(spawnpoint.origin, spawnpoint.angles);
 				return;
 			}
 		}
 
-		maps\mp\_utility::error("NO SPECTATOR SPAWNPOINTS FOUND (TRIED " + level.awe_spawnspectatorname + " AND FALLBACK CLASSNAMES)");
+		maps\mp\_utility::error("NO SPECTATOR SPAWNPOINTS FOUND (TRIED " + level.empire_spawnspectatorname + " AND FALLBACK CLASSNAMES)");
 	}
 }
 
 endMap()
 {
-	if(level.awe_disable)
+	if(level.empire_disable)
 		return;
 
-	maps\mp\gametypes\_awe_mapvote::Initialise();
+	maps\mp\gametypes\_empire_nextmap::Initialise();
 }
 
 aweObituary(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc)
@@ -12225,7 +12229,7 @@ aweObituary(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc
 	if(sMeansOfDeath != "MOD_MELEE_BINOCULARS" && sWeapon == "binoculars_artillery_mp")
 		sMeansOfDeath = "MOD_ARTILLERY";
 
-	if(!level.awe_disable && level.awe_obituary == 2 && isdefined(attacker) && isplayer(attacker))
+	if(!level.empire_disable && level.empire_obituary == 2 && isdefined(attacker) && isplayer(attacker))
 	{
 		if (sMeansOfDeath == "MOD_MELEE")
 			sWeapon = "Bash";
@@ -12247,7 +12251,7 @@ aweObituary(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc
 			sHitLoc = " ";
 
 		//get sides
-		if(isdefined(level.awe_teamplay))
+		if(isdefined(level.empire_teamplay))
 		{
 			selfteam = self.sessionteam;
 			attackerteam = attacker.sessionteam;
@@ -12274,19 +12278,19 @@ aweObituary(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc
 		if(attacker == self) // Suicide?
 		{
 			iprintln(SelfColour + SelfName + "^5 Has killed Himself");
-			if(level.awe_obituarydeath)
+			if(level.empire_obituarydeath)
 				self iprintlnbold("You killed yourself");
 		}
 		else if(sHitLoc != "none") // Hitloc?
 		{
 			iprintln(AttackerColour + AttackerName + "^7 killed " + SelfColour + SelfName + "^7 / " + sWeapon + " / " + sHitLoc + " / " + range_iso + "m");
-			if(level.awe_obituarydeath)
+			if(level.empire_obituarydeath)
 				self iprintlnbold("^7Killed by " + AttackerColour + AttackerName + "^7 /" + sWeapon + " / " + sHitLoc + " / " + range_iso + "m");
 		}
 		else // Catch the rest
 		{
 			iprintln(AttackerColour + AttackerName + "^7 killed " + SelfColour + SelfName + "^7 / " + sWeapon + " / " + range_iso + "m");
-			if(level.awe_obituarydeath)
+			if(level.empire_obituarydeath)
 				self iprintlnbold("^7killed by " + AttackerColour + AttackerName + "^7 /" + sWeapon + " / " + range_iso + "m");
 		}
 	}
@@ -12298,12 +12302,12 @@ aweObituary(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc
 
 spawnradios()
 {
-	level.awe_disable = cvardef("awe_disable",0,0,1,"int");
-	if(level.awe_disable)
+	level.empire_disable = cvardef("empire_disable",0,0,1,"int");
+	if(level.empire_disable)
 		return;
 
-	newradios	= cvardef("awe_hq_spawn_radios",8,3,20,"int");
-	forcenew = cvardef("awe_hq_force_new_radios",0,0,1,"int");
+	newradios	= cvardef("empire_hq_spawn_radios",8,3,20,"int");
+	forcenew = cvardef("empire_hq_force_new_radios",0,0,1,"int");
 
 	radios = getentarray ("hqradio","targetname");
 	if ( (!radios.size) || (radios.size < 3) || forcenew)

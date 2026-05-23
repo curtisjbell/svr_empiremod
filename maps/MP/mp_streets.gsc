@@ -4,7 +4,7 @@ main()
 {
 	//setExpFog (0.00005, .72, .59, .63, 0 );
 	setCullFog (500, 7000, .61, .66, .68, 0 );
-	thread pam_ambientsounds();
+	thread empire_ambientsounds();
 	level thread firesounds();
 
 	maps\mp\_load::main();
@@ -103,7 +103,7 @@ fixExploits() {
 	
 }
 
-pam_ambientsounds()
+empire_ambientsounds()
 {
 	if (getcvar("sv_ambientsounds") != "0")
 	{

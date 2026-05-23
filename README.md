@@ -4,8 +4,8 @@ This repository contains configuration files and assets for the Empire CTF serve
 The primary server configuration is provided in `empire.cfg`. Copy this file to your server and execute it from the game console or include it in your startup scripts.
 
 ## Key Features
-- Custom server branding using `awe_server_logo_text` and related cvars.
-- Extensive AWE mod settings for gameplay tweaks and voting.
+- Custom server branding using `empire_server_logo_text` and related cvars.
+- Extensive empire_mod mod settings for gameplay tweaks and voting.
 - Default game and weapon limits tailored for Capture the Flag play.
 
 For additional notes on mod changes see `the_empire_mod.txt`.
@@ -13,8 +13,8 @@ For additional notes on mod changes see `the_empire_mod.txt`.
 ## Changelog
 
 - **v1.05** - Added gametype rotation cvars for configuring allowed gametypes and history.
-- **v1.04** - Added `awe_map_vote_force` to always include specified maps in voting.
+- **v1.04** - Added `empire_map_vote_force` to always include specified maps in voting.
 - **v1.03** - Added map rotation history to improve map voting.
-- **v1.02** - Added reload glitch detection with new cvars for AWE.
+- **v1.02** - Added reload glitch detection with new cvars for empire_mod.
 - **v1.01** - Fixed display bug when notifying players about AFK status.
 - **v1.0** - Initial release with branding, AutoAdmin messages and gametype voting.

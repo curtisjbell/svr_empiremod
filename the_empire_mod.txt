@@ -2,12 +2,12 @@ v1.01
 
 
 v1.02
-Added reload glitch detection for AWE. New cvars:
+Added reload glitch detection for EMPIRE. New cvars:
 
 v1.03
 Added map rotation history tracking. New cvars:
-awe_map_history_size "5"
-awe_map_history ""
+empire_map_history_size "5"
+empire_map_history ""
 
 v1.0
 
@@ -24,7 +24,7 @@ ui_BrandColorSecondary "1"
 ui_BrandColorTertiary "2"
 ui_BrandNextMap "^1~^3empire ^2| ^1Next:"
 ui_BrandGametypeEnabled "1"
-awe_server_logo_text "" // text displayed under the compass
+empire_server_logo_text "" // text displayed under the compass
 
 // AutoAdmin
 ui_AutoAdmin_AFK_NotifyPlayer "^1~^3empire ^2| ^1automod: ^3You have been detected as ^1AFK^3. You will be forced into spectator mode in {{TIME}} seconds."
